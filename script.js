@@ -13,6 +13,8 @@ if(!Number.isFinite(state.totalSeconds))state.totalSeconds=0;
 if(!Array.isArray(state.history))state.history=[];
 state.players.forEach(p=>{if(typeof p.hasRing!=='boolean')p.hasRing=state.ringsAssigned;if(!Number.isFinite(p.ringSeconds))p.ringSeconds=0;if(!Number.isFinite(p.ringlessSeconds))p.ringlessSeconds=0;if(!Number.isFinite(p.totalRingSeconds))p.totalRingSeconds=0;});
 const hasRing=p=>Boolean(p&&state.ringsAssigned&&p.hasRing);
+const lore=ring=>cfg.ringLore[ring]||{name:ring,power:'Ismeretlen hatalom'};
+const ringLabel=ring=>`${lore(ring).name} · ${lore(ring).power}`;
 
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const map=L.map('mapCanvas',{zoomControl:true}).setView([49.2,16.8],7);
@@ -42,7 +44,23 @@ function updateRumor(){
  rumorMarker.setLatLng(rumor.position);
  rumorMarker.bindPopup('<strong>Sauron – utolsó ismert észlelés</strong><br>⚠️ Bizonytalan információ, nem valós idejű pozíció.<br>Az észlelés 3 óránként változik.');
 }
+// Utazáskor a háromórás világészlelés aktuális pontjáról indul, és időarányosan
+// Prága felé halad. A prototípus egyenes vonalú földrajzi interpolációt használ,
+// nem valós úthálózati navigációt vagy szerveroldali Sauron-szimulációt.
+function advanceSauron(){
+ if(state.phase!=='travel'||!state.travelOrigin||!state.startedAt)return;
+ const from=state.travelOrigin,to=cfg.hunting.center;
+ const lat1=from[0]*Math.PI/180,lat2=to[0]*Math.PI/180;
+ const dlat=(to[0]-from[0])*Math.PI/180,dlon=(to[1]-from[1])*Math.PI/180;
+ const a=Math.sin(dlat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dlon/2)**2;
+ const km=6371*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+ const traveled=Math.max(0,(Date.now()-state.startedAt)/3600000)*cfg.hunting.sauronSpeedKmh;
+ const t=km>0?Math.min(1,traveled/km):1;
+ sauron.setLatLng([from[0]+(to[0]-from[0])*t,from[1]+(to[1]-from[1])*t]);
+ sauron.bindPopup(`Sauron Prága felé közeledik · kb. ${Math.round(Math.max(0,km-traveled))} km hátra (demó)`);
+}
 function syncSauron(){
+ advanceSauron();
  // A sisak kizárólag az aktív játékban, minden zoomszinten látható.
  if(state.phase==='idle'){if(map.hasLayer(sauron))map.removeLayer(sauron)}
  else if(!map.hasLayer(sauron))sauron.addTo(map);
@@ -54,7 +72,7 @@ function syncRumorVisibility(){
 }
 map.on('zoomend',()=>{syncRumorVisibility();syncSauron()});
 updateRumor();syncRumorVisibility();syncSauron();
-setInterval(()=>{updateRumor();syncRumorVisibility()},60000);
+setInterval(()=>{updateRumor();syncRumorVisibility();advanceSauron()},10000);
 $('showEurope').addEventListener('click',()=>{showPage('map');map.fitBounds(cfg.rumor.europeBounds)});
 $('ringsAssigned').checked=state.ringsAssigned;
 $('applyRingMode').addEventListener('click',()=>{if(watchId!==null)stopTracking();state.ringsAssigned=$('ringsAssigned').checked;state.players.forEach(p=>p.hasRing=state.ringsAssigned);save();render();$('adminStatus').textContent=state.ringsAssigned?'💍 A gyűrűk kiosztva (helyi demó).':'🧙 Gyűrű nélküli játék bekapcsolva (helyi demó).';});
@@ -74,8 +92,12 @@ function showHuntWarning(){if(state.phase!=='hunt'||!state.current)return;const 
 $('dismiss').addEventListener('click',()=>$('alert').close());
 function phaseText(){return state.phase==='idle'?'🌫️ Előkészület':state.phase==='travel'?'🚗 Utazás Prágába':'👁️ Prágai vadászat';}
 function updatePhase(){const label=phaseText();$('mode').textContent=label;$('mapPhase').textContent=label;$('adminPhase').textContent='Jelenlegi állapot: '+label;$('activateHunt').disabled=state.phase!=='travel';$('activateHunt').title=state.phase==='hunt'?'A vadászatból nem lehet visszalépni':state.phase==='idle'?'Előbb indíts új játékot':'';$('mapStatus').textContent=state.phase==='idle'?'🌫️ Még nincs aktív játék. A világ bármely pontján felbukkanhat Sauron bizonytalan észlelése.':state.phase==='travel'?'🚗 Sauron közeledhet, de az utazás alatt nem támadhat.':'👁️ A vadászat elindult. A szerveres üldözés még nincs megvalósítva.';syncSauron();syncRumorVisibility();}
-$('newGame').addEventListener('click',()=>{if(!confirm('Új játékot indítasz? A helyi pontszámok és a forduló állapota törlődnek.'))return;stopTracking();state.round++;state.phase=document.querySelector('input[name="startMode"]:checked').value;state.ringsAssigned=$('newGameRings').checked;state.players.forEach(p=>{p.ringSeconds=0;p.ringlessSeconds=0;p.hasRing=state.ringsAssigned;});state.startedAt=Date.now();$('ringsAssigned').checked=state.ringsAssigned;save();updatePhase();render();$('adminStatus').textContent='Új játék elindítva: '+phaseText();if(state.phase==='hunt')showHuntWarning();});
-$('activateHunt').addEventListener('click',()=>{if(state.phase!=='travel')return;if(!confirm('Elindítod a prágai vadászatot? Utazás módba csak új játékkal térhetsz vissza.'))return;state.phase='hunt';save();updatePhase();render();$('adminStatus').textContent='A vadászat elindult. A figyelmeztetés karakterenként az első következő belépéskor jelenik meg.';});
+$('newGame').addEventListener('click',()=>{if(!confirm('Új játékot indítasz? A helyi pontszámok és a forduló állapota törlődnek.'))return;stopTracking();state.round++;state.phase=document.querySelector('input[name="startMode"]:checked').value;state.ringsAssigned=$('newGameRings').checked;state.players.forEach(p=>{p.ringSeconds=0;p.ringlessSeconds=0;p.hasRing=state.ringsAssigned;});state.startedAt=Date.now();
+ // Az indulás pillanatában érvényes világészlelés a kiindulópont.
+ updateRumor();state.travelOrigin=state.phase==='travel'?[...rumor.position]:null;
+ if(state.phase==='hunt')sauron.setLatLng(cfg.hunting.center);
+ $('ringsAssigned').checked=state.ringsAssigned;save();updatePhase();render();$('adminStatus').textContent='Új játék elindítva: '+phaseText();if(state.phase==='hunt')showHuntWarning();});
+$('activateHunt').addEventListener('click',()=>{if(state.phase!=='travel')return;if(!confirm('Elindítod a prágai vadászatot? Utazás módba csak új játékkal térhetsz vissza.'))return;state.phase='hunt';state.travelOrigin=null;sauron.setLatLng(cfg.hunting.center);save();updatePhase();render();$('adminStatus').textContent='A vadászat elindult. A figyelmeztetés karakterenként az első következő belépéskor jelenik meg.';});
 function removePlayer(id){const p=state.players.find(x=>x.id===id);if(!p||!confirm('Eltávolítod ezt a karaktert: '+p.nickname+'?'))return;if(state.current===id){stopTracking();state.current=null;}state.players=state.players.filter(x=>x.id!==id);save();render();}
 $('adminPlayers').addEventListener('click',e=>{const b=e.target.closest('button[data-remove]');if(b)removePlayer(b.dataset.remove);});
 updatePhase();
@@ -84,15 +106,15 @@ $('routeList').innerHTML=cfg.routes.map(r=>`<div class="card"><strong>${esc(r.na
 const makeId=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random();
 function flushActive(){if(activeStart===null||!state.current)return;const p=state.players.find(x=>x.id===state.current);if(p&&state.phase!=='idle'){const dt=Math.max(0,(Date.now()-activeStart)/1000);if(hasRing(p))p.ringSeconds+=dt;else p.ringlessSeconds+=dt;}activeStart=Date.now();save();}
 function formatMinutes(n){return Math.floor(Math.max(0,n)/60)+' perc';}
-function render(){const p=state.players.find(x=>x.id===state.current);$('signedIn').textContent=p?'🧙 Belépve: '+p.nickname:'Nincs bejelentkezett karakter';$('myCharacter').textContent=p?`Bejelentkezve: ${p.nickname} (${p.race}) • ${hasRing(p)?'💍 '+p.ring:'◯ Gyűrű nélkül'}`:'Még nem választottál karaktert.';const ordered=[...state.players].sort((a,b)=>b.ringSeconds-a.ringSeconds);
+function render(){const p=state.players.find(x=>x.id===state.current);$('signedIn').textContent=p?'🧙 Belépve: '+p.nickname:'Nincs bejelentkezett karakter';$('myCharacter').textContent=p?`Bejelentkezve: ${p.nickname} (${p.race}) • ${hasRing(p)?'💍 '+ringLabel(p.ring):'◯ Gyűrű nélkül'}`:'Még nem választottál karaktert.';const ordered=[...state.players].sort((a,b)=>b.ringSeconds-a.ringSeconds);
 const elapsed=x=>Math.max(0,x+(activeStart!==null&&p&&x===p.ringSeconds&&hasRing(p)&&state.phase!=='idle'?(Date.now()-activeStart)/1000:0));
-$('players').innerHTML=ordered.map(x=>`<div class="card player-row"><span class="ring-indicator" title="${hasRing(x)?'Gyűrű birtokában':'Gyűrű nélkül'}">${hasRing(x)?'💍':'◯'}</span><div><strong>${esc(x.nickname)}</strong> – ${esc(x.race)}, ${esc(x.weapon)}<br>${hasRing(x)?'💍 '+esc(x.ring):'◯ Nincs nála gyűrű'}<br>Gyűrűvel: ${formatMinutes(elapsed(x.ringSeconds))} · Összesen: ${formatMinutes((x.totalRingSeconds||0)+elapsed(x.ringSeconds))} · Gyűrű nélkül: ${formatMinutes(x.ringlessSeconds)}<br><small>${x.id===state.current?(watchId!==null?'📍 Aktív':'🌫️ Letért az útról'):'🌫️ Nincs élő GPS-adat'}</small></div></div>`).join('')||'<p>Még nincsenek karakterek.</p>';
-const stolen=state.players.filter(x=>state.ringsAssigned&&!x.hasRing);$('sauronRings').innerHTML=stolen.length?stolen.map(x=>`<span class="ring-token">💍 ${esc(x.ring)} · ${esc(x.nickname)}</span>`).join(' '):'<p>👁️ Sauronnál jelenleg nincs gyűrű.</p>';
+$('players').innerHTML=ordered.map(x=>`<div class="card player-row"><span class="ring-indicator" title="${hasRing(x)?'Gyűrű birtokában':'Gyűrű nélkül'}">${hasRing(x)?'💍':'◯'}</span><div><strong>${esc(x.nickname)}</strong> – ${esc(x.race)}, ${esc(x.weapon)}<br>${hasRing(x)?'💍 '+esc(ringLabel(x.ring)):'◯ Nincs nála gyűrű'}<br>Gyűrűvel: ${formatMinutes(elapsed(x.ringSeconds))} · Összesen: ${formatMinutes((x.totalRingSeconds||0)+elapsed(x.ringSeconds))} · Gyűrű nélkül: ${formatMinutes(x.ringlessSeconds)}<br><small>${x.id===state.current?(watchId!==null?'📍 Aktív':'🌫️ Letért az útról'):'🌫️ Nincs élő GPS-adat'}</small></div></div>`).join('')||'<p>Még nincsenek karakterek.</p>';
+const stolen=state.players.filter(x=>state.ringsAssigned&&!x.hasRing);$('sauronRings').innerHTML=stolen.length?stolen.map(x=>`<span class="ring-token">💍 ${esc(ringLabel(x.ring))} · ${esc(x.nickname)}</span>`).join(' '):'<p>👁️ Sauronnál jelenleg nincs gyűrű.</p>';
 $('adminPlayers').innerHTML=state.players.map(x=>`<div class="card"><strong>${esc(x.nickname)}</strong> · ${esc(x.race)} <button type="button" class="remove" data-remove="${esc(x.id)}">Eltávolítás</button></div>`).join('')||'<p>Nincsenek regisztrált karakterek.</p>';
-$('ringTestControls').innerHTML=state.players.map(x=>`<div class="ring-control"><span>${hasRing(x)?'💍':'◯'} ${esc(x.nickname)} – ${esc(x.ring)}</span><button type="button" data-toggle-ring="${esc(x.id)}" ${!state.ringsAssigned?'disabled':''}>${x.hasRing?'Sauronnak átadás':'Visszaadás'}</button></div>`).join('')||'<p>Nincsenek karakterek.</p>';
+$('ringTestControls').innerHTML=state.players.map(x=>`<div class="ring-control"><span>${hasRing(x)?'💍':'◯'} ${esc(x.nickname)} – ${esc(ringLabel(x.ring))}</span><button type="button" data-toggle-ring="${esc(x.id)}" ${!state.ringsAssigned?'disabled':''}>${x.hasRing?'Sauronnak átadás':'Visszaadás'}</button></div>`).join('')||'<p>Nincsenek karakterek.</p>';
 $('leaderboard').innerHTML=`<div class="notice">Korábban lezárt játékok összesített ideje: <strong>${formatMinutes(state.totalSeconds)}</strong></div>`+ordered.map((x,i)=>`<div class="card">${i+1}. ${esc(x.nickname)} – ${formatMinutes(elapsed(x.ringSeconds))}</div>`).join('')+(state.history.length?'<h3>Lezárt fordulók</h3>'+state.history.slice(-10).reverse().map(r=>`<div class="card">${esc(r.date)} · ${esc(r.mode)} · ${r.players.map(x=>esc(x.nickname)+': '+formatMinutes(x.seconds)).join(' · ')}</div>`).join(''):'');
 const active=state.phase!=='idle';const running=active&&state.startedAt?formatMinutes((Date.now()-state.startedAt)/1000):'—';
-$('adminOverview').innerHTML=`<p><strong>Állapot:</strong> ${active?'🟢 Aktív játék – '+esc(phaseText()):'🌫️ Nincs elindított játék'}</p><p><strong>Eltelt idő:</strong> ${running}</p><p><strong>Összesítő idő:</strong> ${formatMinutes(state.totalSeconds)}</p><p><strong>Gyűrűbirtokosok:</strong> ${state.players.filter(hasRing).map(x=>esc(x.nickname)+' (💍 '+esc(x.ring)+')').join(', ')||'Senki'}</p><p><strong>Sauronnál:</strong> ${stolen.length} gyűrű ${stolen.length?'('+stolen.map(x=>esc(x.ring)).join(', ')+')':''}</p>`;
+$('adminOverview').innerHTML=`<p><strong>Állapot:</strong> ${active?'🟢 Aktív játék – '+esc(phaseText()):'🌫️ Nincs elindított játék'}</p><p><strong>Eltelt idő:</strong> ${running}</p><p><strong>Összesítő idő:</strong> ${formatMinutes(state.totalSeconds)}</p><p><strong>Gyűrűbirtokosok:</strong> ${state.players.filter(hasRing).map(x=>esc(x.nickname)+' (💍 '+esc(x.ring)+')').join(', ')||'Senki'}</p><p><strong>Sauronnál:</strong> ${stolen.length} gyűrű ${stolen.length?'('+stolen.map(x=>esc(ringLabel(x.ring))).join(', ')+')':''}</p>`;
 $('endGame').disabled=!active;
 }
 $('ringTestControls').addEventListener('click',e=>{const b=e.target.closest('[data-toggle-ring]');if(!b)return;const p=state.players.find(x=>x.id===b.dataset.toggleRing);if(!p||!state.ringsAssigned)return;flushActive();p.hasRing=!p.hasRing;save();render();});
@@ -103,9 +125,9 @@ $('loginForm').addEventListener('submit',e=>{e.preventDefault();const f=new Form
 setInterval(()=>{if(activeStart!==null&&state.current){const p=state.players.find(x=>x.id===state.current);if(p){if(state.phase!=='idle'){const dt=(Date.now()-activeStart)/1000;if(hasRing(p))p.ringSeconds+=dt;else p.ringlessSeconds+=dt;}activeStart=Date.now();save();render()}}},10000);
 
 const ruleGroups=[
-['🎭 Játék és karakterek',['Legfeljebb 6 karakter regisztrálható; becenév, faj, fegyver és 4–8 számjegyű PIN tartozik hozzájuk.','A hat különböző gyűrű: Arany, Rubin, Zafír, Smaragd, Mithril és Ametiszt; minden gyűrűnek állandó tulajdonosa van.','Adminjogot a végleges rendszer szerveroldali jelszóellenőrzéssel ad; a jelenlegi helyi demó nem biztonságos többfelhasználós játék.','A regisztrált karaktereket az admin eltávolíthatja; a lezárt fordulók eredményei megőrizhetők.']],
-['🌫️ Előkészület és térkép',['Alapállapotban nincs aktív forduló; Sauron bizonytalan utolsó észlelése Európa-nézetben háromóránként véletlenszerű helyen jelenik meg.','A bizonytalan észlelés nem azonos Sauron tényleges pozíciójával.','A térkép valós városokat és földrajzi adatokat használ; a városok, útvonalak, vadászterület és fantasy-nevek konfigurációból módosíthatók.','Az aktuális útvonal Budapest → Pozsony vagy Bécs → Brno → Prága.']],
-['🚗 Játékmódok és admin',['Új játék indulhat utazással vagy közvetlen prágai vadászattal; kezdődhet gyűrűk nélkül is.','Utazáskor Sauron akár több száz kilométerre is lehet, közeledhet, de nem rabolhat gyűrűt.','Utazásból az admin aktiválhatja a vadászatot; vadászatból utazásra visszaváltani nem lehet.','Az admin befejezheti a játékot, az aktuális gyűrűs időt lezárhatja és archiválhatja; az összesítő perceket külön nullázhatja.']],
+['🎭 Játék és karakterek',['Legfeljebb 6 karakter regisztrálható; becenév, faj, fegyver és 4–8 számjegyű PIN tartozik hozzájuk.','A hat gyűrű különleges, háromszavas fantasy-nevet és hangulati képességet kapott. A képességek csak leírások, nem befolyásolják a játékot.','Adminjogot a végleges rendszer szerveroldali jelszóellenőrzéssel ad; a jelenlegi helyi demó nem biztonságos többfelhasználós játék.','A regisztrált karaktereket az admin eltávolíthatja; a lezárt fordulók eredményei megőrizhetők.']],
+['🌫️ Előkészület és térkép',['Alapállapotban nincs aktív forduló; Sauron bizonytalan utolsó észlelése a világ bármely részén megjelenhet, háromóránként változik.','A bizonytalan észlelés nem azonos Sauron tényleges pozíciójával.','A térkép valós városokat és földrajzi adatokat használ; a városok, útvonalak, vadászterület és fantasy-nevek konfigurációból módosíthatók.','Az aktuális útvonal Budapest → Pozsony vagy Bécs → Brno → Prága.']],
+['🚗 Játékmódok és admin',['Új játék indulhat utazással vagy közvetlen prágai vadászattal; kezdődhet gyűrűk nélkül is.','Utazáskor Sauron a világon bárhol lehet: a legutolsó világészlelési helyéről indul, és Prága felé közeledik, de nem rabolhat gyűrűt. A jelenlegi demó egyenes vonalban, 6 km/h sebességgel mozgatja.','Utazásból az admin aktiválhatja a vadászatot; vadászatból utazásra visszaváltani nem lehet.','Az admin befejezheti a játékot, az aktuális gyűrűs időt lezárhatja és archiválhatja; az összesítő perceket külön nullázhatja.']],
 ['👁️ A vadászat kezdete',['Az admin aktiválásától (vagy közvetlen vadászati indulástól) számított véletlen 30–60 perc alatt Sauron körülbelül 2–3 km-re közelíti meg a csapatot; ezalatt látható, de nem támad.','A vadászat aktiválása utáni első belépéskor karakterenként egyszer felugrik: „Sauron látja, hol vagy, elindult feléd.”','A 15 perc összesített aktív GPS-idő alatt a játékos nem üldözhető; gyűrű-visszaszerzés után új 15 perces védettséget kap.']],
 ['⚔️ Sauron mozgása és rablás',['A vadászterület az Óváros tér középpontú, 5 km sugarú kör Prágában.','Sauron 6 km/h sebességgel a valós utcahálózaton mozog, és véletlenszerűen választ az üldözhető gyűrűbirtokosok közül.','Ha több jogosult játékossal találkozik, az elsőként 50 méteren belül elért játékos gyűrűjét szerzi meg; egyszerre egyet rabol.','Gyűrűrablás után 60 percig láthatatlanul mozog, és nem támadhat.','Ha nincs aktív helyzetmegosztó, az első új aktív játékostól véletlenszerűen 1–5 km-re jelenhet meg, a vadászterület korlátait betartva.']],
 ['💍 Gyűrűk és visszaszerzés',['Sauron csak aktív GPS-t megosztó, gyűrűt birtokló, védettség nélküli karaktert üldözhet; gyűrű nélküli karaktert nem.','A tulajdonos saját gyűrűjét Sauron 1 km-es megközelítésével automatikusan, időkorlát nélkül visszaszerezheti – láthatatlan Sauron esetén is.','Sauron által megszerzett gyűrűk az ő jelölője alatt, valamint a Szövetség menüben látszanak.','A gyűrű használata/levétele a GPS-megosztás be- és kikapcsolását jelenti, nem automatikus gyűrűátruházást.']],
