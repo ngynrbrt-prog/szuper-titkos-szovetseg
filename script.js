@@ -24,23 +24,38 @@ cfg.cities.forEach(c=>L.circleMarker([c.lat,c.lng],{radius:6,color:'#65472b',fil
 L.circle(cfg.hunting.center,{radius:cfg.hunting.radiusKm*1000,color:'#ad4c39',weight:2,fillOpacity:.04,dashArray:'8 7'}).addTo(map).bindPopup('Prágai vadászterület');
 if(bounds.isValid())map.fitBounds(bounds.pad(.12));
 const helmet=`<svg class="sauron-helm" viewBox="0 0 64 86" xmlns="http://www.w3.org/2000/svg" aria-label="Sauron sötét sisakja"><defs><linearGradient id="iron" x2="1" y2="1"><stop stop-color="#77766e"/><stop offset=".4" stop-color="#222322"/><stop offset="1" stop-color="#050607"/></linearGradient></defs><path d="M31 3 37 24 48 8 46 30 60 20 52 42 59 58 45 55 43 79 32 86 21 79 19 55 5 58 12 42 4 20 18 30 16 8 27 24Z" fill="url(#iron)" stroke="#080808" stroke-width="2"/><path d="M20 37 32 31 44 37 41 66 32 77 23 66Z" fill="#050505"/><path d="m21 47 11 4 11-4-11 12Z" fill="#090909"/><path d="m22 47 9 3-7 2Zm20 0-9 3 7 2Z" fill="#a3291d"/><path d="M32 12v23M16 31l13 6M48 31l-13 6" stroke="#7a776c" stroke-width="2" fill="none"/></svg>`;
-const sauron=L.marker([cfg.startCity.lat,cfg.startCity.lng],{icon:L.divIcon({className:'',html:helmet,iconSize:[52,68],iconAnchor:[26,64]})}).bindPopup('Sauron • prototípusos jelölő');
-function syncSauron(){if(state.phase==='idle'||map.getZoom()<=cfg.rumor.visibleAtZoom){if(map.hasLayer(sauron))map.removeLayer(sauron);}else if(!map.hasLayer(sauron))sauron.addTo(map);}
-syncSauron();
-// Európai 'utolsó észlelés': kizárólag fiktív jelzés, nem a mozgó Sauron valódi GPS-helye.
-const rumorKey='szovetseg_sauron_rumor_v1';
+// Egyetlen, közös sisakikon minden nagyítási szinten. Nincs szem vagy kérdőjel réteg.
+const helmetIcon=()=>L.divIcon({className:'sauron-marker',html:helmet,iconSize:[52,68],iconAnchor:[26,64]});
+const sauron=L.marker([cfg.startCity.lat,cfg.startCity.lng],{icon:helmetIcon()}).bindPopup('Sauron • prototípusos jelölő');
+const rumorKey='szovetseg_sauron_rumor_world_v2';
 let rumor;try{rumor=JSON.parse(localStorage.getItem(rumorKey))}catch{}
 const rumorMs=cfg.rumor.refreshHours*3600000;
+const rumorMarker=L.marker([0,0],{icon:helmetIcon()});
 function updateRumor(){
  const slot=Math.floor(Date.now()/rumorMs);
- if(!rumor||rumor.slot!==slot){const choices=cfg.rumor.locations;let idx=Math.floor(Math.random()*choices.length);if(rumor&&choices.length>1&&idx===rumor.index)idx=(idx+1)%choices.length;rumor={slot,index:idx};localStorage.setItem(rumorKey,JSON.stringify(rumor));}
- rumorMarker.setLatLng(cfg.rumor.locations[rumor.index]);
- rumorMarker.bindPopup('<strong>👁️ Sauron – utolsó ismert észlelés</strong><br>⚠️ Bizonytalan információ, nem valós idejű pozíció.<br>Az észlelés 3 óránként változik.');
+ if(!rumor||rumor.slot!==slot||!Array.isArray(rumor.position)){
+   const choices=cfg.rumor.locations;
+   let idx=Math.floor(Math.random()*choices.length);
+   if(rumor&&choices.length>1&&idx===rumor.index)idx=(idx+1)%choices.length;
+   rumor={slot,index:idx,position:choices[idx]};localStorage.setItem(rumorKey,JSON.stringify(rumor));
+ }
+ rumorMarker.setLatLng(rumor.position);
+ rumorMarker.bindPopup('<strong>Sauron – utolsó ismert észlelés</strong><br>⚠️ Bizonytalan információ, nem valós idejű pozíció.<br>Az észlelés 3 óránként változik.');
 }
-const rumorMarker=L.marker(cfg.rumor.locations[0],{icon:L.divIcon({className:'',html:'<span class="rumor-sauron">'+helmet+'</span>',iconSize:[52,68],iconAnchor:[26,64]})});
-function syncRumorVisibility(){const visible=state.phase==='idle'&&map.getZoom()<=cfg.rumor.visibleAtZoom;if(visible&&!map.hasLayer(rumorMarker))rumorMarker.addTo(map);if(!visible&&map.hasLayer(rumorMarker))map.removeLayer(rumorMarker);}
-map.on('zoomend',()=>{syncRumorVisibility();syncSauron();});updateRumor();syncRumorVisibility();setInterval(()=>{updateRumor();syncRumorVisibility()},60000);
-$('showEurope').addEventListener('click',()=>{showPage('map');map.fitBounds(cfg.rumor.europeBounds);});
+function syncSauron(){
+ // A sisak kizárólag az aktív játékban, minden zoomszinten látható.
+ if(state.phase==='idle'){if(map.hasLayer(sauron))map.removeLayer(sauron)}
+ else if(!map.hasLayer(sauron))sauron.addTo(map);
+}
+function syncRumorVisibility(){
+ // Előkészületben a világ bármely pontján, minden zoomszinten ugyanaz a sisak látszik.
+ if(state.phase==='idle'){if(!map.hasLayer(rumorMarker))rumorMarker.addTo(map)}
+ else if(map.hasLayer(rumorMarker))map.removeLayer(rumorMarker);
+}
+map.on('zoomend',()=>{syncRumorVisibility();syncSauron()});
+updateRumor();syncRumorVisibility();syncSauron();
+setInterval(()=>{updateRumor();syncRumorVisibility()},60000);
+$('showEurope').addEventListener('click',()=>{showPage('map');map.fitBounds(cfg.rumor.europeBounds)});
 $('ringsAssigned').checked=state.ringsAssigned;
 $('applyRingMode').addEventListener('click',()=>{if(watchId!==null)stopTracking();state.ringsAssigned=$('ringsAssigned').checked;state.players.forEach(p=>p.hasRing=state.ringsAssigned);save();render();$('adminStatus').textContent=state.ringsAssigned?'💍 A gyűrűk kiosztva (helyi demó).':'🧙 Gyűrű nélküli játék bekapcsolva (helyi demó).';});
 let watchId=null,ownMarker=null,activeStart=null;
@@ -58,7 +73,7 @@ document.querySelectorAll('[data-page]').forEach(btn=>btn.addEventListener('clic
 function showHuntWarning(){if(state.phase!=='hunt'||!state.current)return;const key=state.round+':'+state.current;if(state.seenWarnings[key])return;state.seenWarnings[key]=true;save();if(typeof $('alert').showModal==='function')$('alert').showModal();}
 $('dismiss').addEventListener('click',()=>$('alert').close());
 function phaseText(){return state.phase==='idle'?'🌫️ Előkészület':state.phase==='travel'?'🚗 Utazás Prágába':'👁️ Prágai vadászat';}
-function updatePhase(){const label=phaseText();$('mode').textContent=label;$('mapPhase').textContent=label;$('adminPhase').textContent='Jelenlegi állapot: '+label;$('activateHunt').disabled=state.phase!=='travel';$('activateHunt').title=state.phase==='hunt'?'A vadászatból nem lehet visszalépni':state.phase==='idle'?'Előbb indíts új játékot':'';$('mapStatus').textContent=state.phase==='idle'?'🌫️ Még nincs aktív játék. Európában bizonytalan Sauron-észlelések bukkannak fel.':state.phase==='travel'?'🚗 Sauron közeledhet, de az utazás alatt nem támadhat.':'👁️ A vadászat elindult. A szerveres üldözés még nincs megvalósítva.';syncSauron();syncRumorVisibility();}
+function updatePhase(){const label=phaseText();$('mode').textContent=label;$('mapPhase').textContent=label;$('adminPhase').textContent='Jelenlegi állapot: '+label;$('activateHunt').disabled=state.phase!=='travel';$('activateHunt').title=state.phase==='hunt'?'A vadászatból nem lehet visszalépni':state.phase==='idle'?'Előbb indíts új játékot':'';$('mapStatus').textContent=state.phase==='idle'?'🌫️ Még nincs aktív játék. A világ bármely pontján felbukkanhat Sauron bizonytalan észlelése.':state.phase==='travel'?'🚗 Sauron közeledhet, de az utazás alatt nem támadhat.':'👁️ A vadászat elindult. A szerveres üldözés még nincs megvalósítva.';syncSauron();syncRumorVisibility();}
 $('newGame').addEventListener('click',()=>{if(!confirm('Új játékot indítasz? A helyi pontszámok és a forduló állapota törlődnek.'))return;stopTracking();state.round++;state.phase=document.querySelector('input[name="startMode"]:checked').value;state.ringsAssigned=$('newGameRings').checked;state.players.forEach(p=>{p.ringSeconds=0;p.ringlessSeconds=0;p.hasRing=state.ringsAssigned;});state.startedAt=Date.now();$('ringsAssigned').checked=state.ringsAssigned;save();updatePhase();render();$('adminStatus').textContent='Új játék elindítva: '+phaseText();if(state.phase==='hunt')showHuntWarning();});
 $('activateHunt').addEventListener('click',()=>{if(state.phase!=='travel')return;if(!confirm('Elindítod a prágai vadászatot? Utazás módba csak új játékkal térhetsz vissza.'))return;state.phase='hunt';save();updatePhase();render();$('adminStatus').textContent='A vadászat elindult. A figyelmeztetés karakterenként az első következő belépéskor jelenik meg.';});
 function removePlayer(id){const p=state.players.find(x=>x.id===id);if(!p||!confirm('Eltávolítod ezt a karaktert: '+p.nickname+'?'))return;if(state.current===id){stopTracking();state.current=null;}state.players=state.players.filter(x=>x.id!==id);save();render();}
