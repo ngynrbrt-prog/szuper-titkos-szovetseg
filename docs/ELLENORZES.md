@@ -74,3 +74,7 @@ A teljesítmény-ellenőrzés két új privát idegenkulcs-index hiányát és e
 - A fantáziaképességek díszítő jellegűek. A hiányzó v1 ZIP-ből származó ismeretlen szabályokat nem állítjuk rekonstruáltnak.
 - A böngésző helyadata manipulálható. Nincs operációs rendszer által hitelesített helymeghatározás.
 - Az admin a személyes PIN-jét maga választja az első regisztrációnál. A privát adminmeghívó nem került GitHubra.
+
+## 1.2 · Meghívó nélküli regisztráció
+
+A tulajdonos kérésére megszűnt a meghívókövetelmény. A regisztráció továbbra is hat karakterre korlátozott, és kizárólag normál játékost hoz létre. A PIN-zárolás, szerveroldali korlátok és az adminjogok ellenőrzése megmaradt. A helyi fájl az online oldalra irányít. A `tests/open-registration.sql` visszavont tranzakcióban ellenőrizte a meghívó nélküli regisztrációt, a PIN-t, az adminjog megtagadását és a közvetlen kliens-RPC tiltását.

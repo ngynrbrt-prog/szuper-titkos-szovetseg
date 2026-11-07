@@ -1,16 +1,16 @@
 # A Szuper Titkos szövetség · Multiplayer 1.1
 
-Hat meghívott játékos közös, egyvárosos GPS-játéka. A felület GitHub Pages-en, a hitelesítés és minden játékállapot-változás Supabase-ben fut.
+Hat regisztrált játékos közös, egyvárosos GPS-játéka. A felület GitHub Pages-en, a hitelesítés és minden játékállapot-változás Supabase-ben fut.
 
 Élő oldal: https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/
 
 ## Első használat
 
-1. A tulajdonos a külön, privát `ADMIN-MEGHIVO.txt` fájlból regisztrálhat saját névvel és 6–12 számjegyes PIN-nel. A fájl nincs a repóban. Az adminmeghívó egyszer használható, hét napig érvényes.
-2. Az admin legfeljebb öt további játékosnak készíthet egyszer használható meghívót.
-3. Az Admin oldalon válassz várost, majd a térképszerkesztőben legalább hat nyilvános tárgyhelyszínt, Mordort és legalább két pontból álló, végig ellenőrzött gyalogos útvonalat. A teljes szakasz legyen biztonságos; a térkép önmagában nem igazol közterületi hozzáférést.
-4. Hozd létre az előkészített játékot, ellenőrizd a térképet, majd indítsd el. A hat gyűrű és negyven drágakő a jóváhagyott helyszíneken oszlik el; egy helyen több tárgy is van.
-5. Minden játékos saját telefonján jelentkezzen be és indítsa el a helymegosztást.
+1. Nyisd meg az élő oldalt. Az Új karakter űrlapon adj meg nevet, 6–12 számjegyes PIN-t, fajt és fegyvert. Meghívó nem kell; legfeljebb hat karakter hozható létre.
+2. Regisztráció után a Visszatérő vándor űrlapon lépj be a választott névvel és PIN-nel.
+3. Az adminjog továbbra is külön tulajdonosi beállítás; nyilvános regisztrációval senki nem kap automatikusan adminjogot.
+4. A helyi index.html megnyitása az élő HTTPS-oldalra irányít, mert a helyi fájlból a szerverkapcsolat és a GPS nem megbízható.
+5. Az admin a térképszerkesztőben kijelöli a helyszíneket, Mordort és Sauron útvonalát, majd létrehozza és elindítja a játékot.
 
 ## Megvalósított játékszabályok
 
@@ -25,9 +25,9 @@ Hat meghívott játékos közös, egyvárosos GPS-játéka. A felület GitHub Pa
 
 ## Biztonsági felépítés
 
-A böngésző csak publikus API-kulcsot kap. A PIN bcrypt-hashként, privát sémában tárolódik; öt hibás belépés után 15 perces zárolás következik. A meghívók SHA-256 hashként tárolódnak. Az adminjogot a felhasználó által nem módosítható adatbázisrekord adja. A regisztráció hat fős korlátja és a játékműveletek tranzakciószintű zárolással védettek.
+A böngésző csak publikus API-kulcsot kap. A PIN bcrypt-hashként, privát sémában tárolódik; öt hibás belépés után 15 perces zárolás következik. A korábbi meghívók már nem használhatók regisztrációra. Az adminjogot a felhasználó által nem módosítható adatbázisrekord adja. A regisztráció hat fős korlátja és a játékműveletek tranzakciószintű zárolással védettek.
 
-A `player-auth` a belépést és meghívós regisztrációt kezeli. A `game-api` minden kérést a Supabase Auth `/user` végpontján ellenőriz, majd a szerver az élő `auth.sessions` rekord meglétét is megköveteli. Az ügyfél nem választhatja meg a cselekvő játékos azonosítóját. A kliensszerepköröknek nincs közvetlen tábla- vagy játék-RPC-hozzáférésük. Minden tábla RLS-sel védett; a policy nélküli, alapértelmezett tiltás szándékos, az összes adatforgalom a szerverfüggvényeken halad át.
+A `player-auth` a belépést és a meghívó nélküli regisztrációt kezeli. A `game-api` minden kérést a Supabase Auth `/user` végpontján ellenőriz, majd a szerver az élő `auth.sessions` rekord meglétét is megköveteli. Az ügyfél nem választhatja meg a cselekvő játékos azonosítóját. A kliensszerepköröknek nincs közvetlen tábla- vagy játék-RPC-hozzáférésük. Minden tábla RLS-sel védett; a policy nélküli, alapértelmezett tiltás szándékos, az összes adatforgalom a szerverfüggvényeken halad át.
 
 A kliens munkamenete a lap `sessionStorage` tárhelyén marad. Nincs szolgáltatási kulcs a forrásban. A HTML szigorú tartalombiztonsági szabályt használ, a felhasználói szövegeket a felület szövegként kezeli. A Leaflet 1.9.4 helyben csomagolt; a térképcsempék az OpenStreetMaptől érkeznek.
 

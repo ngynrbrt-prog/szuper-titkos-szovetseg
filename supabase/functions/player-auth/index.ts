@@ -26,12 +26,10 @@ Deno.serve(async(req: Request)=>{
   // Global quota cannot be bypassed by forging forwarded IP headers.
   if(!await rpc('game_rate_limit',{p_bucket:'auth-global',p_max:40,p_seconds:60}))return respond({error:'Túl sok kérés. Próbáld újra egy perc múlva.'},429);
   if(b.action==='register'){
-   if(typeof b.invite==='string') b.invite=b.invite.trim();
-   if(typeof b.invite!=='string' || b.invite.length>100 || !await rpc('game_invite_valid',{p_token:b.invite}))return respond({error:'Érvénytelen vagy lejárt meghívó.'},400);
    const secret=Array.from(crypto.getRandomValues(new Uint8Array(32)),x=>x.toString(16).padStart(2,'0')).join('');
    const user=await request('/auth/v1/admin/users',{email:`${crypto.randomUUID()}@players.example.invalid`,password:secret,email_confirm:true});
-   try{await rpc('game_register_invited',{p_name:name,p_pin:b.pin,p_auth_user_id:user.id,p_invite:b.invite,p_avatar:b.avatar||{}});}
-   catch{await request('/auth/v1/admin/users/'+user.id,undefined,'DELETE');return respond({error:'A név foglalt, a meghívó lejárt vagy betelt a hat hely.'},400);}
+   try{await rpc('game_register_open',{p_name:name,p_pin:b.pin,p_auth_user_id:user.id,p_avatar:b.avatar||{}});}
+   catch{await request('/auth/v1/admin/users/'+user.id,undefined,'DELETE');return respond({error:'A név foglalt vagy betelt a hat karakterhely.'},400);}
    return respond({success:true,message:'A karakter elkészült. Most jelentkezz be.'});
   }
   const id=await rpc('game_verify_player',{p_name:name,p_pin:b.pin});

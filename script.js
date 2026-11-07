@@ -1,5 +1,6 @@
 'use strict';
 (()=>{
+ if(location.protocol==='file:'){location.replace('https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/?v=1.2.0');return;}
  const $=id=>document.getElementById(id), cfg=window.GAME_CONFIG;
  let session=null,state=null,map=null,layer=null,draftLayer=null,watch=null,lastGPS=0,heartbeat=null,editing=false,queue=Promise.resolve(),epoch=0;
  let draft={points:[],route:[],mordor:null};
@@ -78,10 +79,9 @@
   buttons();
  }
  document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.page)));
- for(const action of ['login','register'])$(action+'Form').addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget,button=form.querySelector('button'),b=Object.fromEntries(new FormData(form));button.disabled=true;try{const response=await http('/functions/v1/player-auth',{action,character_name:b.character_name,pin:b.pin,invite:b.invite,avatar:{race:b.race,weapon:b.weapon}});form.elements.pin.value='';if(action==='register'){message(response.message);$('loginForm').elements.character_name.value=b.character_name;form.reset();}else{epoch++;saveSession({...response,expires_at:Date.now()+response.expires_in*1000});await api('state');show('map');fit();}}catch(err){message(err.message||'Kapcsolati hiba.',true);}finally{button.disabled=false;}});
+ for(const action of ['login','register'])$(action+'Form').addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget,button=form.querySelector('button'),b=Object.fromEntries(new FormData(form));button.disabled=true;try{const response=await http('/functions/v1/player-auth',{action,character_name:b.character_name,pin:b.pin,avatar:{race:b.race,weapon:b.weapon}});form.elements.pin.value='';if(action==='register'){message(response.message);$('loginForm').elements.character_name.value=b.character_name;form.reset();}else{epoch++;saveSession({...response,expires_at:Date.now()+response.expires_in*1000});await api('state');show('map');fit();}}catch(err){message(err.message||'Kapcsolati hiba.',true);}finally{button.disabled=false;}});
  bindButton('gps',beginGPS);bindButton('stopGps',stopGPS);
  bindButton('logout',async()=>{await stopGPS().catch(()=>{});let logoutError=false;try{const t=await token();await http('/auth/v1/logout?scope=local',{},t);}catch(e){logoutError=e.status!==401&&e.status!==403;}epoch++;saveSession(null);state=null;$('identity').textContent='Vár a Szövetség';$('logout').hidden=true;$('adminNav').hidden=true;$('adminTools').hidden=true;$('adminLocked').hidden=false;['groundItems','inventory','recoverItems','playerList','scores','archive','events'].forEach(empty);layer?.clearLayers();$('connection').textContent='Kijelentkezve';show('auth');message(logoutError?'Kiléptél ezen a lapon; a szerveroldali lezárást nem sikerült ellenőrizni.':'Kijelentkeztél.',logoutError);});
- bindButton('invite',async()=>{$('inviteValue').textContent=(await api('invite')).invite;});
  bindButton('startGame',async()=>{await api('start');message('A közös kaland elindult.');});
  bindButton('finishGame',async()=>{if(confirm('Lezárod a játékot? Az eredmények megmaradnak.')){await api('finish');await stopGPS().catch(()=>{});message('A játék lezárult.');}});
  function fit(){if(!map)return;if(state?.game)map.setView([state.game.city_lat,state.game.city_lng],15);else map.setView([50.0875,14.4213],14);}
