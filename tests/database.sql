@@ -62,6 +62,17 @@ begin
  insert into checks values('finish stores winner',(out->'game'->>'status'='finished') and out->'game'->>'winner_id' is not null);
  insert into checks values('anonymous table denied',not has_table_privilege('anon','public.players','SELECT'));
  insert into checks values('authenticated direct game RPC denied',not has_function_privilege('authenticated','public.game_action(uuid,text,jsonb,uuid)','EXECUTE'));
+ while (select count(*) from public.players)<6 loop
+  a:=gen_random_uuid(); inv:=encode(extensions.gen_random_bytes(24),'hex');
+  insert into auth.users(id,email) values(a,a||'@test.invalid');
+  insert into game_private.invites(token_hash) values(encode(extensions.digest(inv,'sha256'),'hex'));
+  perform public.game_register_invited('Cap '||left(a::text,8),'12345678',a,inv,'{}');
+ end loop;
+ a:=gen_random_uuid();inv:=encode(extensions.gen_random_bytes(24),'hex');
+ insert into auth.users(id,email) values(a,a||'@test.invalid');
+ insert into game_private.invites(token_hash) values(encode(extensions.digest(inv,'sha256'),'hex'));
+ rejected:=false;begin perform public.game_register_invited('SeventhPlayer','12345678',a,inv,'{}');exception when others then rejected:=true;end;
+ insert into checks values('seventh player blocked',rejected and (select count(*)=6 from public.players));
 end $$;
 select * from checks;
 rollback;
