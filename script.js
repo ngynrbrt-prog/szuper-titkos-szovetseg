@@ -129,7 +129,7 @@
  }
  function openPlacementEditor(context,selection){
   if(!map)throw new Error('A térkép nem töltődött be.');if(!state?.me.is_admin)throw new Error('Adminjog szükséges.');
-  placementContext=context;pendingPlacement=null;editing=true;document.body.classList.add('map-editing');$('mapEditor').hidden=false;$('placementSafe').checked=false;$('livePlacementControls').hidden=context!=='live';
+  placementContext=context;pendingPlacement=null;$('placementLat').value='';$('placementLng').value='';editing=true;document.body.classList.add('map-editing');$('mapEditor').hidden=false;$('placementSafe').checked=false;$('livePlacementControls').hidden=context!=='live';
   $('editorTitle').textContent=context==='live'?'Gyűrű áthelyezése a jelenlegi játékban':'Az új játék gyűrűinek elhelyezése';$('editMode').replaceChildren();
   const option=(value,label,disabled=false)=>{const o=document.createElement('option');o.value=value;o.textContent=label;o.disabled=disabled;$('editMode').append(o);};
   if(context==='live'){
