@@ -1,4 +1,4 @@
-# A Szuper Titkos szövetség · Multiplayer 1.3
+# A Szuper Titkos szövetség · Multiplayer 1.4
 
 Hat regisztrált játékos közös, egyvárosos GPS-játéka. A felület GitHub Pages-en, a hitelesítés és minden játékállapot-változás Supabase-ben fut.
 
@@ -47,3 +47,7 @@ A kliens munkamenete a lap `sessionStorage` tárhelyén marad. Nincs szolgáltat
 A v0.7 ZIP elérhető volt, és a GitHub hat fájlos demójával összevetettük. A korábbi multiplayer v1 ZIP nem volt hozzáférhető; a tulajdonos sem rendelkezik vele. Ez a verzió a v0.7 és a meglévő Supabase-séma alapján készült, nem az elveszett ZIP auditált másolata.
 
 A tesztek és ismert korlátok: `docs/ELLENORZES.md`. A több valódi telefonos, kültéri GPS-próba továbbra is külön ellenőrzési lépés. A böngésző által közölt helyzet meghamisítható; ez baráti játék, nem hitelesített helyazonosítás.
+
+## Gyűrűhelyek szerkesztése
+
+Az Admin oldalon a jelenlegi játék hat gyűrűje névvel és koordinátával jelenik meg. A Hely kiválasztása vagy a Gyűrűk helyének módosítása gomb nyitja meg a térképes szerkesztőt. Válassz gyűrűt, kattints a térképre vagy húzd a jelölőt, majd hagyd jóvá a biztonságos közterületi helyet és nyomd meg a Gyűrű helyének mentése gombot. Koordinátákat közvetlenül is megadhatsz. Csak a földön lévő gyűrű mozgatható, a felvett vagy megsemmisített gyűrű védett. Az új játék tervében mind a hat gyűrű külön, név szerint elhelyezhető; a terv helyben automatikusan megmarad. A szerkesztő a térkép fölött található, nem takarja el a kattintási területet.

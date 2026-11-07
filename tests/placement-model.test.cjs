@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict');
+const p=require('../placement-model.js');
+let draft=p.normalizeDraft({points:[[50,14],[50.1,14.1]],route:[[50,14]],mordor:[50,14]});
+assert.equal(draft.points.length,6);
+assert.deepEqual(draft.points[0],[50,14],'Existing selections must survive the upgrade.');
+draft=p.assignPoint(draft,'ring:5',[50.2,14.2]);
+assert.equal(draft.points[2],null,'Selecting the sixth ring must not shift the ring order.');
+assert.deepEqual(draft.points[5],[50.2,14.2]);
+assert.throws(()=>p.assignPoint(draft,'points',[50,14]),/hat gyűrű/);
+for(let i=0;i<6;i++)draft=p.assignPoint(draft,'ring:'+i,[50+i/100,14]);
+draft=p.assignPoint(draft,'points',[50.3,14.3]);
+assert.equal(draft.points.length,7);
+assert.deepEqual(draft.points[5],[50.05,14],'Additional gem locations must not overwrite ring positions.');
+assert.throws(()=>p.assignPoint(draft,'ring:0',[91,14]));
+assert.throws(()=>p.assignPoint(draft,'ring:6',[50,14]));
+assert.equal(p.ringNames.length,6);
+console.log('PASS: named ring positions, old draft preservation, unordered selection, gem separation, coordinate validation');

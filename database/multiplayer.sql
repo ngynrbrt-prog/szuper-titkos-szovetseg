@@ -156,6 +156,17 @@ begin
    if g.status='finished' then raise exception 'Már lezárt játék.'; end if;
    update public.games set status='finished',finished_at=now() where id=g.id returning * into g;
   end if;
+ elsif p_action='place_ring' then
+  if not me.is_admin or g.id is null or g.status not in ('preparation','active') then raise exception 'Csak admin helyezhet el gyűrűt előkészített vagy aktív játékban.'; end if;
+  if p_data->>'safe' is distinct from 'true' then raise exception 'A nyilvános, biztonságos helyszínt jóvá kell hagyni.'; end if;
+  lat:=(p_data->>'lat')::float8; lng:=(p_data->>'lng')::float8;
+  if lat is null or lng is null or not coalesce(game_private.point(jsonb_build_array(lat,lng),g.city_lat,g.city_lng),false) then raise exception 'Érvénytelen vagy a városközponttól 10 km-nél távolabbi helyszín.'; end if;
+  select * into it from public.items where id=(p_data->>'item')::uuid and game_id=g.id for update;
+  if not found or it.item_type<>'ring' or it.status<>'ground' then raise exception 'Csak még fel nem vett gyűrű helyezhető át.'; end if;
+  update public.items set latitude=lat,longitude=lng where id=it.id;
+  n:=array_position(ring_names,it.item_name)-1;
+  if n is not null then update public.games set config=jsonb_set(config,array['points',n::text],jsonb_build_array(lat,lng)) where id=g.id returning * into g; end if;
+  insert into public.game_events(game_id,player_id,event_type,event_data) values(g.id,me.id,'place_ring',jsonb_build_object('item',it.id,'from',jsonb_build_array(it.latitude,it.longitude),'to',jsonb_build_array(lat,lng)));
  elsif p_action='profile' then
   update public.players set avatar=jsonb_build_object('race',left(coalesce(p_data->>'race','Ember'),24),'weapon',left(coalesce(p_data->>'weapon','Kard'),24)) where id=me.id returning * into me;
  elsif p_action='stop' then

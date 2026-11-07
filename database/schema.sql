@@ -119,7 +119,7 @@ begin
 
     return v_player_id;
 end;
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.game_verify_player(p_name text, p_pin text)
  RETURNS uuid
@@ -185,7 +185,7 @@ begin
 
     return v_player.auth_user_id;
 end;
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.game_rate_limit(p_bucket text, p_max integer, p_seconds integer)
  RETURNS boolean
@@ -203,7 +203,7 @@ begin
  end if;
  update game_private.request_limits set attempts=attempts+1 where bucket=p_bucket;
  return r.attempts < p_max;
-end $function$
+end $function$;
 
 CREATE OR REPLACE FUNCTION public.game_register_invited(p_name text, p_pin text, p_auth_user_id uuid, p_invite text, p_avatar jsonb)
  RETURNS uuid
@@ -220,7 +220,7 @@ begin
  update public.players set is_admin=inv.is_admin,avatar=jsonb_build_object('race',left(coalesce(p_avatar->>'race','Ember'),24),'weapon',left(coalesce(p_avatar->>'weapon','Kard'),24)) where id=pid;
  update game_private.invites set used_by=pid where token_hash=inv.token_hash;
  return pid;
-end $function$
+end $function$;
 
 CREATE OR REPLACE FUNCTION public.game_invite_valid(p_token text)
  RETURNS boolean
@@ -229,7 +229,7 @@ CREATE OR REPLACE FUNCTION public.game_invite_valid(p_token text)
  SET search_path TO ''
 AS $function$
  select exists(select 1 from game_private.invites where token_hash=encode(extensions.digest(p_token,'sha256'),'hex') and used_by is null and expires_at>now())
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION game_private.distance(a double precision, b double precision, c double precision, d double precision)
  RETURNS double precision
@@ -238,7 +238,7 @@ CREATE OR REPLACE FUNCTION game_private.distance(a double precision, b double pr
  SET search_path TO ''
 AS $function$
  select 6371000*2*asin(sqrt(least(1.0,power(sin(radians(c-a)/2),2)+cos(radians(a))*cos(radians(c))*power(sin(radians(d-b)/2),2))))
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION game_private.point(p jsonb, lat double precision, lng double precision)
  RETURNS boolean
@@ -252,7 +252,7 @@ begin
  a:=(p->>0)::float8; b:=(p->>1)::float8;
  return a between -90 and 90 and b between -180 and 180 and game_private.distance(a,b,lat,lng)<=10000;
 exception when others then return false;
-end $function$
+end $function$;
 
 CREATE OR REPLACE FUNCTION game_private.sauron(g games)
  RETURNS jsonb
@@ -278,7 +278,7 @@ begin
   travelled:=travelled-seg;
  end loop;
  return pts->0;
-end $function$
+end $function$;
 
 CREATE OR REPLACE FUNCTION game_private.hash_pin(plain_pin text)
  RETURNS text
@@ -295,7 +295,7 @@ begin
         extensions.gen_salt('bf', 12)
     );
 end;
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION game_private.enforce_player_limit()
  RETURNS trigger
@@ -316,7 +316,7 @@ begin
 
     return new;
 end;
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION game_private.verify_pin(plain_pin text, stored_hash text)
  RETURNS boolean
@@ -325,14 +325,10 @@ CREATE OR REPLACE FUNCTION game_private.verify_pin(plain_pin text, stored_hash t
 AS $function$
     select stored_hash is not null
        and extensions.crypt(plain_pin, stored_hash) = stored_hash;
-$function$
+$function$;
 
-CREATE OR REPLACE FUNCTION public.game_action(p_auth uuid, p_action text, p_data jsonb DEFAULT '{}'::jsonb, p_session uuid DEFAULT NULL::uuid)
- RETURNS jsonb
- LANGUAGE plpgsql
- SECURITY DEFINER
- SET search_path TO ''
-AS $function$
+create or replace function public.game_action(p_auth uuid,p_action text,p_data jsonb default '{}',p_session uuid default null) returns jsonb
+language plpgsql security definer set search_path='' as $$
 declare
  me public.players; g public.games; loc public.player_locations; victim public.player_locations;
  it public.items; other public.players; v_id uuid; lat float8; lng float8; acc float8;
@@ -386,6 +382,17 @@ begin
    if g.status='finished' then raise exception 'Már lezárt játék.'; end if;
    update public.games set status='finished',finished_at=now() where id=g.id returning * into g;
   end if;
+ elsif p_action='place_ring' then
+  if not me.is_admin or g.id is null or g.status not in ('preparation','active') then raise exception 'Csak admin helyezhet el gyűrűt előkészített vagy aktív játékban.'; end if;
+  if p_data->>'safe' is distinct from 'true' then raise exception 'A nyilvános, biztonságos helyszínt jóvá kell hagyni.'; end if;
+  lat:=(p_data->>'lat')::float8; lng:=(p_data->>'lng')::float8;
+  if lat is null or lng is null or not coalesce(game_private.point(jsonb_build_array(lat,lng),g.city_lat,g.city_lng),false) then raise exception 'Érvénytelen vagy a városközponttól 10 km-nél távolabbi helyszín.'; end if;
+  select * into it from public.items where id=(p_data->>'item')::uuid and game_id=g.id for update;
+  if not found or it.item_type<>'ring' or it.status<>'ground' then raise exception 'Csak még fel nem vett gyűrű helyezhető át.'; end if;
+  update public.items set latitude=lat,longitude=lng where id=it.id;
+  n:=array_position(ring_names,it.item_name)-1;
+  if n is not null then update public.games set config=jsonb_set(config,array['points',n::text],jsonb_build_array(lat,lng)) where id=g.id returning * into g; end if;
+  insert into public.game_events(game_id,player_id,event_type,event_data) values(g.id,me.id,'place_ring',jsonb_build_object('item',it.id,'from',jsonb_build_array(it.latitude,it.longitude),'to',jsonb_build_array(lat,lng)));
  elsif p_action='profile' then
   update public.players set avatar=jsonb_build_object('race',left(coalesce(p_data->>'race','Ember'),24),'weapon',left(coalesce(p_data->>'weapon','Kard'),24)) where id=me.id returning * into me;
  elsif p_action='stop' then
@@ -482,7 +489,8 @@ begin
   'sauron',case when g.id is not null and coalesce(g.sauron_cooldown_until,'-infinity')<=now() then game_private.sauron(g) else null end,
   'recoverable',coalesce((select jsonb_agg(item_id) from game_private.ring_custody where player_id=me.id),'[]'),
   'server_time',now());
-end $function$
+end $$;
+
 
 CREATE TRIGGER players_max_six BEFORE INSERT ON public.players FOR EACH ROW EXECUTE FUNCTION game_private.enforce_player_limit();
 CREATE INDEX game_results_player_id_idx ON public.game_results USING btree (player_id);
