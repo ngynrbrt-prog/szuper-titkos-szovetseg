@@ -1,4 +1,4 @@
-# A Szuper Titkos szövetség · Multiplayer 1.1
+# A Szuper Titkos szövetség · Multiplayer 1.3
 
 Hat regisztrált játékos közös, egyvárosos GPS-játéka. A felület GitHub Pages-en, a hitelesítés és minden játékállapot-változás Supabase-ben fut.
 
@@ -13,6 +13,8 @@ Hat regisztrált játékos közös, egyvárosos GPS-játéka. A felület GitHub 
 5. Az admin a térképszerkesztőben kijelöli a helyszíneket, Mordort és Sauron útvonalát, majd létrehozza és elindítja a játékot.
 
 ## Megvalósított játékszabályok
+
+- A játék elindítása előtt Sauron eredeti fekete sisakja más kontinensen látszik. A bizonytalan észlelés kétóránként változik, és regisztráció előtt és után is megjelenik. A Sauron mutatása gomb az észlelésre fókuszál.
 
 - Tárgyfelvétel 50 méteren belül, legfeljebb 50 m pontatlanságú és 30 másodpercnél frissebb GPS-szel.
 - Rablás két látható játékos között 100 méteren belül; a párra 15 perces védelem vonatkozik.
