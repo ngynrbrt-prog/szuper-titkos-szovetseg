@@ -78,3 +78,7 @@ A teljesítmény-ellenőrzés két új privát idegenkulcs-index hiányát és e
 ## 1.2 · Meghívó nélküli regisztráció
 
 A tulajdonos kérésére megszűnt a meghívókövetelmény. A regisztráció továbbra is hat karakterre korlátozott, és kizárólag normál játékost hoz létre. A PIN-zárolás, szerveroldali korlátok és az adminjogok ellenőrzése megmaradt. A helyi fájl az online oldalra irányít. A `tests/open-registration.sql` visszavont tranzakcióban ellenőrizte a meghívó nélküli regisztrációt, a PIN-t, az adminjog megtagadását és a közvetlen kliens-RPC tiltását.
+
+## 1.3 · Világos felület és Sauron észlelései
+
+A tulajdonos kérésére a felület fehér alapot, zöld vezérlőket és arany kiemeléseket kapott. Az eredeti v0.7 fekete sisak SVG-je visszakerült. A játék elindítása előtt – bejelentkezés nélkül és után is – Sauron más kontinensen jelenik meg, és az észlelés közös, kétórás időablakokban változik. A térképen külön Sauron-fókusz gomb és állandó méretű, minden zoomszinten látható sisakjelölő van. Az aktív játék szerver által rejtett pozícióját a felület továbbra sem helyettesíti kitalált hellyel. A `tests/map-model.test.cjs` ellenőrzi az észlelés folytonosságát, a kétórás változást, a más kontinenseket, a játék előkészületét, az élő pozíciót és a rejtőzést.

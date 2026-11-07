@@ -1,8 +1,9 @@
 'use strict';
 (()=>{
- if(location.protocol==='file:'){location.replace('https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/?v=1.2.0');return;}
+ if(location.protocol==='file:'){location.replace('https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/?v=1.3.0');return;}
  const $=id=>document.getElementById(id), cfg=window.GAME_CONFIG;
  let session=null,state=null,map=null,layer=null,draftLayer=null,watch=null,lastGPS=0,heartbeat=null,editing=false,queue=Promise.resolve(),epoch=0;
+ let sauronMarker=null,lastSauronKey=null,lastMapGame=null;
  let draft={points:[],route:[],mordor:null};
  try{session=JSON.parse(sessionStorage.getItem('fellowship-session'));draft=JSON.parse(localStorage.getItem('fellowship-draft'))||draft;}catch{}
  let messageTimer;
@@ -28,10 +29,10 @@
  function itemCard(parent,it){const el=document.createElement('div');el.className='item';text(el,'strong',(it.item_type==='ring'?'💍 ':'💎 ')+it.item_name);text(el,'p',it.item_type==='gem'?fmt(it.value_sestertius)+' sestertius':it.item_description||'Különleges gyűrű');parent.append(el);return el;}
  function buttons(){const active=!!session&&state?.game?.status==='active';$('gps').disabled=!active||watch!==null;$('stopGps').disabled=watch===null;$('startGame').disabled=state?.game?.status!=='preparation';$('finishGame').disabled=!['preparation','active'].includes(state?.game?.status);}
  function render(){
-  const s=state,g=s?.game;if(!s)return;
+  const s=state,g=s?.game;if(!s){renderMap();return;}
   $('identity').textContent=s.me.character_name;$('logout').hidden=false;$('adminNav').hidden=!s.me.is_admin;$('adminTools').hidden=!s.me.is_admin;$('adminLocked').hidden=s.me.is_admin;
   $('phase').textContent=g?({preparation:'Előkészület',active:'A vadászat tart',finished:'Lezárt krónika'}[g.status]):'Még nincs játék';
-  $('connection').textContent='Közös állapot · '+new Date(s.server_time).toLocaleTimeString('hu-HU');$('cityTitle').textContent=g?g.city_name:'Közös kaland, hat vándor';
+  $('connection').textContent='Közös állapot · '+new Date(s.server_time).toLocaleTimeString('hu-HU');$('cityTitle').textContent=g?g.city_name:'A kaland itt kezdődik.';
   $('ringCount').textContent=g?`${s.items.filter(i=>i.item_type==='ring'&&i.status==='ground').length} szabad gyűrű · ${s.items.filter(i=>i.item_type==='gem'&&i.status==='ground').length} drágakő`:'6 gyűrű · 40 drágakő';
   const ground=empty('groundItems');s.items.filter(i=>i.status==='ground').forEach(it=>addButton(itemCard(ground,it),'Felveszem · 50 m',()=>api('pickup',{item:it.id})));
   const bag=empty('inventory');s.items.filter(i=>i.owner_id===s.me.id&&i.status==='owned').forEach(it=>{const c=itemCard(bag,it);if(it.item_type==='ring')addButton(c,'Megsemmisítés Mordornál',async()=>{if(confirm('Végleg megsemmisíted ezt a gyűrűt?'))await api('destroy',{item:it.id});});});
@@ -41,16 +42,41 @@
   const archive=empty('archive');for(const a of s.archive)text(archive,'div',a.city_name+' · '+stamp(a.finished_at)+' · Győztes: '+name(a.winner_id),'event');
   const events=empty('events');const labels={pickup:'felvett egy tárgyat',rob:'elrabolt egy tárgyat',destroy:'megsemmisített egy gyűrűt',recover:'visszaszerzett egy gyűrűt',sauron:'elvesztett egy gyűrűt Sauronnal szemben'};for(const e of s.events)text(events,'div',stamp(e.created_at)+' · '+name(e.player_id)+' '+(labels[e.event_type]||e.event_type),'event');
   $('adminGame').textContent=g?`${g.city_name} · ${$('phase').textContent} · ${s.items.length} tárgy`:'Nincs játék. Jelöld ki az első kaland helyszíneit.';
-  $('sauronInfo').textContent=!g?'Sauron a történet kezdetére vár.':g.status!=='active'?'Sauron jelenleg nem támad.':!s.sauron?'Sauron rejtve marad, és nem támad.':Date.now()-new Date(g.started_at).getTime()<1800000?'Sauron felkészül. Az első 30 percben nem támad.':'Sauron a kijelölt gyalogosútvonalon járőrözik. Kapcsold be a helymegosztást a közös játékhoz.';
   buttons();renderMap();
  }
  function marker(lat,lng,symbol,label,callback){if(!map)return;const icon=L.divIcon({className:'map-icon',html:symbol,iconSize:[32,32],iconAnchor:[16,16]});const m=L.marker([lat,lng],{icon}).addTo(layer);const box=document.createElement('div');text(box,'strong',label);if(callback)addButton(box,'Felveszem · 50 m',callback);m.bindPopup(box);}
- function renderMap(){if(!map)return;layer.clearLayers();if(!state?.game)return;const s=state,g=s.game;
-  if(g.config?.route?.length)L.polyline(g.config.route,{color:'#b092dc',weight:3,dashArray:'5 7'}).addTo(layer);
-  marker(g.mordor_lat,g.mordor_lng,'🌋','Mordor · Gyűrűmegsemmisítés');
-  for(const it of s.items.filter(i=>i.status==='ground'))marker(it.latitude,it.longitude,it.item_type==='ring'?'💍':'💎',it.item_name,()=>api('pickup',{item:it.id}));
-  for(const loc of s.locations)marker(loc.latitude,loc.longitude,loc.player_id===s.me.id?'🧙':'⚔️',name(loc.player_id));
-  if(s.sauron)marker(s.sauron[0],s.sauron[1],'👁️','Sauron');
+ function currentSauron(){return window.SauronMap.sauronView(state);}
+ function updateSauron(){
+  if(!map)return;
+  const view=currentSauron();
+  $('sauronTitle').textContent=view.title;$('sauronCity').textContent=view.city;
+  $('sauronInfo').textContent=view.detail+(view.nextChange?' Következő észlelés: '+new Date(view.nextChange).toLocaleTimeString('hu-HU',{hour:'2-digit',minute:'2-digit'})+'.':'');
+  $('sauronMode').textContent=view.mode==='rumor'?'Bizonytalan hír':view.visible?'Látható':'Rejtve';
+  $('focusSauron').disabled=!view.visible;
+  $('focusSauron').textContent=view.visible?'Sauron mutatása':'Sauron most rejtve van';
+  $('joinCTA').hidden=!!session;document.querySelectorAll('.header-join').forEach(el=>el.hidden=!!session);
+  if(!state?.game)$('phase').textContent='Előkészület';
+  if(!view.visible){if(sauronMarker)map.removeLayer(sauronMarker);sauronMarker=null;lastSauronKey=view.key;return;}
+  if(!sauronMarker){
+   const icon=L.divIcon({className:'sauron-marker',html:'<img src="assets/sauron-helmet.svg" alt="Sauron fekete sisakja" width="52" height="68">',iconSize:[52,68],iconAnchor:[26,64],tooltipAnchor:[0,-65],popupAnchor:[0,-60]});
+   sauronMarker=L.marker(view.position,{icon,zIndexOffset:10000,keyboard:true,alt:'Sauron fekete sisakja',title:'Sauron'}).addTo(map);
+   sauronMarker.bindTooltip('Sauron',{permanent:true,direction:'top',className:'sauron-tooltip',offset:[0,0]});
+  }
+  sauronMarker.setLatLng(view.position);
+  const box=document.createElement('div');text(box,'strong',view.label);text(box,'p',view.detail);sauronMarker.bindPopup(box);
+  if(lastSauronKey===null||(view.mode==='rumor'&&lastSauronKey!==view.key))map.setView(view.position,3);
+  lastSauronKey=view.key;
+ }
+ function renderMap(){
+  if(!map)return;layer.clearLayers();const s=state,g=s?.game;
+  if(g){
+   if(g.config?.route?.length)L.polyline(g.config.route,{color:'#aa8136',weight:3,dashArray:'5 7'}).addTo(layer);
+   marker(g.mordor_lat,g.mordor_lng,'🌋','Mordor · Gyűrűmegsemmisítés');
+   for(const it of s.items.filter(i=>i.status==='ground'))marker(it.latitude,it.longitude,it.item_type==='ring'?'💍':'💎',it.item_name,()=>api('pickup',{item:it.id}));
+   for(const loc of s.locations)marker(loc.latitude,loc.longitude,loc.player_id===s.me.id?'🧙':'⚔️',name(loc.player_id));
+  }
+  updateSauron();
+  if(g?.id!==lastMapGame){lastMapGame=g?.id||null;if(g&&g.status!=='preparation')fit();}
  }
  function renderDraft(){
   const summary=`${draft.points.length} tárgyhelyszín · ${draft.route.length} útvonalpont · Mordor: ${draft.mordor?'kijelölve':'hiányzik'}`;$('draftSummary').textContent=summary;$('editSummary').textContent=summary;localStorage.setItem('fellowship-draft',JSON.stringify(draft));
@@ -81,11 +107,12 @@
  document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.page)));
  for(const action of ['login','register'])$(action+'Form').addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget,button=form.querySelector('button'),b=Object.fromEntries(new FormData(form));button.disabled=true;try{const response=await http('/functions/v1/player-auth',{action,character_name:b.character_name,pin:b.pin,avatar:{race:b.race,weapon:b.weapon}});form.elements.pin.value='';if(action==='register'){message(response.message);$('loginForm').elements.character_name.value=b.character_name;form.reset();}else{epoch++;saveSession({...response,expires_at:Date.now()+response.expires_in*1000});await api('state');show('map');fit();}}catch(err){message(err.message||'Kapcsolati hiba.',true);}finally{button.disabled=false;}});
  bindButton('gps',beginGPS);bindButton('stopGps',stopGPS);
- bindButton('logout',async()=>{await stopGPS().catch(()=>{});let logoutError=false;try{const t=await token();await http('/auth/v1/logout?scope=local',{},t);}catch(e){logoutError=e.status!==401&&e.status!==403;}epoch++;saveSession(null);state=null;$('identity').textContent='Vár a Szövetség';$('logout').hidden=true;$('adminNav').hidden=true;$('adminTools').hidden=true;$('adminLocked').hidden=false;['groundItems','inventory','recoverItems','playerList','scores','archive','events'].forEach(empty);layer?.clearLayers();$('connection').textContent='Kijelentkezve';show('auth');message(logoutError?'Kiléptél ezen a lapon; a szerveroldali lezárást nem sikerült ellenőrizni.':'Kijelentkeztél.',logoutError);});
+ bindButton('logout',async()=>{await stopGPS().catch(()=>{});let logoutError=false;try{const t=await token();await http('/auth/v1/logout?scope=local',{},t);}catch(e){logoutError=e.status!==401&&e.status!==403;}epoch++;saveSession(null);state=null;$('identity').textContent='Vár a Szövetség';$('logout').hidden=true;$('adminNav').hidden=true;$('adminTools').hidden=true;$('adminLocked').hidden=false;['groundItems','inventory','recoverItems','playerList','scores','archive','events'].forEach(empty);layer?.clearLayers();renderMap();$('connection').textContent='Kijelentkezve';show('auth');message(logoutError?'Kiléptél ezen a lapon; a szerveroldali lezárást nem sikerült ellenőrizni.':'Kijelentkeztél.',logoutError);});
  bindButton('startGame',async()=>{await api('start');message('A közös kaland elindult.');});
  bindButton('finishGame',async()=>{if(confirm('Lezárod a játékot? Az eredmények megmaradnak.')){await api('finish');await stopGPS().catch(()=>{});message('A játék lezárult.');}});
- function fit(){if(!map)return;if(state?.game)map.setView([state.game.city_lat,state.game.city_lng],15);else map.setView([50.0875,14.4213],14);}
+ function fit(){if(!map)return;const g=state?.game,view=currentSauron();if(g){const points=[[g.city_lat,g.city_lng],...(g.config?.route||[])];if(view.visible)points.push(view.position);map.fitBounds(L.latLngBounds(points).pad(.18),{maxZoom:15});}else if(view.visible)map.setView(view.position,3);}
  bindButton('fit',fit);
+ bindButton('focusSauron',()=>{const view=currentSauron();if(!view.visible)return;show('map');map.setView(view.position,Math.max(5,map.getZoom()));sauronMarker?.openPopup();});
  bindButton('editMap',()=>{if(!map)throw new Error('A térkép nem töltődött be.');editing=true;$('mapEditor').hidden=false;show('map');const f=$('createForm').elements;map.setView([Number(f.lat.value),Number(f.lng.value)],15);renderDraft();});
  bindButton('undoPoint',()=>{const mode=$('editMode').value;if(mode==='mordor')draft.mordor=null;else draft[mode].pop();renderDraft();});
  bindButton('closeEditor',()=>{editing=false;$('mapEditor').hidden=true;renderDraft();show('admin');});
@@ -93,7 +120,7 @@
  document.addEventListener('visibilitychange',()=>{if(document.hidden){const t=session?.access_token;if(t)fetch(cfg.url+'/functions/v1/game-api',{method:'POST',headers:{apikey:cfg.key,'Content-Type':'application/json',Authorization:'Bearer '+t},body:JSON.stringify({action:'stop'}),keepalive:true}).catch(()=>{});stopGPS().catch(()=>{});}});
  window.addEventListener('offline',()=>{$('connection').textContent='Nincs internetkapcsolat';stopGPS().catch(()=>{});});
  window.addEventListener('pagehide',()=>{if(session)fetch(cfg.url+'/functions/v1/game-api',{method:'POST',headers:{apikey:cfg.key,'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},body:JSON.stringify({action:'stop'}),keepalive:true}).catch(()=>{});});
- async function poll(){if(session&&!document.hidden)try{await api('state');}catch(e){$('connection').textContent='Kapcsolat megszakadt · '+e.message;}setTimeout(poll,10000);}
+ async function poll(){if(!session)updateSauron();if(session&&!document.hidden)try{await api('state');}catch(e){$('connection').textContent='Kapcsolat megszakadt · '+e.message;}setTimeout(poll,10000);}
  if(window.L){map=L.map('mapCanvas').setView([50.0875,14.4213],14);L.tileLayer(cfg.tiles,{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map).on('tileerror',()=>{ $('gpsStatus').textContent='A térképháttér nem elérhető. A tárgyak listája és a játék továbbra is használható.'; });layer=L.layerGroup().addTo(map);draftLayer=L.layerGroup().addTo(map);map.on('click',e=>{if(!editing||!state?.me.is_admin)return;const point=[Number(e.latlng.lat.toFixed(6)),Number(e.latlng.lng.toFixed(6))],mode=$('editMode').value;if(mode==='mordor')draft.mordor=point;else if(draft[mode].length<100)draft[mode].push(point);renderDraft();});}else message('A térképet nem sikerült betölteni. A listás játékfelület továbbra is használható.',true);
- renderDraft();buttons();if(!session)show('auth');poll();
+ renderDraft();buttons();renderMap();poll();
 })();
