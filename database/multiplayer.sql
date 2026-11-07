@@ -106,7 +106,7 @@ language plpgsql security definer set search_path='' as $$
 declare
  me public.players; g public.games; loc public.player_locations; victim public.player_locations;
  it public.items; other public.players; v_id uuid; lat float8; lng float8; acc float8;
- dt int:=0; pts jsonb; route jsonb; pt jsonb; s jsonb; i int; n int; token text;
+ dt int:=0; pts jsonb; route jsonb; pt jsonb; s jsonb; i int; n int; token text; route_length float8:=0;
  ring_names text[]:=array['Anor Arany Fénye','Barad Rubin Lángja','Elbereth Kék Csillaga','Lórien Zöld Álma','Khazad Ezüst Pajzsa','Ithil Lila Árnya'];
 begin
  -- Serializes all game changes, including competing pickups and robberies.
@@ -133,6 +133,10 @@ begin
   for pt in select value from jsonb_array_elements(pts||route||jsonb_build_array(p_data->'mordor')) loop
    if not coalesce(game_private.point(pt,lat,lng),false) then raise exception 'Érvénytelen vagy túl távoli koordináta.'; end if;
   end loop;
+  for i in 0..jsonb_array_length(route)-2 loop
+   route_length:=route_length+game_private.distance((route->i->>0)::float8,(route->i->>1)::float8,(route->(i+1)->>0)::float8,(route->(i+1)->>1)::float8);
+  end loop;
+  if route_length<10 then raise exception 'Sauron útvonala legalább 10 méter hosszú legyen.'; end if;
   if length(btrim(coalesce(p_data->>'city','')))=0 then raise exception 'Városnév szükséges.'; end if;
   insert into public.games(city_name,city_lat,city_lng,mordor_lat,mordor_lng,config)
    values(left(btrim(p_data->>'city'),80),lat,lng,(p_data->'mordor'->>0)::float8,(p_data->'mordor'->>1)::float8,jsonb_build_object('route',route,'points',pts)) returning * into g;

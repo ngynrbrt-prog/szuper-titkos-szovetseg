@@ -1,7 +1,7 @@
 'use strict';
 (()=>{
  const $=id=>document.getElementById(id), cfg=window.GAME_CONFIG;
- let session=null,state=null,map=null,layer=null,draftLayer=null,watch=null,lastGPS=0,editing=false,queue=Promise.resolve(),epoch=0;
+ let session=null,state=null,map=null,layer=null,draftLayer=null,watch=null,lastGPS=0,heartbeat=null,editing=false,queue=Promise.resolve(),epoch=0;
  let draft={points:[],route:[],mordor:null};
  try{session=JSON.parse(sessionStorage.getItem('fellowship-session'));draft=JSON.parse(localStorage.getItem('fellowship-draft'))||draft;}catch{}
  let messageTimer;
@@ -59,12 +59,24 @@
   if(draft.route.length)L.polyline(draft.route,{color:'#bf9df2',weight:5}).addTo(draftLayer);
   draft.route.forEach((p,i)=>L.circleMarker(p,{color:'#bf9df2',radius:5}).bindTooltip('Útvonal '+(i+1)).addTo(draftLayer));
  }
- async function stopGPS(){if(watch!==null)navigator.geolocation.clearWatch(watch);watch=null;lastGPS=0;$('gpsStatus').textContent='Helymegosztás kikapcsolva.';buttons();if(session)await api('stop');}
- function beginGPS(){if(!navigator.geolocation)throw new Error('Ez a böngésző nem támogatja a helymeghatározást.');if(document.hidden)throw new Error('Nyisd meg a játék lapját.');watch=navigator.geolocation.watchPosition(p=>{
-  const c=p.coords;$('gpsStatus').textContent='GPS-pontosság: '+Math.round(c.accuracy)+' m · A helyed a Szövetség számára látható.';
-  if(c.accuracy>50){$('gpsStatus').textContent='A GPS még pontatlan: '+Math.round(c.accuracy)+' m. Várj pontosabb mérésre.';return;}
-  if(Date.now()-lastGPS<10000 || document.hidden)return;lastGPS=Date.now();api('location',{lat:c.latitude,lng:c.longitude,accuracy:c.accuracy}).catch(e=>{message(e.message,true);$('gpsStatus').textContent='A helyzetet nem sikerült megosztani: '+e.message;});
- },e=>{stopGPS().catch(()=>{});message(e.code===1?'A helymeghatározás engedélye szükséges.':'Nem érkezett GPS-jel. Próbáld újra szabad ég alatt.',true);},{enableHighAccuracy:true,maximumAge:0,timeout:20000});buttons();}
+ async function stopGPS(){if(heartbeat!==null)clearInterval(heartbeat);heartbeat=null;if(watch!==null)navigator.geolocation.clearWatch(watch);watch=null;lastGPS=0;$('gpsStatus').textContent='Helymegosztás kikapcsolva.';buttons();if(session)await api('stop');}
+ function beginGPS(){
+  if(!navigator.geolocation)throw new Error('Ez a böngésző nem támogatja a helymeghatározást.');
+  if(document.hidden)throw new Error('Nyisd meg a játék lapját.');
+  const options={enableHighAccuracy:true,maximumAge:0,timeout:20000};
+  const onPosition=p=>{
+   if(watch===null||document.hidden)return;
+   const c=p.coords;$('gpsStatus').textContent='GPS-pontosság: '+Math.round(c.accuracy)+' m · A helyed a Szövetség számára látható.';
+   if(c.accuracy>50){$('gpsStatus').textContent='A GPS még pontatlan: '+Math.round(c.accuracy)+' m. Várj pontosabb mérésre.';return;}
+   if(Date.now()-lastGPS<10000)return;lastGPS=Date.now();
+   api('location',{lat:c.latitude,lng:c.longitude,accuracy:c.accuracy}).catch(e=>{message(e.message,true);$('gpsStatus').textContent='A helyzetet nem sikerült megosztani: '+e.message;});
+  };
+  const onError=e=>{stopGPS().catch(()=>{});message(e.code===1?'A helymeghatározás engedélye szükséges.':'Nem érkezett GPS-jel. Próbáld újra szabad ég alatt.',true);};
+  watch=navigator.geolocation.watchPosition(onPosition,onError,options);
+  // Stationary browsers may not emit watchPosition updates: request a fresh fix too.
+  heartbeat=setInterval(()=>{if(watch!==null&&!document.hidden)navigator.geolocation.getCurrentPosition(onPosition,onError,options);},12000);
+  buttons();
+ }
  document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.page)));
  for(const action of ['login','register'])$(action+'Form').addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget,button=form.querySelector('button'),b=Object.fromEntries(new FormData(form));button.disabled=true;try{const response=await http('/functions/v1/player-auth',{action,character_name:b.character_name,pin:b.pin,invite:b.invite,avatar:{race:b.race,weapon:b.weapon}});form.elements.pin.value='';if(action==='register'){message(response.message);$('loginForm').elements.character_name.value=b.character_name;form.reset();}else{epoch++;saveSession({...response,expires_at:Date.now()+response.expires_in*1000});await api('state');show('map');fit();}}catch(err){message(err.message||'Kapcsolati hiba.',true);}finally{button.disabled=false;}});
  bindButton('gps',beginGPS);bindButton('stopGps',stopGPS);

@@ -33,10 +33,11 @@ A kliens munkamenete a lap `sessionStorage` tárhelyén marad. Nincs szolgáltat
 
 ## Telepítés és karbantartás
 
+- A `database/schema.sql` a teljes, adatokat és meghívókat nem tartalmazó séma új Supabase-projekthez. Az exportot önálló új projektben nem teszteltük.
 - A `database/multiplayer.sql` a 2026-11-07-én meglévő sémához készült, egyszer alkalmazható frissítés. Már telepítve van; ne futtasd újra.
 - A `supabase/functions/` forrásfájljai a telepített végpontok forrásai. A `verify_jwt=false` szükséges a nyilvános belépéshez, illetve a `game-api` saját, élő felhasználó- és session-ellenőrzést végez.
 - A szerverkulcs csak Supabase-környezetben található: `GAME_SERVER_KEY`, `SUPABASE_SECRET_KEYS.default`, vagy a beépített `SUPABASE_SERVICE_ROLE_KEY`.
-- A GitHub `main` ág statikus fájljait a meglévő Pages-folyamat publikálja. Nincs buildlépés vagy npm-függőség.
+- A végső indexjavítás a `database/final-indexes.sql` fájlban szerepel. A GitHub `main` ág statikus fájljait a meglévő Pages-folyamat publikálja. Nincs buildlépés vagy npm-függőség.
 - A `tests/database.sql` az élő adatbázisban egyetlen visszavont tranzakcióban tesztel. Csak üres, játékos nélküli környezetben futtasd, mert a hatfős korláttal és a legutóbbi játékkal dolgozik.
 
 ## Források és ellenőrzési határok

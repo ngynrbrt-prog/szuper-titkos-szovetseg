@@ -23,6 +23,8 @@ begin
  insert into checks values('player cannot invite',rejected);
  rejected:=false;begin perform public.game_action(a,'state','{}',null);exception when others then rejected:=true;end;
  insert into checks values('missing/revoked session blocked',rejected);
+ rejected:=false;begin perform public.game_action(a,'create',jsonb_build_object('city','Audit Prague','lat',50.0875,'lng',14.4213,'mordor',jsonb_build_array(50.0875,14.4213),'points',pts,'route','[[50.0875,14.4213],[50.0875,14.4213]]'::jsonb,'safe',true),sa);exception when others then rejected:=true;end;
+ insert into checks values('zero-length Sauron route blocked',rejected);
  out:=public.game_action(a,'create',jsonb_build_object('city','Audit Prague','lat',50.0875,'lng',14.4213,'mordor',jsonb_build_array(50.0875,14.4213),'points',pts,'route',pts,'safe',true),sa);
  gid:=(out->'game'->>'id')::uuid;
  insert into checks values('six rings and forty gems',(select count(*)=6 from public.items where game_id=gid and item_type='ring') and (select count(*)=40 from public.items where game_id=gid and item_type='gem'));
