@@ -76,7 +76,8 @@
    for(const loc of s.locations)marker(loc.latitude,loc.longitude,loc.player_id===s.me.id?'🧙':'⚔️',name(loc.player_id));
   }
   updateSauron();
-  if(g?.id!==lastMapGame){lastMapGame=g?.id||null;if(g&&g.status!=='preparation')fit();}
+  const gameViewKey=g?g.id+':'+g.status:null;
+  if(gameViewKey!==lastMapGame){lastMapGame=gameViewKey;if(g&&g.status!=='preparation')fit();}
  }
  function renderDraft(){
   const summary=`${draft.points.length} tárgyhelyszín · ${draft.route.length} útvonalpont · Mordor: ${draft.mordor?'kijelölve':'hiányzik'}`;$('draftSummary').textContent=summary;$('editSummary').textContent=summary;localStorage.setItem('fellowship-draft',JSON.stringify(draft));
