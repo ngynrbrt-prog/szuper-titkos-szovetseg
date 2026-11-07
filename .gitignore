@@ -1,0 +1,5 @@
+ADMIN-MEGHIVO.txt
+.env*
+!\.env.example
+node_modules/
+test-results/

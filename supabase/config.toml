@@ -1,0 +1,5 @@
+[functions.player-auth]
+verify_jwt = false
+
+[functions.game-api]
+verify_jwt = false
