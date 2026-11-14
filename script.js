@@ -46,7 +46,15 @@
   $('adminGame').textContent=g?`${g.city_name} · ${$('phase').textContent} · ${s.items.length} tárgy`:'Nincs játék. Jelöld ki az első kaland helyszíneit.';
   buttons();renderMap();renderRingSummary();if(editing)renderDraft();
  }
- function marker(lat,lng,symbol,label,callback){if(!map)return;const icon=L.divIcon({className:'map-icon',html:symbol,iconSize:[32,32],iconAnchor:[16,16]});const m=L.marker([lat,lng],{icon}).addTo(layer);const box=document.createElement('div');text(box,'strong',label);if(callback)addButton(box,'Felveszem · 50 m',callback);m.bindPopup(box);}
+ function marker(lat,lng,symbol,label,callback,options={}){if(!map)return;const icon=L.divIcon({className:'map-icon',html:symbol,iconSize:[32,32],iconAnchor:[16,16]});const m=L.marker([lat,lng],{icon,...options}).addTo(layer);const box=document.createElement('div');text(box,'strong',label);if(callback)addButton(box,'Felveszem · 50 m',callback);m.bindPopup(box);}
+ function ringSearchCenter(item){
+  let hash=0;
+  for(const character of item.id)hash=(Math.imul(hash,31)+character.charCodeAt(0))>>>0;
+  const angle=(hash%360)*Math.PI/180;
+  const lat=item.latitude+Math.cos(angle)*25/111320;
+  const lng=item.longitude+Math.sin(angle)*25/(111320*Math.max(0.01,Math.cos(item.latitude*Math.PI/180)));
+  return [Math.max(-90,Math.min(90,lat)),((lng+540)%360)-180];
+ }
  function currentSauron(){return window.SauronMap.sauronView(state);}
  function updateSauron(){
   if(!map)return;
@@ -74,7 +82,18 @@
   if(g&&!editing){
    if(g.config?.route?.length)L.polyline(g.config.route,{color:'#aa8136',weight:3,dashArray:'5 7'}).addTo(layer);
    marker(g.mordor_lat,g.mordor_lng,'🌋','Mordor · Gyűrűmegsemmisítés');
-   for(const it of s.items.filter(i=>i.status==='ground'))marker(it.latitude,it.longitude,it.item_type==='ring'?'💍':'💎',it.item_name,()=>api('pickup',{item:it.id}));
+   const hasRing=s.items.some(item=>item.item_type==='ring'&&item.status==='owned'&&item.owner_id===s.me.id);
+   const preciseRings=hasRing&&g.status==='active'&&watch!==null&&s.locations.some(location=>location.player_id===s.me.id&&Date.now()-Date.parse(location.updated_at)<30000);
+   for(const item of s.items.filter(item=>item.status==='ground')){
+    const pickup=()=>api('pickup',{item:item.id});
+    if(item.item_type!=='ring'||preciseRings){
+     marker(item.latitude,item.longitude,item.item_type==='ring'?'💍':'💎',item.item_name,pickup,item.item_type==='ring'?{zIndexOffset:1000}:{});
+     continue;
+    }
+    const [lat,lng]=ringSearchCenter(item);
+    L.circle([lat,lng],{radius:50,color:'#88662b',fillColor:'#e5bd5f',fillOpacity:.28,weight:2,interactive:false}).addTo(layer);
+    marker(lat,lng,'<span class="ring-search-icon" aria-hidden="true"></span>',item.item_name+' · keresési terület',pickup,{zIndexOffset:1000,title:'Gyűrű keresési területe'});
+   }
    for(const loc of s.locations)marker(loc.latitude,loc.longitude,loc.player_id===s.me.id?'🧙':'⚔️',name(loc.player_id));
   }
   updateSauron();
@@ -139,7 +158,7 @@
   show('map');renderMap();renderDraft();
   requestAnimationFrame(()=>{map.invalidateSize();const it=selectedLiveRing(),f=$('createForm').elements,point=context==='live'&&it?[it.latitude,it.longitude]:/^ring:/.test($('editMode').value)?draft.points[Number($('editMode').value.split(':')[1])]:null;map.setView(point||(context==='live'?[state.game.city_lat,state.game.city_lng]:[Number(f.lat.value),Number(f.lng.value)]),16);$('mapEditor').scrollIntoView({block:'start',behavior:'smooth'});});
  }
- async function stopGPS(){if(heartbeat!==null)clearInterval(heartbeat);heartbeat=null;if(watch!==null)navigator.geolocation.clearWatch(watch);watch=null;lastGPS=0;$('gpsStatus').textContent='Helymegosztás kikapcsolva.';buttons();if(session)await api('stop');}
+ async function stopGPS(){if(heartbeat!==null)clearInterval(heartbeat);heartbeat=null;if(watch!==null)navigator.geolocation.clearWatch(watch);watch=null;lastGPS=0;$('gpsStatus').textContent='Helymegosztás kikapcsolva.';buttons();renderMap();if(session)await api('stop');}
  function beginGPS(){
   if(!navigator.geolocation)throw new Error('Ez a böngésző nem támogatja a helymeghatározást.');
   if(document.hidden)throw new Error('Nyisd meg a játék lapját.');
@@ -163,7 +182,7 @@
  bindButton('logout',async()=>{await stopGPS().catch(()=>{});let logoutError=false;try{const t=await token();await http('/auth/v1/logout?scope=local',{},t);}catch(e){logoutError=e.status!==401&&e.status!==403;}epoch++;saveSession(null);state=null;$('identity').textContent='Vár a Szövetség';$('logout').hidden=true;$('adminNav').hidden=true;$('adminTools').hidden=true;$('adminLocked').hidden=false;['groundItems','inventory','recoverItems','playerList','scores','archive','events'].forEach(empty);layer?.clearLayers();renderMap();$('connection').textContent='Kijelentkezve';show('auth');message(logoutError?'Kiléptél ezen a lapon; a szerveroldali lezárást nem sikerült ellenőrizni.':'Kijelentkeztél.',logoutError);});
  bindButton('startGame',async()=>{await api('start');message('A közös kaland elindult.');});
  bindButton('finishGame',async()=>{if(confirm('Lezárod a játékot? Az eredmények megmaradnak.')){await api('finish');await stopGPS().catch(()=>{});message('A játék lezárult.');}});
- function fit(){if(!map)return;if(editing){const f=$('createForm').elements;map.setView(placementContext==='live'?[state.game.city_lat,state.game.city_lng]:[Number(f.lat.value),Number(f.lng.value)],16);return;}const g=state?.game,view=currentSauron();if(g){const points=[[g.city_lat,g.city_lng],...(g.config?.route||[])];if(view.visible)points.push(view.position);map.fitBounds(L.latLngBounds(points).pad(.18),{maxZoom:15});}else if(view.visible)map.setView(view.position,3);}
+ function fit(){if(!map)return;if(editing){const f=$('createForm').elements;map.setView(placementContext==='live'?[state.game.city_lat,state.game.city_lng]:[Number(f.lat.value),Number(f.lng.value)],16);return;}const g=state?.game,view=currentSauron();if(g){const points=[[g.city_lat,g.city_lng],...(g.config?.route||[])];for(const item of state.items)if(item.item_type==='ring'&&item.status==='ground')points.push(ringSearchCenter(item),[item.latitude,item.longitude]);if(view.visible&&view.mode!=='rumor')points.push(view.position);map.fitBounds(L.latLngBounds(points).pad(.18),{maxZoom:15});}else if(view.visible)map.setView(view.position,3);}
  bindButton('fit',fit);
  bindButton('focusSauron',()=>{const view=currentSauron();if(!view.visible)return;show('map');map.setView(view.position,Math.max(5,map.getZoom()));sauronMarker?.openPopup();});
  bindButton('editMap',()=>openPlacementEditor('draft'));

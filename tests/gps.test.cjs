@@ -16,7 +16,7 @@ const context = {
  }},
  setInterval(fn,ms){interval=fn;calls.push(['interval',ms]);return 9;},
  clearInterval(id){calls.push(['clearInterval',id]);},
- Date:{now:()=>now},Math,$:()=>({}),buttons(){},message(){},
+ Date:{now:()=>now},Math,$:()=>({}),buttons(){},renderMap(){},message(){},
  async api(action,data){calls.push([action,data]);}
 };
 vm.createContext(context);
