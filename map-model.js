@@ -16,7 +16,7 @@
    return {nextChange:(slot+1)*7200000,key:'rumor:'+slot,mode:'rumor',visible:true,position:sighting.position,city:sighting.city,title:'Utolsó ismert észlelés',label:'Sauron · bizonytalan észlelés',detail:'A játék előtt egy másik kontinensről érkezik hír. Az észlelés kétóránként változik; ez nem Sauron valódi, élő helyzete.'};
   }
   if(!state.sauron)return {key:game.id+':hidden',mode:'hidden',visible:false,position:null,city:game.city_name,title:game.status==='finished'?'A kaland lezárult':'Sauron rejtve marad',detail:game.status==='finished'?'Ennek a játéknak a vadászata véget ért.':'A rablást követő rejtőzési idő alatt Sauron nem látható és nem támad.'};
-  return {key:game.id+':'+game.status,mode:game.status,visible:true,position:state.sauron,city:game.city_name,title:game.status==='finished'?'Utolsó játékbeli helyzet':'Sauron a térképen',label:'Sauron',detail:game.status==='finished'?'A lezárt játék utolsó helyzete.':now-new Date(game.started_at).getTime()<1800000?'Sauron felkészül. Az első 30 percben nem támad.':'Sauron az admin által kijelölt gyalogosútvonalon járőrözik.'};
+  return {key:game.id+':'+game.status,mode:game.status,visible:true,position:state.sauron,city:game.city_name,title:game.status==='finished'?'Utolsó játékbeli helyzet':'Sauron a térképen',label:'Sauron',detail:game.status==='finished'?'A lezárt játék utolsó helyzete.':game.config?.sauron_target?'Sauron egy helyzetét megosztó játékost üldöz.':'Sauron helyzetet megosztó játékost keres.'};
  }
  const api=Object.freeze({sauronView});
  if(typeof window!=='undefined')window.SauronMap=api;
