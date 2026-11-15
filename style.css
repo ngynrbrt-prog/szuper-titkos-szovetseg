@@ -6,3 +6,5 @@
 .ring-search-icon{display:inline-block;width:24px;height:24px;margin:4px;border:3px solid #88662b;border-radius:50%;background:#fff9e7;box-shadow:0 0 0 2px white;vertical-align:top}
 
 #roundClock{margin-left:auto;margin-right:12px;white-space:normal}#roundDialog{width:min(92vw,580px);max-height:85vh;border:1px solid var(--line);border-radius:20px;padding:24px;color:var(--ink);background:white}#roundDialog::backdrop{background:#14292288}.round-result{padding:10px 0;border-bottom:1px solid var(--line)}.round-result p{margin:4px 0;color:var(--muted)}#roundDialog form{margin-top:18px}
+
+.player-map-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;border:2px solid #176349;background:white;box-shadow:0 2px 6px #172b2450;font-size:19px;line-height:1}.player-map-own{outline:2px solid #b48a36;outline-offset:2px}#characterForm{max-width:420px}

@@ -18,7 +18,17 @@
   if(!state.sauron)return {key:game.id+':hidden',mode:'hidden',visible:false,position:null,city:game.city_name,title:game.status==='finished'?'A kaland lezárult':'Sauron rejtve marad',detail:game.status==='finished'?'Ennek a játéknak a vadászata véget ért.':'A rablást követő rejtőzési idő alatt Sauron nem látható és nem támad.'};
   return {key:game.id+':'+game.status,mode:game.status,visible:true,position:state.sauron,city:game.city_name,title:game.status==='finished'?'Utolsó játékbeli helyzet':'Sauron a térképen',label:'Sauron',detail:game.status==='finished'?'A lezárt játék utolsó helyzete.':game.config?.sauron_target?'Sauron egy helyzetét megosztó gyűrűbirtokost üldöz.':'Sauron helyzetet megosztó gyűrűbirtokost keres.'};
  }
- const api=Object.freeze({sauronView});
+ const characterIcons=Object.freeze({Ember:'🧑',Tünde:'🧝',Törp:'⛏️',Hobbit:'🌿',Varázsló:'🧙',Ork:'👹'});
+ function characterIcon(race){return Object.hasOwn(characterIcons,race)?characterIcons[race]:'👤';}
+ function sharedCharacters(state){
+  const players=new Map(state.players.map(player=>[player.id,player]));
+  return state.locations.flatMap(location=>{
+   const player=players.get(location.player_id);
+   if(!player)return [];
+   return [{...location,icon:characterIcon(player.avatar?.race),label:player.character_name,own:player.id===state.me.id}];
+  });
+ }
+ const api=Object.freeze({sauronView,characterIcons,characterIcon,sharedCharacters});
  if(typeof window!=='undefined')window.SauronMap=api;
  if(typeof module!=='undefined')module.exports=api;
 })();
