@@ -51,3 +51,13 @@ A tesztek és ismert korlátok: `docs/ELLENORZES.md`. A több valódi telefonos,
 ## Gyűrűhelyek szerkesztése
 
 Az Admin oldalon a jelenlegi játék hat gyűrűje névvel és koordinátával jelenik meg. A Hely kiválasztása vagy a Gyűrűk helyének módosítása gomb nyitja meg a térképes szerkesztőt. Válassz gyűrűt, kattints a térképre vagy húzd a jelölőt, majd hagyd jóvá a biztonságos közterületi helyet és nyomd meg a Gyűrű helyének mentése gombot. Koordinátákat közvetlenül is megadhatsz. Csak a földön lévő gyűrű mozgatható, a felvett vagy megsemmisített gyűrű védett. Az új játék tervében mind a hat gyűrű külön, név szerint elhelyezhető; a terv helyben automatikusan megmarad. A szerkesztő a térkép fölött található, nem takarja el a kattintási területet.
+
+## Dokumentáció
+
+- [Igényösszefoglaló](docs/IGENY-OSSZEFOGLALO.md)
+- [Tervdokumentum és folyamatábrák](docs/TERVDOKUMENTUM.md)
+- [Felhasználói kézikönyv](docs/FELHASZNALOI-KEZIKONYV.md)
+- [Kiadási és élesítési dokumentum](docs/RELEASE-ELESITES.md)
+- [Ellenőrzési napló](docs/ELLENORZES.md)
+
+- [Regressziós tesztjegyzőkönyv sablonja](docs/tesztjegyzokonyvek/SABLON.md)
