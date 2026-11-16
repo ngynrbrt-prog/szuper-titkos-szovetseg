@@ -193,6 +193,7 @@
   renderDraft();
  }
  function openPlacementEditor(context,selection){
+  if(context==='draft')validateCity();
   if(!map)throw new Error('A térkép nem töltődött be.');if(!state?.me.is_admin)throw new Error('Adminjog szükséges.');
   placementContext=context;pendingPlacement=null;$('placementLat').value='';$('placementLng').value='';editing=true;document.body.classList.add('map-editing');$('mapEditor').hidden=false;$('placementSafe').checked=false;$('livePlacementControls').hidden=context!=='live';
   $('editorTitle').textContent=context==='live'?'Gyűrű áthelyezése a jelenlegi játékban':'Az új játék gyűrűinek elhelyezése';$('editMode').replaceChildren();
@@ -246,6 +247,58 @@
  function fit(){if(!map)return;if(editing){const f=$('createForm').elements;map.setView(placementContext==='live'?[state.game.city_lat,state.game.city_lng]:[Number(f.lat.value),Number(f.lng.value)],16);return;}const g=state?.game,view=currentSauron();if(g){const points=[[g.city_lat,g.city_lng],...(g.config?.route||[])];for(const item of state.items)if(item.item_type==='ring'&&item.status==='ground')points.push(ringSearchCenter(item),[item.latitude,item.longitude]);if(view.visible&&view.mode!=='rumor')points.push(view.position);map.fitBounds(L.latLngBounds(points).pad(.18),{maxZoom:15});}else if(view.visible)map.setView(view.position,3);}
  bindButton('fit',fit);
  bindButton('focusSauron',()=>{const view=currentSauron();if(!view.visible)return;show('map');map.setView(view.position,Math.max(5,map.getZoom()));sauronMarker?.openPopup();});
+ const cityFields=$('createForm').elements;
+ const cityKey=value=>value.trim().normalize('NFD').replace(/\p{M}/gu,'').toLowerCase();
+ let acceptedCity=cityKey(cityFields.city.value), cityMatches=[];
+ try{
+  const saved=JSON.parse(localStorage.getItem('fellowship-city'));
+  if(saved&&typeof saved.name==='string'&&window.PlacementModel.validPoint([saved.latitude,saved.longitude])){
+   cityFields.city.value=saved.name;cityFields.lat.value=saved.latitude;cityFields.lng.value=saved.longitude;acceptedCity=cityKey(saved.name);
+  }
+ }catch{}
+ function validateCity(){
+  if(cityKey(cityFields.city.value)!==acceptedCity)throw new Error('A helyszínek kijelölése előtt kattints a Város elfogadása gombra.');
+ }
+ function applyCity(city){
+  const changed=Number(cityFields.lat.value)!==city.latitude||Number(cityFields.lng.value)!==city.longitude;
+  const hasPoints=draft.points.some(Boolean)||draft.route.length||draft.mordor;
+  if(changed&&hasPoints&&!confirm('Városváltáskor törlődnek a terv korábbi helyszínei. Folytatod?'))return;
+  if(changed){
+   draft=window.PlacementModel.normalizeDraft(null);
+   cityFields.safe.checked=false;
+  }
+  cityFields.city.value=city.name;
+  cityFields.lat.value=city.latitude;
+  cityFields.lng.value=city.longitude;
+  acceptedCity=cityKey(city.name);
+  localStorage.setItem('fellowship-city',JSON.stringify({name:city.name,latitude:city.latitude,longitude:city.longitude}));
+  $('cityStatus').textContent=city.name+' elfogadva. Itt jelölheted ki a játék helyszíneit.';
+  renderDraft();
+ }
+ cityFields.city.addEventListener('input',()=>{
+  $('cityMatchesLabel').hidden=true;
+  $('cityStatus').textContent='';
+ });
+ bindButton('acceptCity',async()=>{
+  const query=cityFields.city.value.trim();
+  if(query.length<2)throw new Error('Írd be a város nevét.');
+  if(cityKey(query)==='gardony'){applyCity({name:'Gárdony',latitude:47.2094,longitude:18.6361});return;}
+  const params=new URLSearchParams({name:query,count:'10',language:'hu'});
+  const response=await fetch('https://geocoding-api.open-meteo.com/v1/search?'+params,{signal:AbortSignal.timeout(10000)});
+  if(cityFields.city.value.trim()!==query)return;
+  if(!response.ok)throw new Error('A városkeresés most nem érhető el.');
+  const data=await response.json();
+  if(cityFields.city.value.trim()!==query)return;
+  cityMatches=(data.results||[]).filter(city=>city.feature_code?.startsWith('PPL')&&Number.isFinite(city.latitude)&&Number.isFinite(city.longitude));
+  if(!cityMatches.length)throw new Error('Nem találtam ilyen települést. Próbáld meg a teljes nevét.');
+  if(cityMatches.length===1){applyCity(cityMatches[0]);return;}
+  $('cityMatches').replaceChildren(new Option('Válassz települést',''),...cityMatches.map((city,index)=>new Option([city.name,city.admin1,city.country].filter(Boolean).join(' · '),String(index))));
+  $('cityMatchesLabel').hidden=false;
+  $('cityStatus').textContent='Válaszd ki a megfelelő települést a találatok közül.';
+ });
+ $('cityMatches').addEventListener('change',event=>{
+  if(event.target.value!=='')applyCity(cityMatches[Number(event.target.value)]);
+ });
  bindButton('editMap',()=>openPlacementEditor('draft'));
  bindButton('editRings',()=>openPlacementEditor('live'));
  $('editMode').addEventListener('change',()=>{pendingPlacement=null;$('placementSafe').checked=false;$('placementLat').value='';$('placementLng').value='';renderDraft();});
@@ -254,7 +307,7 @@
  bindButton('saveRingPosition',async()=>{const it=selectedLiveRing();if(!it||!pendingPlacement)throw new Error('Előbb válaszd ki a gyűrű új helyét a térképen.');await api('place_ring',{item:it.id,lat:pendingPlacement[0],lng:pendingPlacement[1],safe:$('placementSafe').checked});pendingPlacement=null;$('placementSafe').checked=false;renderDraft();message('A gyűrű új helyét elmentettem a közös játékba.');});
  bindButton('undoPoint',()=>{if(placementContext==='live')pendingPlacement=null;else{const mode=$('editMode').value;if(mode.startsWith('ring:'))draft.points[Number(mode.split(':')[1])]=null;else if(mode==='mordor')draft.mordor=null;else if(mode==='points'){if(draft.points.length>6)draft.points.pop();}else draft.route.pop();}renderDraft();});
  bindButton('closeEditor',()=>{if(placementContext==='live'&&pendingPlacement&&!confirm('Az új hely még nincs mentve. Elveted a kijelölést?'))return;editing=false;pendingPlacement=null;document.body.classList.remove('map-editing');$('mapEditor').hidden=true;draftLayer.clearLayers();renderMap();show('admin');});
- $('createForm').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,button=f.querySelector('button.primary');button.disabled=true;try{const b=Object.fromEntries(new FormData(f));if(draft.points.slice(0,6).some(p=>!p))throw new Error('Jelöld ki mind a hat gyűrű helyét a szerkesztőben.');await api('create',{city:b.city,lat:Number(b.lat),lng:Number(b.lng),...draft,safe:f.elements.safe.checked});draft=window.PlacementModel.normalizeDraft(null); f.elements.safe.checked=false; renderDraft();message('A játék előkészítve. Indítás előtt ellenőrizd a térképet.');fit();}catch(err){message(err.message,true);}finally{button.disabled=false;}});
+ $('createForm').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,button=f.querySelector('button.primary');button.disabled=true;try{validateCity();const b=Object.fromEntries(new FormData(f));if(draft.points.slice(0,6).some(p=>!p))throw new Error('Jelöld ki mind a hat gyűrű helyét a szerkesztőben.');await api('create',{city:b.city,lat:Number(b.lat),lng:Number(b.lng),...draft,safe:f.elements.safe.checked});draft=window.PlacementModel.normalizeDraft(null); f.elements.safe.checked=false; renderDraft();message('A játék előkészítve. Indítás előtt ellenőrizd a térképet.');fit();}catch(err){message(err.message,true);}finally{button.disabled=false;}});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){const t=session?.access_token;if(t)fetch(cfg.url+'/functions/v1/game-api',{method:'POST',headers:{apikey:cfg.key,'Content-Type':'application/json',Authorization:'Bearer '+t},body:JSON.stringify({action:'stop'}),keepalive:true}).catch(()=>{});stopGPS().catch(()=>{});}});
  window.addEventListener('offline',()=>{$('connection').textContent='Nincs internetkapcsolat';stopGPS().catch(()=>{});});
  window.addEventListener('pagehide',()=>{if(session)fetch(cfg.url+'/functions/v1/game-api',{method:'POST',headers:{apikey:cfg.key,'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},body:JSON.stringify({action:'stop'}),keepalive:true}).catch(()=>{});});
