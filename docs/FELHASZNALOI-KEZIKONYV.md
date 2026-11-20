@@ -68,3 +68,5 @@ Ha a gyűrűfelvétel sikertelen, ellenőrizd, hogy aktív-e a kör, engedélyez
 ![A telefonra telepített alkalmazás ikonja](../assets/app-192.png)
 
 A játékhoz internet szükséges. Kapcsolatvesztéskor figyelmeztetés jelenik meg, offline indításkor pedig újrapróbálási oldal. Tartsd az alkalmazást előtérben és a kijelzőt bekapcsolva a helymegosztáshoz. Törlés: a telefonon hosszan nyomd az ikont, majd válaszd az eltávolítást. A böngésző és az alkalmazás adatai külön is megmaradhatnak.
+
+![Az éles telepítési segítség telefonméretű böngészőben](kepek/pwa-telepites-mobil.jpg)

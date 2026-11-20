@@ -22,7 +22,7 @@
   navigator.serviceWorker.addEventListener('controllerchange', () => {if(applying)location.reload();});
   navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r => {
    registration=r;
-   const available=() => {if(r.waiting)update.hidden=false;};
+   const available=() => {update.hidden=!r.waiting;};
    available();
    r.addEventListener('updatefound', () => {const w=r.installing;w?.addEventListener('statechange',available);});
   }).catch(() => {if(navigator.onLine)status.textContent='A webes játék használható. A telepítési előkészítéshez próbáld újratölteni az oldalt.';});
