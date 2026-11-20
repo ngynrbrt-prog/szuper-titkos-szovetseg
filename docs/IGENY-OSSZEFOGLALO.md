@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Telefonra telepíthető alkalmazás](#telefonra-telepíthető-alkalmazás)
 - [Verziókövetés](#verziókövetés)
 - [Cél és szerepkörök](#cél-és-szerepkörök)
 - [Elfogadási feltételek](#elfogadási-feltételek)
@@ -15,6 +16,7 @@
 | 1.1 | 1.5.3 | 2026-11-16 | Ellenőrizve a mobilos és asztali kézikönyv frissítésekor. |
 | 1.2 | 1.5.3 | 2026-11-16 | Áttekintve a technológiai leltár dokumentálásakor. |
 | 1.3 | 1.5.3 | 2026-11-16 | Áttekintve a regressziós jegyzőkönyvezés bevezetésekor. |
+| 1.4 | 1.6.0 | 2026-11-20 | Telepíthető mobilváltozat, használat, működés és korlátok dokumentálása. |
 
 ## Cél és szerepkörök
 
@@ -32,3 +34,8 @@ A Szuper Titkos szövetség egy városi, közös GPS-játék legfeljebb hat kara
 ## Hatókör és korlátok
 
 A gárdonyi pergamentérkép önálló koncepció. Az 1.5.3-as játék az utcai térképet használja. A böngészős GPS pontossága készülékfüggő. A pontos tárgykoordináták megjelenítését a kliens szabályozza, és a szerverválasz tartalmazhatja ezeket az adatokat. A kéttelefonos kültéri ellenőrzés nyitott.
+
+
+## Telefonra telepíthető alkalmazás
+
+A játék Androidon és iPhone-on kezdőképernyőről indítható PWA-változatot kap. Követelmény a saját ikon, önálló ablak, telepítési segítség, kapcsolatvesztés jelzése és felhasználó által indított verzióváltás. A többjátékos működés online; háttérbeli és lezárt képernyős GPS nincs vállalva. Fizikai telefonos elfogadás még szükséges.

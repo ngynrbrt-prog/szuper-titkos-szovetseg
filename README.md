@@ -61,3 +61,7 @@ Az Admin oldalon a jelenlegi játék hat gyűrűje névvel és koordinátával j
 - [Ellenőrzési napló](docs/ELLENORZES.md)
 
 - [Regressziós tesztjegyzőkönyv sablonja](docs/tesztjegyzokonyvek/SABLON.md)
+
+## Telefonra telepíthető változat
+
+A telepítéshez nyisd meg a játékot Androidon Chrome-ban vagy iPhone-on Safariban, és válaszd a **Telepítés a telefonra** gombot. Részletek: [kézikönyv](docs/FELHASZNALOI-KEZIKONYV.md#telepítés-androidra-és-iphone-ra). A játék online, a háttérbeli GPS nem támogatott.

@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Mobilalkalmazás és gyorsítótár](#mobilalkalmazás-és-gyorsítótár)
 - [Verziókövetés](#verziókövetés)
 - [Architektúra](#architektúra)
 - [Komponensek](#komponensek)
@@ -17,6 +18,7 @@
 | 1.1 | 1.5.3 | 2026-11-16 | Ellenőrizve a mobilos és asztali kézikönyv frissítésekor. |
 | 1.2 | 1.5.3 | 2026-11-16 | Futtatási függőségek, technológiák és fejlesztőeszközök dokumentálása. |
 | 1.3 | 1.5.3 | 2026-11-16 | Áttekintve a regressziós jegyzőkönyvezés bevezetésekor. |
+| 1.4 | 1.6.0 | 2026-11-20 | Telepíthető mobilváltozat, használat, működés és korlátok dokumentálása. |
 
 ## Architektúra
 
@@ -113,3 +115,22 @@ flowchart TD
 ## Állapot és ellenőrzés
 
 A kliens nagyjából tíz másodpercenként kér közös állapotot. A GPS-méréseket aktív megosztásnál küldi, az elavult pozíciók kiesnek. Sauron mozgását a szerver a kéréseknél számolja. A város és a következő kör vázlata böngészőben tárolódik. Az éles játékállapot és a lezárt eredmények az adatbázisban maradnak. Telepítés után az [ellenőrzési napló](ELLENORZES.md) alapján kell célzott próbát végezni.
+
+
+## Mobilalkalmazás és gyorsítótár
+
+Új technológiák: Web App Manifest, Service Worker API, Cache Storage API, beforeinstallprompt és display-mode. Nincs új külső csomag vagy fizetős fejlesztőeszköz. A manifest a repó alkönyvtárához viszonyított scope/start_url értékeket használ. A pwa.js kezeli a telepítést, kapcsolatjelzést és a felhasználó által jóváhagyott frissítést. A sw.js csak tételesen felsorolt nyilvános statikus fájlokat tárol verziózott, alkalmazásnévvel elkülönített tárban. Navigáció: hálózat, hibánál offline.html. Nincs offline index vagy játékállapot. Külső szolgáltatás, térképcsempe, API, POST, token és helyadat nincs gyorsítótárazva. Új worker várakozik, csak frissítési jóváhagyásra aktiválódik; más alkalmazások tárát nem törli. A PNG ikonok saját geometrikus arany gyűrűt ábrázolnak zöld alapon. HTTPS szükséges.
+
+```mermaid
+flowchart TD
+ U[Telefon kezdőképernyő] --> P[PWA / meglévő frontend]
+ P --> S[Service worker]
+ S --> N[Online navigáció]
+ S --> O[Offline tájékoztató]
+ P --> A[Meglévő online játék API]
+ W[Új worker] --> V[Várakozás]
+ V --> J[Felhasználó frissítést kér]
+ J --> R[Újratöltés és új verzió]
+```
+
+Források: [Service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers), [PWA telepítés](https://web.dev/learn/pwa/installation).
