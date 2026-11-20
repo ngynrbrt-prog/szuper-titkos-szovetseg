@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Helyszínalapú random pálya](#helyszínalapú-random-pálya)
 - [Megjelenítés, menü és random elhelyezés](#megjelenítés,-menü-és-random-elhelyezés)
 - [Telepítés Androidra és iPhone-ra](#telepítés-androidra-és-iphone-ra)
 - [Verziókövetés](#verziókövetés)
@@ -21,6 +22,7 @@
 | 1.3 | 1.5.3 | 2026-11-16 | Áttekintve a regressziós jegyzőkönyvezés bevezetésekor. |
 | 1.4 | 1.6.0 | 2026-11-20 | Telepíthető mobilváltozat, használat, működés és korlátok dokumentálása. |
 | 1.5 | 1.7.0 | 2026-11-20 | Belépett menü, világos/sötét megjelenítés és véletlen pályaterv. |
+| 1.6 | 1.7.1 | 2026-11-20 | 1/3/5 km választó; gyűrűk és Mordor éttermeknél, kocsmáknál vagy nevezetességeknél. |
 
 ## Mobilos és asztali webes nézet
 
@@ -37,7 +39,7 @@ Az ábra felső sora a mobilos, az alsó az asztali webes használatot szemlélt
 
 ## Belépés és karakter
 
-Nyisd meg a [játékot](https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/?v=1.5.3). Az **Új karakter** űrlapon válassz nevet, 6–12 számjegyes PIN-t, fajt és fegyvert. A **Visszatérő vándor** űrlapon lépsz be. A térképes ikont a **Szövetség → Térképes karakterikon → Ikon mentése** útvonalon állíthatod át.
+Nyisd meg a [játékot](https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/?v=1.7.1). Az **Új karakter** űrlapon válassz nevet, 6–12 számjegyes PIN-t, fajt és fegyvert. A **Visszatérő vándor** űrlapon lépsz be. A térképes ikont a **Szövetség → Térképes karakterikon → Ikon mentése** útvonalon állíthatod át.
 
 ## Játékos lépései
 
@@ -83,8 +85,15 @@ A térképi tárgyjelölőre vagy gyűrű-keresési jelölőre bökve nyisd meg 
 **Véletlen pálya:**
 
 1. Admin → Új városi kaland: fogadd el a várost, majd nyisd meg a térképes szerkesztőt.
-2. Adj meg **100–5000 méter** sugarat; alapérték 1000 m.
+2. Válassz **1 km**, **3 km** vagy **5 km** sugarat a listából; alapérték 1 km.
 3. Nyomd meg a **Random elhelyezés** gombot, majd bökj a kívánt középpontra. A gomb ismételt megnyomásával megszakíthatod a módot. A teljes kör maradjon a városközpont 10 km-es körzetében.
 4. Korábbi tervnél erősítsd meg a lecserélést. 6 gyűrű, 20 drágakő, Mordor és Sauron útvonala jelenik meg. A jelenlegi játékot ez még nem változtatja meg.
 5. Vizsgáld át az összes pontot és útvonalszakaszt. Húzással módosíthatod a jelölőket; a véletlen útvonal nem követi automatikusan az utcákat. Vízre, magánterületre vagy veszélyes helyre eső pontot helyezz át.
 6. Jóváhagyás után hozd létre az előkészített játékot, és csak ellenőrzés után indítsd el. Kézi tervnél a korábbi 40 drágakő az alapérték; generált tervnél 20.
+
+
+## Helyszínalapú random pálya
+
+A **Random elhelyezés** mellett a lenyíló listában **1 km**, **3 km** vagy **5 km** választható. Térképkattintás után várd meg az éttermek, kocsmák és nevezetességek keresését. A hat gyűrű és Mordor az ilyen helyekre kerül; a nevük megjelenik a szerkesztőben. Kevés találatnál válassz nagyobb sugarat vagy másik középpontot. Hálózati hibánál próbáld később: a korábbi terv nem vész el.
+
+A generált gyűrűt és Mordort ismert helyszín közelébe húzva vagy kattintva a jelölő a helyszín koordinátájára illeszkedik. 150 méteren belüli megfelelő hely hiányában az áthelyezés elutasított. Újratöltés után a hét kiválasztott hely marad ismert; más helyekhez új generálást indíthatsz. A térképes adatok lehetnek elavultak, a hely nyitvatartását, megközelíthetőségét és a teljes útvonalat indulás előtt ellenőrizd. A véletlenül generált drágakő és útvonalpont továbbra is kézzel áthelyezhető.

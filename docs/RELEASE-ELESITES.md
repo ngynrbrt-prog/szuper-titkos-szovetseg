@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Helyszínalapú random pálya](#helyszínalapú-random-pálya)
 - [Az 1.7.0 kiadás előkészítése](#az-1.7.0-kiadás-előkészítése)
 - [A mobilváltozat kiadása](#a-mobilváltozat-kiadása)
 - [Verziókövetés](#verziókövetés)
@@ -19,6 +20,7 @@
 | 1.3 | 1.5.3 | 2026-11-16 | Áttekintve a regressziós jegyzőkönyvezés bevezetésekor. |
 | 1.4 | 1.6.0 | 2026-11-20 | Telepíthető mobilváltozat, használat, működés és korlátok dokumentálása. |
 | 1.5 | 1.7.0 | 2026-11-20 | Belépett menü, világos/sötét megjelenítés és véletlen pályaterv. |
+| 1.6 | 1.7.1 | 2026-11-20 | 1/3/5 km választó; gyűrűk és Mordor éttermeknél, kocsmáknál vagy nevezetességeknél. |
 
 ## Éles kiadás
 
@@ -52,3 +54,8 @@ Az 1.6.0 első telepítése igazolt: a7ef3242be3225be0185b22e74d7eb5c7763a77f, s
 Változó fájlok: index.html, script.js, style.css, appearance.js, placement-model.js, sw.js, offline.html; kiegészített tesztek és dokumentáció. Először database/random-placement.sql telepítendő (opcionális 20/40 drágakő), majd a frontend. A backend visszafelé kompatibilis: gem_count nélkül 40 marad. A korábbi játékok, karakterek és jogosultságok nem módosulnak. A mobil service worker és a megváltozott fájlok verziója 1.7.0.
 
 A szervermigráció sikeres, az adatbázispróba visszagörgetett tranzakcióban átment. A frontend telepítését ebben a szakaszban még nem jelöljük élesnek; az igazolás az ellenőrzési naplóba kerül.
+
+
+## Helyszínalapú random pálya
+
+Az 1.7.1 az 1.7.0 szervermigrációjára épül; új adatbázis-módosítás nincs. Új poi-model.js, 1/3/5 km választó, Overpass CSP-engedély és helyszínalapú generálás. A PWA cache és minden változó kliensfájl verziója 1.7.1. A 1.7.0 Pages-futtatása igazolt: 7547254116498e8a718b0f68b80debc447aab7b4, futtatás 44831618794. Az 1.7.1 élesítési bizonyíték külön kerül az ellenőrzési naplóba. A szolgáltató kiesésekor nincs tetszőleges koordinátára történő fallback; hibaüzenet és változatlan korábbi terv marad.

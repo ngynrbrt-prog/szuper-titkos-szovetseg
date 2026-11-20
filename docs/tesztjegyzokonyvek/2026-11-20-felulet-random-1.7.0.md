@@ -35,7 +35,8 @@ macOS helyi forrás, Node REPL beépített VM/assert/fs modulokkal, determiniszt
 | DB-03 | 01 | Automata / SQL / Supabase | RPC jogosultságok | anon=false, authenticated=false, service_role=true | Sikeres |
 | DB-04 | 01 | Automata / Supabase advisor | Biztonsági vizsgálat | Korábbi RLS-no-policy INFO-k a szándékosan közvetlen klienshozzáférés nélkül kezelt táblákon; korábbi leaked-password-protection WARN. Új hozzáférési jogot nem adtunk | Ellenőrizve |
 | UI-08 | 01 | Automata / Node HTTP fixture | Helyi szimulált admin böngészőteszt előkészítése | A környezet tiltotta a localhost:4177 listen műveletet (EPERM), böngészős fixture nem indult | Blokkolt |
-| UI-09 | — | Kézi / éles böngésző | Telepítés után vendég menü és mobilméret | Következő ellenőrzés | Tervezett |
+| UI-09 | 01 | Kézi / éles CUA böngésző | 1.7.0 megnyitása | script.js?v=1.7.0, térkép és vendég menü látszik; Admin és Beállítások nem látszik. Mobilméret külön ebben a körben még nem futott | Részben sikeres |
+| UI-11 | 01 | Kézi / CUA | Frissítési gomb megnyomása | A kattintás időtúllépést adott; következő állapotban a gomb eltűnt, de az aktiválás pontos menete nem igazolt | Blokkolt |
 | UI-10 | — | Kézi / fizikai Android+iPhone | Valódi belépés, téma és admin térképkattintás | Fizikai eszköz és külön tesztfiók nincs | Nem futott |
 
 ## Korlátok

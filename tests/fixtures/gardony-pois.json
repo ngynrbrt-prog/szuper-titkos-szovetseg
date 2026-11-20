@@ -1,0 +1,825 @@
+{
+  "center": [
+    47.2094,
+    18.6361
+  ],
+  "radius": 3000,
+  "fetched_at": "2026-11-20T22:53:36.838Z",
+  "source": "https://overpass.private.coffee/api/interpreter",
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-07-24T11:04:51Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+    {
+      "type": "node",
+      "id": 282958138,
+      "lat": 47.208546,
+      "lon": 18.6298544,
+      "tags": {
+        "addr:city": "Gárdony",
+        "addr:housenumber": "1",
+        "addr:postcode": "2483",
+        "addr:street": "Posta utca",
+        "amenity": "restaurant",
+        "cuisine": "regional",
+        "name": "Sarki Róka Falatozó",
+        "opening_hours": "Mo-Su,PH 10:00-19:00",
+        "payment:credit_cards": "yes",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 681344531,
+      "lat": 47.2162037,
+      "lon": 18.6485623,
+      "tags": {
+        "amenity": "restaurant",
+        "name": "Cápa grill",
+        "toilets:wheelchair": "no",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1704418285,
+      "lat": 47.2067429,
+      "lon": 18.6314283,
+      "tags": {
+        "addr:city": "Gárdony",
+        "addr:housenumber": "2",
+        "addr:postcode": "2483",
+        "addr:street": "Bóné Kálmán utca",
+        "amenity": "restaurant",
+        "name": "Kék Tó vendéglő",
+        "operator": "Polónyi István",
+        "operator:addr": "2481 Velence, Cseresznye utca 15.",
+        "ref:HU:vatin": "64030005-2-27",
+        "ref:vatin": "HU64030005",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2061776039,
+      "lat": 47.2066422,
+      "lon": 18.6264442,
+      "tags": {
+        "addr:city": "Gárdony",
+        "addr:housenumber": "11",
+        "addr:postcode": "2483",
+        "addr:street": "Szabadság út",
+        "amenity": "restaurant",
+        "contact:facebook": "https://facebook.com/pontyetterem/",
+        "name": "Ponty Étterem"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2677066302,
+      "lat": 47.2111029,
+      "lon": 18.6305472,
+      "tags": {
+        "addr:city": "Gárdony",
+        "addr:housenumber": "23",
+        "addr:postcode": "2483",
+        "addr:street": "Pisztráng utca",
+        "amenity": "restaurant",
+        "capacity": "100",
+        "cuisine": "regional",
+        "name": "Varga Étterem",
+        "smoking": "outside"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2900294385,
+      "lat": 47.19684,
+      "lon": 18.6068034,
+      "tags": {
+        "amenity": "pub",
+        "name": "Blues Terasz",
+        "opening_hours": "10:00-24:00",
+        "smoking": "outside",
+        "toilets:wheelchair": "no",
+        "wheelchair": "limited"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2900305478,
+      "lat": 47.1972053,
+      "lon": 18.6074297,
+      "tags": {
+        "amenity": "pub",
+        "name": "Bambusz Söröző",
+        "smoking": "outside",
+        "toilets:wheelchair": "no",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2928918901,
+      "lat": 47.2261632,
+      "lon": 18.6635457,
+      "tags": {
+        "amenity": "pub",
+        "name": "Hullám söröző",
+        "toilets:wheelchair": "no",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2970737193,
+      "lat": 47.1951402,
+      "lon": 18.6153693,
+      "tags": {
+        "addr:city": "Gárdony",
+        "addr:housenumber": "13",
+        "addr:postcode": "2484",
+        "addr:street": "József utca",
+        "addr:suburb": "Agárd",
+        "amenity": "restaurant",
+        "contact:facebook": "https://www.facebook.com/jozsefpizza/",
+        "cuisine": "pizza",
+        "name": "József Pizzéria",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2975522176,
+      "lat": 47.2077271,
+      "lon": 18.6307076,
+      "tags": {
+        "historic": "memorial",
+        "name": "Doni kopjafa"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2975522177,
+      "lat": 47.2080673,
+      "lon": 18.6304107,
+      "tags": {
+        "historic": "memorial",
+        "memorial": "statue",
+        "name": "Halász Jancsi"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2975522179,
+      "lat": 47.2076519,
+      "lon": 18.6308605,
+      "tags": {
+        "artist_name": "Horváth István agárdi fafaragó",
+        "historic": "memorial",
+        "material": "wood",
+        "memorial": "stele",
+        "name": "Millecentenáriumi kopjafa",
+        "ref:kozterkep": "2836"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2975524048,
+      "lat": 47.2076016,
+      "lon": 18.6308469,
+      "tags": {
+        "description": "kettős kopjafa faragott rovás és latin betűs felirattal",
+        "historic": "memorial",
+        "inscription": "𐲒𐲀𐲒 𐲀𐲙𐲙𐲀𐲓 𐲀 𐲙𐲋𐲠𐲙𐲉𐲓⹁‏ 𐲀𐲓𐲐 𐲉𐲖𐲌𐲉𐲖𐲉𐲇𐲐 𐲟𐲤𐲉𐲐𐲦⹁‏ 𐲢𐲀𐲂𐲐𐲍𐲁𐲢𐲀 𐲮𐲁𐲖𐲦𐲒𐲀 𐲥𐲀𐲂𐲀𐲇𐲤𐲁𐲍𐲁𐲦.‏;Magyar történet múzsája vésőd soká nyugodott. Vedd föl azt s örök tábládra vésd föl ezt a nagy napot! OKT. 23.",
+        "memorial": "kopjafa",
+        "name": "Áldozat - 1956-os emlékmű",
+        "source": "http://www.rovasirasforrai.hu/Fenykeptar/1_Kep/091b_Gardony_Kopjafa_Karpati-Gabor-Csaba.jpg;http://www.velenceitonal.hu/adatlap/latnivalok/56+os+kettos+kopjafa"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2975524049,
+      "lat": 47.2077536,
+      "lon": 18.6307206,
+      "tags": {
+        "historic": "memorial",
+        "memorial": "stele",
+        "name": "1848-as kopjafa"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2975693152,
+      "lat": 47.1854381,
+      "lon": 18.6235929,
+      "tags": {
+        "building": "yes",
+        "material": "wood",
+        "name": "Gárdonyi rönkvár",
+        "tourism": "attraction"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2975693153,
+      "lat": 47.1977089,
+      "lon": 18.610511,
+      "tags": {
+        "historic": "memorial",
+        "memorial": "war_memorial",
+        "name": "I. és II. világháborús emlékmű"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2975693154,
+      "lat": 47.1932262,
+      "lon": 18.6118257,
+      "tags": {
+        "historic": "memorial",
+        "man_made": "obelisk",
+        "name": "Nádasdy-obeliszk",
+        "start_date": "1864"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3485134519,
+      "lat": 47.22197,
+      "lon": 18.659201,
+      "tags": {
+        "historic": "castle",
+        "name": "Beck-kastély (üdülő)",
+        "source": "turistautak.hu",
+        "source:date": "2011-06-29",
+        "url": "http://turistautak.hu/poi.php?id=55516"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3485134522,
+      "lat": 47.2095176,
+      "lon": 18.6263558,
+      "tags": {
+        "amenity": "pub",
+        "name": "Éva Büfé"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3485134569,
+      "lat": 47.191491,
+      "lon": 18.6099087,
+      "tags": {
+        "amenity": "pub",
+        "name": "Gesztenye vendéglő",
+        "url": "http://turistautak.hu/poi.php?id=124115"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3485134570,
+      "lat": 47.195111,
+      "lon": 18.61546,
+      "tags": {
+        "amenity": "pub",
+        "name": "Söröző",
+        "source": "turistautak.hu",
+        "source:date": "2011-06-29",
+        "url": "http://turistautak.hu/poi.php?id=101465"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3485134571,
+      "lat": 47.1971261,
+      "lon": 18.6207934,
+      "tags": {
+        "amenity": "pub",
+        "name": "Puby Kocsma"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3661432753,
+      "lat": 47.1982128,
+      "lon": 18.6070488,
+      "tags": {
+        "historic": "memorial",
+        "memorial": "statue",
+        "name": "Az 1992-es buszszerencsétlenség áldozatainak emlékműve"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3661552250,
+      "lat": 47.2055903,
+      "lon": 18.628831,
+      "tags": {
+        "artist_name": "Petri Lajos",
+        "historic": "memorial",
+        "memorial": "plaque",
+        "name": "Gárdonyi Géza",
+        "ref:kozterkep": "17691"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3661552251,
+      "lat": 47.2071096,
+      "lon": 18.6317415,
+      "tags": {
+        "artist_name": "Betlen Gyula",
+        "historic": "memorial",
+        "memorial": "war_memorial",
+        "memorial:conflict": "WW1",
+        "name": "I. világháborús emlékfal",
+        "ref:kozterkep": "1497"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3661552252,
+      "lat": 47.2071073,
+      "lon": 18.6313292,
+      "tags": {
+        "artist:wikidata": "Q1175793",
+        "artist:wikipedia": "hu:Melocco Miklós",
+        "artist_name": "Melocco Miklós",
+        "historic": "memorial",
+        "memorial": "war_memorial",
+        "memorial:conflict": "WW2",
+        "name": "II. világháborús emlékmű",
+        "ref:kozterkep": "1493"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3661597685,
+      "lat": 47.1960577,
+      "lon": 18.6070732,
+      "tags": {
+        "historic": "memorial",
+        "memorial": "bust",
+        "name": "Gárdonyi Géza"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3661597686,
+      "lat": 47.1853721,
+      "lon": 18.6228584,
+      "tags": {
+        "artist:wikidata": "Q1113826",
+        "artist:wikipedia": "hu:Kligl Sándor",
+        "artist_name": "Kligl Sándor",
+        "historic": "memorial",
+        "memorial": "statue",
+        "name": "Gárdonyi Géza",
+        "ref:kozterkep": "21103",
+        "start_date": "2013-08-03",
+        "subject:wikidata": "Q221903",
+        "subject:wikipedia": "hu:Gárdonyi Géza"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4051585126,
+      "lat": 47.1897808,
+      "lon": 18.6138405,
+      "tags": {
+        "addr:city": "Gárdony",
+        "addr:housenumber": "44",
+        "addr:postcode": "2484",
+        "addr:street": "Mikszáth Kálmán utca",
+        "addr:suburb": "Agárd",
+        "amenity": "pub",
+        "contact:facebook": "https://www.facebook.com/TomTomAgard",
+        "name": "Tom Tom"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5754779604,
+      "lat": 47.209375,
+      "lon": 18.6265288,
+      "tags": {
+        "amenity": "pub",
+        "name": "Tókert Söröző",
+        "wheelchair": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5909730220,
+      "lat": 47.2296312,
+      "lon": 18.6613628,
+      "tags": {
+        "amenity": "pub",
+        "name": "Dokk bár"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5955639364,
+      "lat": 47.2021206,
+      "lon": 18.6086397,
+      "tags": {
+        "description": "A Velencei tó partja gyönyörű természetes panorámát kínál Pákozd - Sukoró irányában.",
+        "tourism": "viewpoint"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7728314233,
+      "lat": 47.1968328,
+      "lon": 18.6095591,
+      "tags": {
+        "artist_name": "Karl Ferenc József",
+        "historic": "memorial",
+        "memorial": "bust",
+        "name": "Gárdonyi Géza",
+        "ref:kozterkep": "41916"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7804233757,
+      "lat": 47.2019732,
+      "lon": 18.6083293,
+      "tags": {
+        "amenity": "pub",
+        "name": "Italbár"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7804233774,
+      "lat": 47.1974039,
+      "lon": 18.6009291,
+      "tags": {
+        "addr:city": "Gárdony",
+        "addr:housenumber": "1",
+        "addr:postcode": "2484",
+        "addr:street": "Tópart utca",
+        "addr:suburb": "Agárd",
+        "amenity": "restaurant",
+        "name": "Touring Étterem"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7804247517,
+      "lat": 47.2102735,
+      "lon": 18.6273099,
+      "tags": {
+        "amenity": "bar",
+        "name": "Beach Bár"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9969966128,
+      "lat": 47.2059188,
+      "lon": 18.6300301,
+      "tags": {
+        "addr:city": "Gárdony",
+        "addr:housenumber": "8",
+        "addr:postcode": "2483",
+        "addr:street": "Bóné Kálmán utca",
+        "artist_name": "Tóth Attila Gyula",
+        "description": "Kettős fakereszt latin és rovás betűkkel faragva.",
+        "historic": "memorial",
+        "inscription": "TRIANON 𐲦𐲢𐲐𐲀𐲙𐲛𐲙 Trianon sebeit az idő beszőtte, de a vér átüt még a sebeken. Jún. 4. Meddig tűrjük még e gyalázatot? 𐲘𐲉𐲇𐲍 𐲦𐲭𐲢𐲒𐲬𐲓 𐲘𐲋𐲍 𐲉 𐲀𐲖𐲁𐲯𐲀𐲦𐲛𐲦⸮‏",
+        "material": "wood",
+        "name": "Trianon emlékmű",
+        "source": "https://trianon100.hu/emlekmu/gardony-trianon-emlekmu;http://www.velenceitonal.hu/tartalom/trianon+emlekmu"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10538003062,
+      "lat": 47.2069903,
+      "lon": 18.6271222,
+      "tags": {
+        "addr:city": "Gárdony",
+        "addr:housenumber": "7",
+        "addr:postcode": "2483",
+        "addr:street": "Szabadság út",
+        "amenity": "pub",
+        "name": "Kaktusz Söröző",
+        "outdoor_seating": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11038666307,
+      "lat": 47.2217291,
+      "lon": 18.6548582,
+      "tags": {
+        "historic": "memorial",
+        "material": "stone",
+        "memorial": "cross",
+        "name": "Kun Péter",
+        "subject:wikipedia": "hu:Kun Péter"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12050130227,
+      "lat": 47.1988364,
+      "lon": 18.6066188,
+      "tags": {
+        "artist_name": "Kontur András",
+        "historic": "memorial",
+        "inscription": "Chernel István|1865 - 1922",
+        "material": "limestone",
+        "memorial": "bust",
+        "name": "Chernel István",
+        "ref:kozterkep": "25557",
+        "start_date": "2015-05-31"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12050130228,
+      "lat": 47.1993808,
+      "lon": 18.606969,
+      "tags": {
+        "artist_name": "Kontur András",
+        "historic": "memorial",
+        "inscription": "Herman Ottó|1835-1914",
+        "material": "limestone",
+        "memorial": "bust",
+        "name": "Herman Ottó",
+        "ref:kozterkep": "24028",
+        "start_date": "2014-09-27"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12050130229,
+      "lat": 47.199561,
+      "lon": 18.6069995,
+      "tags": {
+        "artist_name": "Kontur András",
+        "historic": "memorial",
+        "inscription": "Solymos Ede|1926 - 2008",
+        "material": "limestone",
+        "memorial": "bust",
+        "name": "Solymos Ede",
+        "ref:kozterkep": "29191",
+        "start_date": "2016-05-06"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12050130230,
+      "lat": 47.1997611,
+      "lon": 18.6069839,
+      "tags": {
+        "artist_name": "Kontur András",
+        "historic": "memorial",
+        "inscription": "Id. Radetzky Jenő|1909 - 1991",
+        "material": "limestone",
+        "memorial": "bust",
+        "name": "Id. Radetzky Jenő",
+        "ref:kozterkep": "33810",
+        "start_date": "2017-11-26"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12645795824,
+      "lat": 47.1853524,
+      "lon": 18.6228425,
+      "tags": {
+        "historic": "memorial",
+        "material": "bronze;limestone",
+        "memorial": "plaque",
+        "name": "Gárdonyi Géza",
+        "ref:kozterkep": "45875",
+        "subject:wikidata": "Q221903",
+        "subject:wikipedia": "hu:Gárdonyi Géza"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13016227408,
+      "lat": 47.1976272,
+      "lon": 18.6022809,
+      "tags": {
+        "access": "customers",
+        "amenity": "pub",
+        "name": "Kontrafék büfé"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13016227409,
+      "lat": 47.1978213,
+      "lon": 18.602808,
+      "tags": {
+        "access": "customers",
+        "amenity": "pub",
+        "name": "Lángosos"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13016227414,
+      "lat": 47.204205,
+      "lon": 18.6140035,
+      "tags": {
+        "amenity": "pub",
+        "name": "Part büfé",
+        "operator": "Agárdi Vendéglátóipari és Kereskedelmi Kft.",
+        "operator:addr": "2483 GÁRDONY MÉSZÁROS LÁZÁR UTCA 26.",
+        "payment:cash": "yes",
+        "payment:credit_cards": "yes",
+        "toilets": "yes"
+      }
+    },
+    {
+      "type": "way",
+      "id": 231388644,
+      "center": {
+        "lat": 47.2080658,
+        "lon": 18.623792
+      },
+      "tags": {
+        "access": "customers",
+        "amenity": "pub",
+        "building": "yes",
+        "fixme": "resurvey",
+        "name": "Kő-kortyintó"
+      }
+    },
+    {
+      "type": "way",
+      "id": 231388664,
+      "center": {
+        "lat": 47.2073197,
+        "lon": 18.624598
+      },
+      "tags": {
+        "amenity": "bar",
+        "building": "yes",
+        "internet_access:ssid": "strandsor",
+        "name": "Sör bár"
+      }
+    },
+    {
+      "type": "way",
+      "id": 265526976,
+      "center": {
+        "lat": 47.1852267,
+        "lon": 18.6229681
+      },
+      "tags": {
+        "building": "yes",
+        "name": "Gárdonyi Géza szülőháza",
+        "tourism": "museum",
+        "wikidata": "Q1031112",
+        "wikimedia_commons": "Category:Géza Gárdonyi Memorial House in Gárdony",
+        "wikipedia": "hu:Gárdonyi Géza Emlékház"
+      }
+    },
+    {
+      "type": "way",
+      "id": 286372154,
+      "center": {
+        "lat": 47.1974204,
+        "lon": 18.6059635
+      },
+      "tags": {
+        "addr:city": "Gárdony",
+        "addr:housenumber": "1",
+        "addr:postcode": "2484",
+        "addr:street": "Vasút utca",
+        "addr:suburb": "Agárd",
+        "amenity": "restaurant",
+        "building": "yes",
+        "capacity": "500",
+        "cuisine": "gyros",
+        "internet_access:ssid": "Agarden",
+        "name": "Agarden büfésor",
+        "old_name": "Agarden bevásárló központ",
+        "shop": "mall",
+        "short_name": "Agarden",
+        "smoking": "separated",
+        "toilets:wheelchair": "yes",
+        "wheelchair": "yes",
+        "wheelchair:description": "accessible toilet in the train station (100m) akadálymentes WC a vasútállomáson"
+      }
+    },
+    {
+      "type": "way",
+      "id": 414778517,
+      "center": {
+        "lat": 47.1869644,
+        "lon": 18.6208641
+      },
+      "tags": {
+        "building": "residential",
+        "historic": "castle",
+        "name": "Nádasdy-kastély",
+        "tourism": "attraction"
+      }
+    },
+    {
+      "type": "way",
+      "id": 475392376,
+      "center": {
+        "lat": 47.1897736,
+        "lon": 18.613792
+      },
+      "tags": {
+        "amenity": "restaurant",
+        "building": "yes"
+      }
+    },
+    {
+      "type": "way",
+      "id": 535234958,
+      "center": {
+        "lat": 47.2277126,
+        "lon": 18.6642219
+      },
+      "tags": {
+        "addr:city": "Velence",
+        "addr:postcode": "2481",
+        "addr:street": "Tábor utca",
+        "amenity": "restaurant",
+        "building": "yes",
+        "contact:instagram": "https://www.instagram.com/groenk_deli/",
+        "cuisine": "burger;regional",
+        "email": "velence@groenkdeli.hu",
+        "facebook": "velence@groenkdeli.hu",
+        "name": "Grøenk Deli",
+        "opening_hours": "Mo-Sa 11:30-22:00; Su 10:00-18:00",
+        "phone": "+36705551908",
+        "website": "https://www.groenkdeli.hu/"
+      }
+    },
+    {
+      "type": "way",
+      "id": 830097443,
+      "center": {
+        "lat": 47.1975537,
+        "lon": 18.6087933
+      },
+      "tags": {
+        "addr:city": "Gárdony",
+        "addr:housenumber": "50",
+        "addr:postcode": "2484",
+        "addr:street": "Balatoni út",
+        "addr:suburb": "Agárd",
+        "amenity": "restaurant",
+        "building": "yes",
+        "cuisine": "fish",
+        "internet_access:ssid": "Medora Park",
+        "name": "Gulyás csárda",
+        "opening_hours": "Mo-Su 12:00-22:00",
+        "payment:cash": "yes",
+        "payment:maestro": "yes",
+        "payment:mastercard": "yes",
+        "payment:visa": "yes",
+        "website": "https://medorapark.hu/gulyascsarda/"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1130745416,
+      "center": {
+        "lat": 47.2073695,
+        "lon": 18.627811
+      },
+      "tags": {
+        "addr:city": "Gárdony",
+        "addr:housenumber": "5/a",
+        "addr:postcode": "2483",
+        "addr:street": "Szabadság út",
+        "amenity": "restaurant",
+        "building": "retail",
+        "building:colour": "white",
+        "building:levels": "1",
+        "contact:email": "info@pizza-wurlitzer.hu",
+        "contact:facebook": "http://www.facebook.com/pizzawurlitzer",
+        "contact:instagram": "http://www.instagram.com/pizzawurlitzer/",
+        "contact:phone": "+36 20 462 8585",
+        "contact:website": "https://pizza-wurlitzer.hu/",
+        "cuisine": "pizza",
+        "name": "Pizza & Wurlitzer",
+        "opening_hours": "Su-We 11:00-20:00; Th-Sa 11:00-21:00",
+        "outdoor_seating": "yes",
+        "roof:shape": "flat",
+        "takeaway": "yes"
+      }
+    }
+  ]
+}

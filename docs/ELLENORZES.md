@@ -102,3 +102,7 @@ Az r2 javítás élesítése is igazolt: `1ff23459ad04e8e8d4af44137b4bd978473d02
 ## 2026-11-20 — Belépett felület és random pálya 1.7.0
 
 A [jegyzőkönyv](tesztjegyzokonyvek/2026-11-20-felulet-random-1.7.0.md) rögzíti a modelles és SQL-próbákat, az ismétléseket, a blokkolt helyi böngészőkörnyezetet és a telefonos korlátokat. Öt JS-tesztkészlet végső futása sikeres. A random_placement_gem_count migráció sikeres; a tranzakciós próba igazolta a 6+20 tárgyat 26 külön helyen, a korábbi 40-es alapértéket és az admin/safety védelmet. RPC: anon/authenticated tiltott, service_role engedett. Éles frontend igazolása folyamatban.
+
+## 2026-11-20 — Helyszínalapú random pálya 1.7.1
+
+A [részletes jegyzőkönyv](tesztjegyzokonyvek/2026-11-20-helyszin-random-1.7.1.md) rögzíti a hálózati és VM-próbák ismétléseit is. A kiválasztható sugár 1, 3 vagy 5 km. A Private.coffee Overpass-válasz Gárdony 3 km-es körében 56 elemet adott, 46 szűrt POI-val; hét különböző hely kiválasztása és a 6 gyűrű + Mordor pontos POI-koordinátája igazolt. Hét JS-tesztkészlet végső futása sikeres; a teljes generateAt próbában hiba esetén változatlan maradt a terv, a cache és a párhuzamos keresés tiltása működött. Új adatbázismigráció nincs. Fizikai telefonos és valós bejelentkezett böngészős folyamat nem igazolt.
