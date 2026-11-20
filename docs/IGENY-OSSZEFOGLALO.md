@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Gyűrűidő, játékosszín és közös kiszabadítás](#gyűrűidő,-játékosszín-és-közös-kiszabadítás)
 - [Helyszínalapú random pálya](#helyszínalapú-random-pálya)
 - [Belépett felület és pályagenerálás](#belépett-felület-és-pályagenerálás)
 - [Telefonra telepíthető alkalmazás](#telefonra-telepíthető-alkalmazás)
@@ -21,6 +22,11 @@
 | 1.4 | 1.6.0 | 2026-11-20 | Telepíthető mobilváltozat, használat, működés és korlátok dokumentálása. |
 | 1.5 | 1.7.0 | 2026-11-20 | Belépett menü, világos/sötét megjelenítés és véletlen pályaterv. |
 | 1.6 | 1.7.1 | 2026-11-20 | 1/3/5 km választó; gyűrűk és Mordor éttermeknél, kocsmáknál vagy nevezetességeknél. |
+| 1.7 | 1.8.0 | 2026-11-21 | Gyűrűnkénti 60 perc, hat gyűrűs lezárás, színek, ikonbeállítás és körkép. |
+| 1.8 | 1.8.0 | 2026-11-21 | Közös ötperces helymegosztás kiszabadítja Sauron gyűrűit. |
+| 1.9 | 1.8.0 | 2026-11-21 | Telefonos sáv a Beállításokban és a térképoldal alján. |
+| 1.10 | 1.8.0 | 2026-11-21 | Teljes szélességű, nagy helymegosztási gombok. |
+| 1.11 | 1.8.0 | 2026-11-21 | Android/iPhone natív háttér-GPS igény rögzítve; a PWA korlátja változatlan, külön fejlesztés indul. |
 
 ## Cél és szerepkörök
 
@@ -33,7 +39,7 @@ A Szuper Titkos szövetség egy városi, közös GPS-játék legfeljebb hat kara
 - Helymegosztáskor a térkép a játékosok választott karakterikonját mutatja. A saját ikon arany keretet kap. A földön lévő gyűrűk közelítő keresőköre GPS nélkül is látható. A pontos jelölőhöz saját gyűrű és aktív helymegosztás kell.
 - Tárgyfelvételhez friss GPS és legfeljebb 50 méter, rabláshoz két megosztott, friss hely és legfeljebb 100 méter kell. A szerver dönt a műveletekről.
 - Sauron friss helyzetet megosztó gyűrűbirtokost üldöz. Több alkalmas célpont közül a hozzá legközelebbit választja.
-- Az első sikeres mordori megsemmisítés lezárja a kört, és a megsemmisítő nyer. Több saját gyűrű egy művelettel is megsemmisíthető. Mind a hat gyűrű megszerzésekor Sauron nyer. Az eredményablak a győztest és az adott kör játékosonkénti eredményeit mutatja. A játékidő lezáráskor megáll. Új körhöz új játékot kell konfigurálni.
+- A kör csak mind a hat gyűrű megsemmisülésekor zárul le, a győztest a pontszámrangsor adja. Saját gyűrű 60 perc igazolt megosztás után semmisíthető meg, több gyűrűnél mindegyikre teljesülnie kell. Sauron összes gyűrűjének megszerzése nem zárja le a játékot. Az eredményablak a győztest és az adott kör játékosonkénti eredményeit mutatja. A játékidő lezáráskor megáll. Új körhöz új játékot kell konfigurálni.
 
 ## Hatókör és korlátok
 
@@ -55,3 +61,18 @@ A fejléc a Kilépés előtt minden képernyőméreten mutatja a belépett karak
 ## Helyszínalapú random pálya
 
 A sugár kizárólag 1, 3 vagy 5 km lehet. A hat gyűrű és Mordor hét különböző étterem, kocsma/bár vagy nevezetesség OSM-koordinátájára kerül. Legalább hét különböző hely szükséges; hiányos vagy sikertelen lekérdezéskor a régi terv változatlan marad. A 20 drágakő és Sauron geometrikus útvonala továbbra is véletlen. A teljes kör a városközpont 10 km-es körzetében marad.
+
+
+## Gyűrűidő, játékosszín és közös kiszabadítás
+
+A Szövetség névsorában a karakter neve mellett a választott faj ikonja jelenik meg. A Hátizsákban a gyűrű kis képe és az adott gyűrű aktuális birtoklása alatt igazolt helymegosztási idő látható. Egy gyűrű csak legalább 3600 összegyűjtött másodperc után semmisíthető meg, friss GPS-szel, Mordor 50 m-es körzetében. Elvesztés, rablás, visszaszerzés és új felvétel nullázza az adott birtoklási szakasz számlálóját. Megszakítás önmagában nem törli a gyűrű addigi idejét, de a szünet nem számít bele. Az összes gyűrű együttes megsemmisítése csak akkor engedett, ha mindegyik saját gyűrű külön jogosult.
+
+Az aktív kör kizárólag a hatodik gyűrű megsemmisülésekor ér véget. Sauron gyűrűinek száma és az admin lezáró művelete nem fejezhet be aktív kört. Az el nem indított előkészület elvethető. A nyertes a szerver pontszám szerinti rangsorának első játékosa, holtversenyben megsemmisített gyűrűk, gyűrűidő, majd stabil játékosazonosító szerint.
+
+Minden játékos automatikusan véletlen, egyedi színt kap nyolc alapszínből. Színt csak két kör között vagy az indítás előtt válthat, foglalt színre nem. A karakterikon a Beállításokban módosítható. A kör végén letölthető térképkép mutatja a várost és a bekapcsolt helymegosztások színes nyomvonalait, a kör végén rögzített színekkel.
+
+Ha a Sauronnál lévő gyűrűk mellett minden regisztrált játékos egyszerre legalább 300 másodpercig friss helyet oszt meg, új elfogás nélkül, minden Sauronnál lévő gyűrű visszatér az eredeti felvételi koordinátájára. Leállítás, 30 másodperces GPS-elavulás, új elfogás vagy legalább 30 másodperces ellenőrzési hiány újrakezdi a közös időt. A kiszabadított gyűrűk újból felvehetők, saját egyórás idejük nulláról indul.
+
+A telefonos telepítési sáv a Beállításokban és a kezdő térképoldal legalján látszik. A helymegosztás két gombja teljes kártyaszélességű, legalább 64 px magas; mobilon 68 px magas és a térkép alatt kap helyet.
+
+A lezárt képernyős, bezárt oldalas folyamatos GPS Androidon és iPhone-on külön natív alkalmazást igényel. Az 1.8.0 webes változat ezt nem teljesíti, nem címkéz elavult helyadatot frissként. Források: [Android háttérhelymeghatározás](https://developer.android.com/develop/sensors-and-location/location/background), [Apple Core Location](https://developer.apple.com/documentation/corelocation/handling-location-updates-in-the-background).

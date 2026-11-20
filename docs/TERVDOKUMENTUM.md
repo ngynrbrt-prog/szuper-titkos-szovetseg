@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Gyűrűidők, színek, megosztási nyomvonal és kiszabadítás](#gyűrűidők,-színek,-megosztási-nyomvonal-és-kiszabadítás)
 - [Helyszínalapú random pálya](#helyszínalapú-random-pálya)
 - [Megjelenítés és véletlen pályaterv](#megjelenítés-és-véletlen-pályaterv)
 - [Mobilalkalmazás és gyorsítótár](#mobilalkalmazás-és-gyorsítótár)
@@ -23,6 +24,11 @@
 | 1.4 | 1.6.0 | 2026-11-20 | Telepíthető mobilváltozat, használat, működés és korlátok dokumentálása. |
 | 1.5 | 1.7.0 | 2026-11-20 | Belépett menü, világos/sötét megjelenítés és véletlen pályaterv. |
 | 1.6 | 1.7.1 | 2026-11-20 | 1/3/5 km választó; gyűrűk és Mordor éttermeknél, kocsmáknál vagy nevezetességeknél. |
+| 1.7 | 1.8.0 | 2026-11-21 | Gyűrűnkénti 60 perc, hat gyűrűs lezárás, színek, ikonbeállítás és körkép. |
+| 1.8 | 1.8.0 | 2026-11-21 | Közös ötperces helymegosztás kiszabadítja Sauron gyűrűit. |
+| 1.9 | 1.8.0 | 2026-11-21 | Telefonos sáv a Beállításokban és a térképoldal alján. |
+| 1.10 | 1.8.0 | 2026-11-21 | Teljes szélességű, nagy helymegosztási gombok. |
+| 1.11 | 1.8.0 | 2026-11-21 | Android/iPhone natív háttér-GPS igény rögzítve; a PWA korlátja változatlan, külön fejlesztés indul. |
 
 ## Architektúra
 
@@ -94,12 +100,9 @@ flowchart TD
   C --> D[Admin indít]
   D --> E[Aktív kör]
   E --> F{Lezárási feltétel}
-  F -->|Első gyűrű megsemmisül| G[Játékos győz]
-  F -->|Mind a hat gyűrű Sauronnál| H[Sauron győz]
-  F -->|Admin lezárja| I[Szerver rangsorol]
-  G --> J[Eredmény mentése és megjelenítése]
-  H --> J
-  I --> J
+  F -->|Mind a hat gyűrű megsemmisült| I[Szerver rangsorol]
+  F -->|Még nem| E
+  I --> J[Eredmény és színes térképkép]
   J --> A
 ```
 
@@ -168,3 +171,38 @@ flowchart TD
 Típusok: amenity=restaurant/pub/bar; tourism=attraction/museum/viewpoint; historic=castle/monument/memorial/ruins. Kizárva: access=private/no, disused=yes, abandoned=yes, körön kívüli vagy hibás koordináta, 30 m-en belüli duplikátum. Node koordináta, way/relation esetén OSM-középpont. Fisher–Yates választás hét különböző helyből; első hat gyűrű, hetedik Mordor. A helyek neve a szerkesztőben szövegként jelenik meg, HTML-ként nem értelmezzük. A kiválasztott hét POI a helyi draft poi_sites mezőjében megmarad. A generált gyűrű/Mordor áthelyezéskor 150 m-en belüli ismert POI-ra illeszkedik; egyébként visszautasított. Az aktív játék kézi admin-áthelyezése továbbra is a meglévő szerveres művelet.
 
 A helyszín típusa OSM-adat, nem a nyitvatartás vagy biztonság igazolása. A way középpontja épület belsejébe eshet; a legális megközelítést az admin ellenőrzi. Forrás és licenc: [OpenStreetMap](https://www.openstreetmap.org/copyright), [Overpass szolgáltatók](https://wiki.openstreetmap.org/wiki/Overpass_API). A hét hely kiválasztását valódi, 56 elemes gárdonyi válasszal ellenőriztük; szűrés után 46 hely maradt.
+
+
+## Gyűrűidők, színek, megosztási nyomvonal és kiszabadítás
+
+Új komponensek: player-rules.js (8 szín, gyűrű- és kiszabadítási kijelzés), summary-map.js (Web Mercator, szegmensek, Canvas 2D, PNG-adat URL), assets/ring.svg. Nincs új csomag vagy fizetős szolgáltatás. A térképkép csak az aktuálisan megjelenített térképkivágás OSM-csempéit tölti be HTTPS-en, szokásos böngészőcache-sel; látható forrásmegjelölést tartalmaz. Sikertelen csempénél hiányos háttérre figyelmeztet, újrapróbálható. Nem hoz létre offline csempetárat.
+
+Adatmodell: players.color_id smallint NOT NULL, 1–8 CHECK és UNIQUE index. BEFORE INSERT trigger tranzakciós zárral szabad színt sorsol, a meglévő hat játékos egyszeri egyedi színt kapott. game_action color csak nem aktív körben enged változtatást, a szerver kizárja az elfoglalt értéket. A profile művelet kezeli továbbra is az ikont; a form a Beállításokban van.
+
+items.ring_share_seconds integer 0–3600, csak a saját tárgy időértéke kerül a kliensválaszba. location művelet két friss, 30 másodpercnél közelebbi megosztás között számol, az aktuális collected_at időponttal levágva a felvétel előtti részt. Egész másodperceket jóváír, maximum 3600-ig; hosszabb szünet, state-poll és önmagában eltelt falióra nem ad időt. Tulajdonosváltó műveletek és Sauron elfogása nulláznak. A destroy/destroy_all egy tranzakcióban ellenőrzi mindegyik érintett gyűrű jogosultságát. A bevezetés előtt nem igazolt időt nem pótoltuk; az élesítés előtti kör előkészített volt, senkinél nem volt gyűrű.
+
+Privát location_samples tábla: game_id, player_id, lat/lng, sampled_at, segment_id. Aktív location kérésből készül minta az első mérésnél, szegmensváltáskor, legalább 30 másodperc után vagy legalább 10 másodperc és 25 m elmozdulás után. Stop és 30 másodperces frissességi hiány megszakítja a szegmenst; kikapcsolt megosztásból nincs új minta. RLS és közvetlen kliensjogok hiánya védi. Aktív körben a privát történet nem kerül a klienshez; lezárt körnél a hitelesített játékosok last_round.map mezőben kapják meg. 30 napnál régebbi minta nem szerepel a válaszban, és a következő hitelesített játékkérés törli. Ez kérésvezérelt megőrzés, nem időzített cron.
+
+A lezárás config.summary_players mezőben rögzíti a neveket, ikonokat és színeket. A round_map a pontokat játékosonként kb. 1200 pontra ritkítja, a szegmensvégeket megőrzi. A későbbi színváltás nem színezi át a lezárt kört. A PNG a böngészőben készül, nem kerül nyilvános tárhelyre; kilépéskor a képi hivatkozások és az összesítő állapota törlődnek. Korábbi körökhöz nem gyártunk utólagos helyadatot.
+
+A kiszabadítás authoritative config mezői: rescue_started_at, rescue_checked_at, rescue_last_capture_at, rescue_completed_at, rescue_released. Az összes registration_completed játékos friss, pontos helye szükséges, nem csak a gyűrűbirtokosoké. Sauron elfogása és a stop azonnal resetel; a location régi frissessége és az ellenőrzésben 30 másodperces hiány is resetel. Sikeres 300 másodperc után a sauron állapotú gyűrűk ground állapotot kapnak, tulajdonos és idő törlődik, a ring_custody kiürül, sauron_release audit keletkezik. Az items latitude/longitude az eredeti földi helyet őrzi, így nincs új véletlen hely választás. A kör továbbra is aktív.
+
+Telepítés: új projektnél az 1.7-es séma után database/ring-progress-colors.sql; a már feltelepített első 1.8-változathoz database/team-rescue.sql frissíti ugyanazt a játékfüggvényt. A round-rules.sql a végső játékfüggvény, az új oszlopok és helper-függvények nélkül önmagában nem telepíthető. Edge Function-változás nincs.
+
+```mermaid
+flowchart TD
+ A[Friss GPS, gyűrű saját tulajdonban] --> B[Gyűrűnkénti idő jóváírása]
+ B --> C{Legalább 3600 mp és Mordor?}
+ C -->|Igen| D[Gyűrű megsemmisül]
+ D --> E{Mind a hat megsemmisült?}
+ E -->|Nem| A
+ E -->|Igen| F[Rangsor és színpillanatkép]
+ F --> G[Színes nyomvonalas PNG]
+ H[Minden regisztrált játékos friss helyet oszt] --> I{300 mp elfogás nélkül?}
+ I -->|Nem| H
+ I -->|Igen| J[Sauron gyűrűi vissza az eredeti helyre]
+ J --> A
+ K[Stop, elavulás vagy elfogás] --> L[Közös 5 perc újraindul]
+```
+
+A lezárt képernyős, bezárt oldalas folyamatos GPS Androidon és iPhone-on külön natív alkalmazást igényel. Az 1.8.0 webes változat ezt nem teljesíti, nem címkéz elavult helyadatot frissként. Források: [Android háttérhelymeghatározás](https://developer.android.com/develop/sensors-and-location/location/background), [Apple Core Location](https://developer.apple.com/documentation/corelocation/handling-location-updates-in-the-background).

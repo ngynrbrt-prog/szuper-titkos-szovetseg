@@ -25,7 +25,7 @@
   return state.locations.flatMap(location=>{
    const player=players.get(location.player_id);
    if(!player)return [];
-   return [{...location,icon:characterIcon(player.avatar?.race),label:player.character_name,own:player.id===state.me.id}];
+   return [{...location,color_id:player.color_id,icon:characterIcon(player.avatar?.race),label:player.character_name,own:player.id===state.me.id}];
   });
  }
  const api=Object.freeze({sauronView,characterIcons,characterIcon,sharedCharacters});

@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Az 1.8.0 változásai és telepítése](#az-1.8.0-változásai-és-telepítése)
 - [Helyszínalapú random pálya](#helyszínalapú-random-pálya)
 - [Az 1.7.0 kiadás előkészítése](#az-1.7.0-kiadás-előkészítése)
 - [A mobilváltozat kiadása](#a-mobilváltozat-kiadása)
@@ -21,6 +22,11 @@
 | 1.4 | 1.6.0 | 2026-11-20 | Telepíthető mobilváltozat, használat, működés és korlátok dokumentálása. |
 | 1.5 | 1.7.0 | 2026-11-20 | Belépett menü, világos/sötét megjelenítés és véletlen pályaterv. |
 | 1.6 | 1.7.1 | 2026-11-20 | 1/3/5 km választó; gyűrűk és Mordor éttermeknél, kocsmáknál vagy nevezetességeknél. |
+| 1.7 | 1.8.0 | 2026-11-21 | Gyűrűnkénti 60 perc, hat gyűrűs lezárás, színek, ikonbeállítás és körkép. |
+| 1.8 | 1.8.0 | 2026-11-21 | Közös ötperces helymegosztás kiszabadítja Sauron gyűrűit. |
+| 1.9 | 1.8.0 | 2026-11-21 | Telefonos sáv a Beállításokban és a térképoldal alján. |
+| 1.10 | 1.8.0 | 2026-11-21 | Teljes szélességű, nagy helymegosztási gombok. |
+| 1.11 | 1.8.0 | 2026-11-21 | Android/iPhone natív háttér-GPS igény rögzítve; a PWA korlátja változatlan, külön fejlesztés indul. |
 
 ## Éles kiadás
 
@@ -59,3 +65,14 @@ A szervermigráció sikeres, az adatbázispróba visszagörgetett tranzakcióban
 ## Helyszínalapú random pálya
 
 Az 1.7.1 az 1.7.0 szervermigrációjára épül; új adatbázis-módosítás nincs. Új poi-model.js, 1/3/5 km választó, Overpass CSP-engedély és helyszínalapú generálás. A PWA cache és minden változó kliensfájl verziója 1.7.1. A 1.7.0 Pages-futtatása igazolt: 7547254116498e8a718b0f68b80debc447aab7b4, futtatás 44831618794. Az 1.7.1 élesítése igazolt: c161c0019ceff933e83195679eb2582ea5302fe6, sikeres Pages-futtatás 44833099950; a bizonyíték az ellenőrzési naplóban és a jegyzőkönyvben szerepel. A szolgáltató kiesésekor nincs tetszőleges koordinátára történő fallback; hibaüzenet és változatlan korábbi terv marad.
+
+
+## Az 1.8.0 változásai és telepítése
+
+Új szerveres mezők és privát tábla: players.color_id, items.ring_share_seconds, game_private.location_samples. Először a six_rings_progress_colors_trails migráció futott le, majd a kiegészítő all_players_five_minute_ring_rescue. Az első migráció kiosztotta a meglévő játékosok egyedi színét. A játék az ellenőrzéskor előkészített volt, saját gyűrűk nélkül; így nem nullázódott futó játékból igazolt új számláló. Az új idejű gyűrűk múltbeli megosztását nem becsüljük vissza.
+
+A tranzakciós tesztek igazolják a gyűrűidőt és átadáskori nullázást, a csak-hat-gyűrűs lezárást, a befagyasztott körszínt, az admin idő előtti lezárásának tiltását és az ötperces közös kiszabadítást. A közvetlen kliens-RPC és privát nyomvonaltábla továbbra is tiltott. A hat játékoshely betelt, új regisztráció végigvitele külön tesztkörnyezet nélkül nem futott.
+
+Frontend: player-rules.js, summary-map.js, ring.svg, módosított menük, Hátizsák, összesítő, nagy GPS-gombok és áthelyezett telepítési sáv. A megváltozott statikus fájlok és a service worker cache verziója 1.8.0. A frontend élesítését csak a sikeres Pages-futás és az éles nézet ellenőrzése után jelöljük igazoltnak. Visszaállításnál az új adatmezőket és privát adatokat ne töröld; kompatibilis javító frontend és új worker-verzió szükséges.
+
+A lezárt képernyős, bezárt oldalas folyamatos GPS Androidon és iPhone-on külön natív alkalmazást igényel. Az 1.8.0 webes változat ezt nem teljesíti, nem címkéz elavult helyadatot frissként. Források: [Android háttérhelymeghatározás](https://developer.android.com/develop/sensors-and-location/location/background), [Apple Core Location](https://developer.apple.com/documentation/corelocation/handling-location-updates-in-the-background).

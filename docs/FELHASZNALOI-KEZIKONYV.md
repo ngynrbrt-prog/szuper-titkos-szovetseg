@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Gyűrűidő, szín és a kör végi térképkép](#gyűrűidő,-szín-és-a-kör-végi-térképkép)
 - [Helyszínalapú random pálya](#helyszínalapú-random-pálya)
 - [Megjelenítés, menü és random elhelyezés](#megjelenítés,-menü-és-random-elhelyezés)
 - [Telepítés Androidra és iPhone-ra](#telepítés-androidra-és-iphone-ra)
@@ -23,6 +24,11 @@
 | 1.4 | 1.6.0 | 2026-11-20 | Telepíthető mobilváltozat, használat, működés és korlátok dokumentálása. |
 | 1.5 | 1.7.0 | 2026-11-20 | Belépett menü, világos/sötét megjelenítés és véletlen pályaterv. |
 | 1.6 | 1.7.1 | 2026-11-20 | 1/3/5 km választó; gyűrűk és Mordor éttermeknél, kocsmáknál vagy nevezetességeknél. |
+| 1.7 | 1.8.0 | 2026-11-21 | Gyűrűnkénti 60 perc, hat gyűrűs lezárás, színek, ikonbeállítás és körkép. |
+| 1.8 | 1.8.0 | 2026-11-21 | Közös ötperces helymegosztás kiszabadítja Sauron gyűrűit. |
+| 1.9 | 1.8.0 | 2026-11-21 | Telefonos sáv a Beállításokban és a térképoldal alján. |
+| 1.10 | 1.8.0 | 2026-11-21 | Teljes szélességű, nagy helymegosztási gombok. |
+| 1.11 | 1.8.0 | 2026-11-21 | Android/iPhone natív háttér-GPS igény rögzítve; a PWA korlátja változatlan, külön fejlesztés indul. |
 
 ## Mobilos és asztali webes nézet
 
@@ -39,7 +45,7 @@ Az ábra felső sora a mobilos, az alsó az asztali webes használatot szemlélt
 
 ## Belépés és karakter
 
-Nyisd meg a [játékot](https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/?v=1.7.1). Az **Új karakter** űrlapon válassz nevet, 6–12 számjegyes PIN-t, fajt és fegyvert. A **Visszatérő vándor** űrlapon lépsz be. A térképes ikont a **Szövetség → Térképes karakterikon → Ikon mentése** útvonalon állíthatod át.
+Nyisd meg a [játékot](https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/?v=1.8.0). Az **Új karakter** űrlapon válassz nevet, 6–12 számjegyes PIN-t, fajt és fegyvert. A **Visszatérő vándor** űrlapon lépsz be. A térképes ikont a **Beállítások → Térképes karakterikon → Ikon mentése** útvonalon állíthatod át.
 
 ## Játékos lépései
 
@@ -47,7 +53,7 @@ Nyisd meg a [játékot](https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/
 2. Az arany keresőkör segít megtalálni a gyűrűt. Saját gyűrűvel és aktív megosztással megjelenik a pontos jelölő.
 3. Menj a tárgy tényleges helyétől 50 méteren belülre, majd válaszd a **Felveszem · 50 m** gombot. A műveletet a térképi jelölő felugró ablakából indítsd; belépett nézetben nincs külön kincslista.
 4. A **Szövetség** oldalon választhatsz rablást, ha mindkét játékos megosztja friss helyét és 100 méteren belül vannak egymáshoz. A páros rablási védelem 15 perc.
-5. A **Hátizsákban** Mordor 50 méteres körzetében megsemmisítheted a saját gyűrűdet. Több gyűrűnél elérhető az együttes megsemmisítés is. A kör véget ér, és megjelenik az eredményablak. Az **Eredmények** oldalon a pontok és a korábbi körök is láthatók.
+5. A **Hátizsákban** legalább 60 perc gyűrűnkénti igazolt helymegosztás után, Mordor 50 méteres körzetében semmisítheted meg a saját gyűrűdet. Több gyűrűnél elérhető az együttes megsemmisítés is. A kör a hatodik gyűrű megsemmisülésekor ér véget, ekkor jelenik meg az eredményablak. Az **Eredmények** oldalon a pontok és a korábbi körök is láthatók.
 
 ## Admin lépései
 
@@ -97,3 +103,22 @@ A térképi tárgyjelölőre vagy gyűrű-keresési jelölőre bökve nyisd meg 
 A **Random elhelyezés** mellett a lenyíló listában **1 km**, **3 km** vagy **5 km** választható. Térképkattintás után várd meg az éttermek, kocsmák és nevezetességek keresését. A hat gyűrű és Mordor az ilyen helyekre kerül; a nevük megjelenik a szerkesztőben. Kevés találatnál válassz nagyobb sugarat vagy másik középpontot. Hálózati hibánál próbáld később: a korábbi terv nem vész el.
 
 A generált gyűrűt és Mordort ismert helyszín közelébe húzva vagy kattintva a jelölő a helyszín koordinátájára illeszkedik. 150 méteren belüli megfelelő hely hiányában az áthelyezés elutasított. Újratöltés után a hét kiválasztott hely marad ismert; más helyekhez új generálást indíthatsz. A térképes adatok lehetnek elavultak, a hely nyitvatartását, megközelíthetőségét és a teljes útvonalat indulás előtt ellenőrizd. A véletlenül generált drágakő és útvonalpont továbbra is kézzel áthelyezhető.
+
+
+## Gyűrűidő, szín és a kör végi térképkép
+
+**Beállítások:** itt találod a térképes karakterikon, az egyedi játékosszín és a világos/sötét megjelenítés választóját. Nyolc alapszín elérhető: piros, kék, zöld, sárga, narancs, lila, rózsaszín, barna. Foglalt szín nem választható; aktív játékban a színmező zárolt. A Szövetség névsorában a választott karakterikon és egy színjelzés látszik a név mellett.
+
+**Hátizsák:** minden saját gyűrű mellett kis gyűrűkép, haladási sáv és „perc/mp / 60 perc” érték látható. Az idő csak a gyűrű birtoklása közbeni, friss bekapcsolt helymegosztásokból gyűlik. Szünetben nem halad, elvesztés vagy új tulajdonos után nulláról indul. 60 percig a megsemmisítés gomb tiltott; utána is Mordor 50 m-es körzete és friss GPS szükséges. Több gyűrű együttes megsemmisítéséhez mindegyik saját gyűrűnek külön teljesítenie kell az egy órát.
+
+Az aktív játék csak mind a hat gyűrű megsemmisülésekor ér véget; a pontszám alapján készül a rangsor. Sauron minden gyűrű megszerzésével sem fejezi be a kört. A még el nem indított játékot az admin az Előkészület elvetése gombbal törölheti az aktív előkészületek közül.
+
+**Közös kiszabadítás:** ha Sauronnál van gyűrű, minden regisztrált játékosnak egyszerre kell helyet megosztania öt percen át, új elfogás nélkül. A térkép melletti helymegosztási kártya mutatja az X/Y játékost és a közös időt. Leállítás, 30 másodpercnél régebbi GPS vagy új elfogás újrakezdi az öt percet. Siker esetén Sauron összes gyűrűje visszakerül eredeti helyére, ismét felvehető, és az új birtokos egyórás számlálója nulláról indul.
+
+**Kör végi térképkép:** az eredményablakban megjelenik a kiválasztott város és a kör alatt megosztott, játékosszínű útvonalak képe. A Térképkép mentése link PNG-ként letölti. A megosztási szüneteket nem köti össze a vonal. Előfordulhat hiányos háttértérkép; ilyenkor az Újrapróbálás gombbal kérheted újra. A PNG nincs a szerverre vagy GitHubra feltöltve.
+
+**Helyadatok:** az aktív körben bekapcsolt megosztásból útvonalminták tárolódnak, hogy a lezáráskor minden regisztrált játékos lássa a térképet. 30 nap után már nem érhetők el; a lejárt minták törlése a következő játékkéréskor történik. Korábbi, még nem rögzített köröknél nincs visszamenőleges útvonal.
+
+**Telefonos sáv és nagy gombok:** a Szövetség a telefonodon sáv a Beállításokban és a kezdő Térkép oldal legalján található. Más oldalon nem jelenik meg. A Helymegosztás indítása és Megosztás leállítása teljes kártyaszélességű, nagy gomb; mobilon a térkép alatt helyezkedik el.
+
+A lezárt képernyős, bezárt oldalas folyamatos GPS Androidon és iPhone-on külön natív alkalmazást igényel. Az 1.8.0 webes változat ezt nem teljesíti, nem címkéz elavult helyadatot frissként. Források: [Android háttérhelymeghatározás](https://developer.android.com/develop/sensors-and-location/location/background), [Apple Core Location](https://developer.apple.com/documentation/corelocation/handling-location-updates-in-the-background).

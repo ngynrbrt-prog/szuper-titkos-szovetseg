@@ -1,4 +1,4 @@
-# A Szuper Titkos szövetség · Multiplayer 1.4
+# A Szuper Titkos szövetség · Multiplayer 1.8.0
 
 Hat regisztrált játékos közös, egyvárosos GPS-játéka. A felület GitHub Pages-en, a hitelesítés és minden játékállapot-változás Supabase-ben fut.
 
@@ -18,12 +18,12 @@ Hat regisztrált játékos közös, egyvárosos GPS-játéka. A felület GitHub 
 
 - Tárgyfelvétel 50 méteren belül, legfeljebb 50 m pontatlanságú és 30 másodpercnél frissebb GPS-szel.
 - Rablás két látható játékos között 100 méteren belül; a párra 15 perces védelem vonatkozik.
-- Saját gyűrű megsemmisítése Mordor 50 méteres körzetében, 1000 pontért.
+- Saját gyűrű megsemmisítése legalább 60 perc gyűrűnkénti friss helymegosztás után, Mordor 50 méteres körzetében, 1000 pontért.
 - A drágakövek egyszeri felvételi értéke 1000–40000 sestertius. A rablás az eszköz tulajdonát adja át; korábban szerzett pontot nem von vissza.
-- Sauron 30 perc után 6 km/h-val járőrözik az admin útvonalán oda-vissza. 15 perc aktív GPS-idő után, 50 méteren belül egy gyűrűt elvesz. Utána 60 percig rejtett és nem támad. A korábbi tulajdonos 1 km-en belül visszaszerezheti; utána 15 perc védettséget kap.
+- Sauron azonnal üldözi a friss helyet megosztó gyűrűbirtokost, 6 km/h-val. Elfogás után 60 percig rejtett és nem támad. A korábbi tulajdonos 1 km-en belül visszaszerezhet; ez új, nulláról induló gyűrűidő.
 - Sauron eseményeit kérésekkor értékeli ki a szerver, csak friss helyadatokra. Nincs folyamatos háttérfolyamat vagy utcahálózaton célpontot üldöző útvonaltervező.
 - Gyűrűvel töltött idő csak friss GPS-mérések közötti, legfeljebb 30 másodperces időablakokban számít. Háttérbe kerüléskor a megosztás leáll; újraindítása kézi.
-- Automatikus lezárás, ha minden gyűrű megsemmisült vagy Sauronnál van. Admin is lezárhatja a játékot. A rangsor: sestertius, megsemmisített gyűrűk, gyűrűidő. Az archívum megmarad.
+- Az aktív játék csak mind a hat gyűrű megsemmisülésekor ér véget. Minden regisztrált játékos közös, ötperces friss megosztása új elfogás nélkül visszahelyezi Sauron gyűrűit az eredeti pontokra. A végső rangsor: sestertius, megsemmisített gyűrűk, gyűrűidő.
 
 ## Biztonsági felépítés
 

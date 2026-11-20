@@ -8,9 +8,9 @@
  let draft={points:[],route:[],mordor:null};
  try{session=JSON.parse(sessionStorage.getItem('fellowship-session'));draft=JSON.parse(localStorage.getItem('fellowship-draft'))||draft;}catch{}
  draft=window.PlacementModel.normalizeDraft(draft);
- let messageTimer,lastProfileRace;
+ let messageTimer,lastProfileRace,lastProfileColor;
  function message(text,error=false){$('message').textContent=text;$('message').classList.toggle('error',error);$('message').hidden=false;clearTimeout(messageTimer);messageTimer=setTimeout(()=>$('message').hidden=true,9000);}
- function show(page){if((page==='admin'&&!state?.me.is_admin)||(page==='settings'&&!state?.me))page='auth';document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id===page));document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('selected',el.dataset.page===page));if(page==='map')setTimeout(()=>map?.invalidateSize(),50);}
+ function show(page){if((page==='admin'&&!state?.me.is_admin)||(page==='settings'&&!state?.me))page='auth';const appPanel=document.querySelector('.app-panel');if(appPanel){appPanel.hidden=!['map','settings'].includes(page);if(page==='map'||page==='settings')$(page==='map'?'appMapMount':'appSettingsMount').append(appPanel);}document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id===page));document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('selected',el.dataset.page===page));if(page==='map')setTimeout(()=>map?.invalidateSize(),50);}
  function saveSession(s){session=s;if(s)sessionStorage.setItem('fellowship-session',JSON.stringify(s));else sessionStorage.removeItem('fellowship-session');}
  async function http(path,body,token){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
@@ -28,8 +28,8 @@
  const name=id=>state?.players.find(p=>p.id===id)?.character_name||'Ismeretlen vándor';
  const fmt=n=>Number(n||0).toLocaleString('hu-HU');
  const stamp=t=>new Date(t).toLocaleString('hu-HU');
- function itemCard(parent,it){const el=document.createElement('div');el.className='item';text(el,'strong',(it.item_type==='ring'?'💍 ':'💎 ')+it.item_name);text(el,'p',it.item_type==='gem'?fmt(it.value_sestertius)+' sestertius':it.item_description||'Különleges gyűrű');parent.append(el);return el;}
- function buttons(){const active=!!session&&state?.game?.status==='active';$('gps').disabled=!active||watch!==null;$('stopGps').disabled=watch===null;$('startGame').disabled=state?.game?.status!=='preparation';$('finishGame').disabled=!['preparation','active'].includes(state?.game?.status);$('editRings').disabled=!state?.me.is_admin||!['preparation','active'].includes(state?.game?.status)||!state.items.some(i=>i.item_type==='ring'&&i.status==='ground');$('saveRingPosition').disabled=!pendingPlacement||!$('placementSafe').checked||selectedLiveRing()?.status!=='ground';}
+ function itemCard(parent,it){const el=document.createElement('div');el.className='item';if(it.item_type==='ring'){const img=document.createElement('img');img.src='assets/ring.svg';img.alt='Gyűrű';img.className='inventory-ring';el.append(img);}text(el,'strong',(it.item_type==='ring'?'':'💎 ')+it.item_name);text(el,'p',it.item_type==='gem'?fmt(it.value_sestertius)+' sestertius':it.item_description||'Különleges gyűrű');parent.append(el);return el;}
+ function buttons(){const active=!!session&&state?.game?.status==='active';$('gps').disabled=!active||watch!==null;$('stopGps').disabled=watch===null;$('startGame').disabled=state?.game?.status!=='preparation';$('finishGame').disabled=state?.game?.status!=='preparation';$('editRings').disabled=!state?.me.is_admin||!['preparation','active'].includes(state?.game?.status)||!state.items.some(i=>i.item_type==='ring'&&i.status==='ground');$('saveRingPosition').disabled=!pendingPlacement||!$('placementSafe').checked||selectedLiveRing()?.status!=='ground';}
 
  let appearancePlayer=null;
  function accountView(){
@@ -47,7 +47,7 @@
   const s=state,g=s?.game;accountView();if(!s){renderMap();return;}
   $('characterForm').hidden=false;
   if(lastProfileRace!==s.me.avatar?.race){lastProfileRace=s.me.avatar?.race;$('characterForm').elements.race.value=lastProfileRace||'Ember';}
-  accountView();
+  accountView();renderColors();
   $('phase').textContent=g?({preparation:'Előkészület',active:'A vadászat tart',finished:'Lezárt krónika'}[g.status]):'Még nincs játék';
   $('connection').textContent='Közös állapot · '+new Date(s.server_time).toLocaleTimeString('hu-HU');$('cityTitle').textContent=g?g.city_name:'A kaland itt kezdődik.';
   $('ringCount').textContent=g?`${s.items.filter(i=>i.item_type==='ring'&&i.status==='ground').length} szabad gyűrű · ${s.items.filter(i=>i.item_type==='gem'&&i.status==='ground').length} drágakő`:'6 gyűrű · 40 drágakő';
@@ -57,21 +57,24 @@
   const rings=owned.filter(item=>item.item_type==='ring');
   owned.forEach(item=>{
    const card=itemCard(bag,item);
-   if(item.item_type!=='ring'||g?.status!=='active')return;
-   addButton(card,'Megsemmisítés Mordornál',async()=>{
-    if(confirm('Megsemmisíted ezt a gyűrűt és lezárod a kört?'))await api('destroy',{item:item.id});
-   });
-   if(rings.length>1&&item.id===rings[0].id)addButton(card,'Összes gyűrű megsemmisítése',async()=>{
-    if(confirm('Megsemmisíted az összes saját gyűrűdet és lezárod a kört?'))await api('destroy_all');
-   });
+   if(item.item_type!=='ring')return;
+   const progress=window.PlayerRules.ringProgress(item);text(card,'p','Helymegosztás ezzel a gyűrűvel: '+progress.label,'ring-progress-label');const meter=document.createElement('progress');meter.max=3600;meter.value=progress.seconds;meter.setAttribute('aria-label',progress.label);card.append(meter);
+   if(g?.status!=='active')return;
+   const destroy=addButton(card,'Megsemmisítés Mordornál',async()=>{
+    if(confirm('Megsemmisíted ezt a gyűrűt? A kör mind a hat gyűrű megsemmisülésekor ér véget.'))await api('destroy',{item:item.id});
+   });destroy.disabled=!progress.eligible;
+   if(rings.length>1&&item.id===rings[0].id){const all=addButton(card,'Összes gyűrű megsemmisítése',async()=>{
+    if(confirm('Megsemmisíted az összes saját gyűrűdet? Mindegyikhez külön 60 perc megosztás szükséges.'))await api('destroy_all');
+   });all.disabled=!rings.every(r=>window.PlayerRules.ringProgress(r).eligible);}
   });
   const recover=empty('recoverItems');s.items.filter(i=>s.recoverable.includes(i.id)).forEach(it=>addButton(itemCard(recover,it),'Visszaszerzem · 1 km',()=>api('recover',{item:it.id})));
-  const players=empty('playerList');for(const p of s.players){const card=document.createElement('div');card.className='card';text(card,'h3',p.character_name+(p.id===s.me.id?' · Te':''));text(card,'p',(p.avatar?.race||'Vándor')+' · '+(p.avatar?.weapon||''),'muted');text(card,'p',s.locations.some(l=>l.player_id===p.id)?'● Helye megosztva':'○ Helye nem látható','muted');const items=s.items.filter(i=>i.owner_id===p.id&&i.status==='owned');text(card,'p',`${items.filter(i=>i.item_type==='ring').length} gyűrű · ${items.filter(i=>i.item_type==='gem').length} drágakő`);if(p.id!==s.me.id)for(const it of items)addButton(card,'Elrablom: '+it.item_name,()=>api('rob',{item:it.id}));players.append(card);}
+  const players=empty('playerList');for(const p of s.players){const card=document.createElement('div');card.className='card';const heading=text(card,'h3',window.SauronMap.characterIcon(p.avatar?.race)+' '+p.character_name+(p.id===s.me.id?' · Te':''));const dot=text(heading,'span',' ●','player-color-dot');dot.style.color=window.PlayerRules.color(p.color_id).hex;dot.title=window.PlayerRules.color(p.color_id).name;text(card,'p',(p.avatar?.race||'Vándor')+' · '+(p.avatar?.weapon||''),'muted');text(card,'p',s.locations.some(l=>l.player_id===p.id)?'● Helye megosztva':'○ Helye nem látható','muted');const items=s.items.filter(i=>i.owner_id===p.id&&i.status==='owned');text(card,'p',`${items.filter(i=>i.item_type==='ring').length} gyűrű · ${items.filter(i=>i.item_type==='gem').length} drágakő`);if(p.id!==s.me.id)for(const it of items)addButton(card,'Elrablom: '+it.item_name,()=>api('rob',{item:it.id}));players.append(card);}
   const scores=empty('scores');[...s.results].sort((a,b)=>b.sestertius_earned-a.sestertius_earned||b.rings_destroyed-a.rings_destroyed||b.ring_seconds-a.ring_seconds).forEach(r=>{const tr=document.createElement('tr');[name(r.player_id),fmt(r.sestertius_earned),r.gems_collected,r.successful_robberies,r.rings_destroyed,(r.ring_seconds/60).toFixed(1)].forEach(v=>text(tr,'td',v));scores.append(tr);});
   const archive=empty('archive');for(const a of s.archive)text(archive,'div',a.city_name+' · '+stamp(a.finished_at)+' · Győztes: '+(a.reason==='sauron'?'Sauron':name(a.winner_id)),'event');
-  const events=empty('events');const labels={pickup:'felvett egy tárgyat',rob:'elrabolt egy tárgyat',destroy:'megsemmisített egy gyűrűt',destroy_all:'megsemmisítette az összes saját gyűrűjét',recover:'visszaszerzett egy gyűrűt',sauron:'elvesztett egy gyűrűt Sauronnal szemben',place_ring:'módosította egy gyűrű helyét'};for(const e of s.events)text(events,'div',stamp(e.created_at)+' · '+name(e.player_id)+' '+(labels[e.event_type]||e.event_type),'event');
+  const events=empty('events');const labels={sauron_release:'A közös helymegosztás kiszabadított egy gyűrűt Saurontól',pickup:'felvett egy tárgyat',rob:'elrabolt egy tárgyat',destroy:'megsemmisített egy gyűrűt',destroy_all:'megsemmisítette az összes saját gyűrűjét',recover:'visszaszerzett egy gyűrűt',sauron:'elvesztett egy gyűrűt Sauronnal szemben',place_ring:'módosította egy gyűrű helyét'};for(const e of s.events)text(events,'div',stamp(e.created_at)+' · '+(e.event_type==='sauron_release'?'':name(e.player_id)+' ')+(labels[e.event_type]||e.event_type),'event');
   $('adminGame').textContent=g?`${g.city_name} · ${$('phase').textContent} · ${s.items.length} tárgy`:'Nincs játék. Jelöld ki az első kaland helyszíneit.';
   updateRoundClock();
+  const rescue=window.PlayerRules.rescueProgress(s.rescue);$('rescueStatus').hidden=!rescue.captive;$('rescueStatus').textContent='Közös kiszabadítás: '+rescue.sharing+'/'+rescue.required+' játékos osztja meg a helyét · '+Math.floor(rescue.seconds/60)+' perc '+String(rescue.seconds%60).padStart(2,'0')+' mp / 5 perc. Megszakítás vagy elfogás újrakezdi.';
   showRoundResults(s);
   if(g?.status==='finished'&&watch!==null)void stopGPS().catch(()=>{});
   buttons();renderMap();renderRingSummary();if(editing)renderDraft();
@@ -98,8 +101,23 @@
    results.append(row);
   }
   if(!dialog.open)dialog.showModal();
+  if(round.map)void showRoundMap(round);else $('roundMapFigure').hidden=true;
   sessionStorage.setItem('seen-round:'+s.me.id,round.id);
  }
+
+ function renderColors(){
+  if(!state?.me)return;const select=$('playerColor');
+  for(const option of select.options)option.disabled=state.players.some(p=>p.id!==state.me.id&&Number(p.color_id)===Number(option.value));
+  if(lastProfileColor!==state.me.color_id){lastProfileColor=state.me.color_id;select.value=String(lastProfileColor);}
+  const locked=!window.PlayerRules.canChangeColor(state.game);select.disabled=locked;$('colorForm').querySelector('button').disabled=locked;$('colorHelp').textContent=locked?'Aktív játékban a színed rögzített. A következő kör előtt módosíthatod.':'Válassz egy szabad alapszínt. Minden szín csak egy játékoshoz tartozhat.';
+ }
+ let roundMapId=null,roundMapData=null;
+ function clearRoundMap(){roundMapId=null;roundMapData=null;$('roundMapFigure').hidden=true;$('roundMapImage').removeAttribute('src');$('downloadRoundMap').removeAttribute('href');if($('roundDialog').open)$('roundDialog').close();}
+ async function showRoundMap(round,retry=false){
+  if(roundMapId===round.id&&!retry)return;roundMapId=round.id;roundMapData=round;$('roundMapFigure').hidden=false;$('roundMapImage').hidden=true;$('downloadRoundMap').hidden=true;$('retryRoundMap').hidden=true;$('roundMapStatus').textContent='Az összesítő térképkép készül…';
+  try{const result=await window.RoundMap.render(round.map,document.createElement('canvas'),cfg.tiles);if(roundMapId!==round.id)return;$('roundMapImage').src=result.url;$('roundMapImage').hidden=false;$('downloadRoundMap').href=result.url;$('downloadRoundMap').hidden=false;$('retryRoundMap').hidden=result.failed===0;$('roundMapStatus').textContent=(result.points?'A kör alatt megosztott útvonalak a játékosok rögzített színével.':'Ehhez a körhöz nincs rögzített helymegosztási útvonal.')+(result.failed?' A háttértérkép hiányos; újrapróbálhatod.':'');}catch(e){if(roundMapId!==round.id)return;$('roundMapStatus').textContent='A térképképet nem sikerült elkészíteni. Kapcsolódj az internethez és próbáld újra.';$('retryRoundMap').hidden=false;}
+ }
+ $('retryRoundMap').addEventListener('click',()=>{if(roundMapData)void showRoundMap(roundMapData,true);});
  setInterval(updateRoundClock,1000);
  function marker(lat,lng,symbol,label,callback,options={}){if(!map)return;const icon=L.divIcon({className:'map-icon',html:symbol,iconSize:[32,32],iconAnchor:[16,16]});const m=L.marker([lat,lng],{icon,...options}).addTo(layer);const box=document.createElement('div');text(box,'strong',label);if(callback)addButton(box,'Felveszem · 50 m',callback);m.bindPopup(box);}
  function ringSearchCenter(item){
@@ -150,7 +168,7 @@
     marker(lat,lng,'<span class="ring-search-icon" aria-hidden="true"></span>',item.item_name+' · keresési terület',pickup,{zIndexOffset:1000,title:'Gyűrű keresési területe'});
    }
    for(const person of window.SauronMap.sharedCharacters(s)){
-    const symbol='<span class="player-map-icon'+(person.own?' player-map-own':'')+'">'+person.icon+'</span>';
+    const symbol='<span class="player-map-icon player-color-'+Number(person.color_id)+(person.own?' player-map-own':'')+'">'+person.icon+'<i aria-hidden="true"></i></span>';
     const label=person.label+(person.own?' · Te':'');
     marker(person.latitude,person.longitude,symbol,label,null,{title:label,zIndexOffset:person.own?2200:2100});
    }
@@ -275,6 +293,8 @@
  document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.page)));
  for(const action of ['login','register'])$(action+'Form').addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget,button=form.querySelector('button'),b=Object.fromEntries(new FormData(form));button.disabled=true;try{const response=await http('/functions/v1/player-auth',{action,character_name:b.character_name,pin:b.pin,avatar:{race:b.race,weapon:b.weapon}});form.elements.pin.value='';if(action==='register'){message(response.message);$('loginForm').elements.character_name.value=b.character_name;form.reset();}else{epoch++;saveSession({...response,expires_at:Date.now()+response.expires_in*1000});await api('state');show('map');fit();}}catch(err){message(err.message||'Kapcsolati hiba.',true);}finally{button.disabled=false;}});
  const characterForm=$('characterForm');
+ $('playerColor').replaceChildren(...window.PlayerRules.colors.map(c=>new Option(c.name,String(c.id))));
+ $('colorForm').addEventListener('submit',async e=>{e.preventDefault();const button=e.currentTarget.querySelector('button');button.disabled=true;try{await api('color',{color_id:Number($('playerColor').value)});message('A játékosszín elmentve.');}catch(e){message(e.message,true);}finally{renderColors();}});
  for(const select of [characterForm.elements.race,$('registerForm').elements.race]){
   select.replaceChildren(...Object.entries(window.SauronMap.characterIcons).map(([race,icon])=>new Option(icon+' '+race,race)));
  }
@@ -290,9 +310,9 @@
   finally{button.disabled=false;}
  });
  bindButton('gps',beginGPS);bindButton('stopGps',stopGPS);
- bindButton('logout',async()=>{await stopGPS().catch(()=>{});let logoutError=false;try{const t=await token();await http('/auth/v1/logout?scope=local',{},t);}catch(e){logoutError=e.status!==401&&e.status!==403;}epoch++;saveSession(null);state=null;lastProfileRace=undefined;$('characterForm').hidden=true;updateRoundClock();accountView();$('logout').hidden=true;$('adminNav').hidden=true;$('adminTools').hidden=true;$('adminLocked').hidden=false;['groundItems','inventory','recoverItems','playerList','scores','archive','events'].forEach(empty);layer?.clearLayers();renderMap();$('connection').textContent='Kijelentkezve';show('auth');message(logoutError?'Kiléptél ezen a lapon; a szerveroldali lezárást nem sikerült ellenőrizni.':'Kijelentkeztél.',logoutError);});
+ bindButton('logout',async()=>{await stopGPS().catch(()=>{});let logoutError=false;try{const t=await token();await http('/auth/v1/logout?scope=local',{},t);}catch(e){logoutError=e.status!==401&&e.status!==403;}epoch++;saveSession(null);state=null;lastProfileRace=undefined;lastProfileColor=undefined;$('characterForm').hidden=true;clearRoundMap();updateRoundClock();accountView();$('logout').hidden=true;$('adminNav').hidden=true;$('adminTools').hidden=true;$('adminLocked').hidden=false;['groundItems','inventory','recoverItems','playerList','scores','archive','events'].forEach(empty);layer?.clearLayers();renderMap();$('connection').textContent='Kijelentkezve';show('auth');message(logoutError?'Kiléptél ezen a lapon; a szerveroldali lezárást nem sikerült ellenőrizni.':'Kijelentkeztél.',logoutError);});
  bindButton('startGame',async()=>{await api('start');message('A közös kaland elindult.');});
- bindButton('finishGame',async()=>{if(confirm('Lezárod a játékot? Az eredmények megmaradnak.')){await api('finish');await stopGPS().catch(()=>{});message('A játék lezárult.');}});
+ bindButton('finishGame',async()=>{if(confirm('Elveted az el nem indított játék előkészületét?')){await api('finish');await stopGPS().catch(()=>{});message('Az előkészületet elvetetted.');}});
  function fit(){if(!map)return;if(editing){const f=$('createForm').elements;map.setView(placementContext==='live'?[state.game.city_lat,state.game.city_lng]:[Number(f.lat.value),Number(f.lng.value)],16);return;}const g=state?.game,view=currentSauron();if(g){const points=[[g.city_lat,g.city_lng],...(g.config?.route||[])];for(const item of state.items)if(item.item_type==='ring'&&item.status==='ground')points.push(ringSearchCenter(item),[item.latitude,item.longitude]);if(view.visible&&view.mode!=='rumor')points.push(view.position);map.fitBounds(L.latLngBounds(points).pad(.18),{maxZoom:15});}else if(view.visible)map.setView(view.position,3);}
  bindButton('fit',fit);
  bindButton('focusSauron',()=>{const view=currentSauron();if(!view.visible)return;show('map');map.setView(view.position,Math.max(5,map.getZoom()));sauronMarker?.openPopup();});
