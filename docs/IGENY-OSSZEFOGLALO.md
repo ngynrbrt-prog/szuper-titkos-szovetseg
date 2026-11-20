@@ -49,7 +49,7 @@ A játék Androidon és iPhone-on kezdőképernyőről indítható PWA-változat
 
 A fejléc a Kilépés előtt minden képernyőméreten mutatja a belépett karakter nevét. Belépés után a Belépés gombok és a következő felfedezés tárgylistája eltűnnek; a felvétel a térképi jelölőből indítható. A Beállítások minden belépett karakternek elérhető, az Admin csak belépett adminnak. A világos/sötét választás eszközönként és karakterenként mentett.
 
-Új játék tervénél a Random elhelyezés 1, 3 vagy 5 kmes sugarú körben 6 gyűrűt, 20 drágakövet, Mordort és Sauron útvonalát helyezi el. A kör teljes egészében a város 10 km-es korlátján belül marad. A generálás meglévő tervnél megerősítést kér, ellenőrzést nem helyettesít; mentés előtt kötelező a helyszínek és útszakaszok ellenőrzése. A már futó játék automatikus újraszórása nem része ennek a funkciónak.
+Új játék tervénél a Random elhelyezés 1, 3 vagy 5 km sugarú körben 6 gyűrűt, 20 drágakövet, Mordort és Sauron útvonalát helyezi el. A kör teljes egészében a város 10 km-es korlátján belül marad. A generálás meglévő tervnél megerősítést kér, ellenőrzést nem helyettesít; mentés előtt kötelező a helyszínek és útszakaszok ellenőrzése. A már futó játék automatikus újraszórása nem része ennek a funkciónak.
 
 
 ## Helyszínalapú random pálya

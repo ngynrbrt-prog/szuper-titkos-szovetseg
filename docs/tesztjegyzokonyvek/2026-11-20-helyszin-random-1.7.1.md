@@ -32,9 +32,16 @@ Frontend 1.7.1, helyi macOS, Node REPL VM/assert, rögzített Overpass-adat és 
 | POI-04 | 02 | JS / Node VM / automata | Friss modullal ismétlés | tests/poi-generation.test.cjs PASS: 26 tárgyhely, 7 POI, cache-újrahasználat, safety törlés, hiba esetén régi terv, párhuzamos keresés tiltva | Sikeres |
 | POI-05 | 01 | JS / Node VM / automata | GPS, Sauron, korábbi helyszínmodell, PWA újrafuttatás | tests/gps.test.cjs, map-model.test.cjs, placement-model.test.cjs, pwa.test.cjs mind PASS | Sikeres |
 | POI-06 | 01 | JS / Node VM / automata | Szintaktikai ellenőrzés | script.js, appearance.js, placement-model.js, poi-model.js, sw.js elemezhető | Sikeres |
-| POI-07 | — | CUA / éles böngésző / kézi | 1.7.1 megnyitás, vendég menü és mobilméret | Telepítés után rögzítendő | Tervezett |
+| POI-07 | 01 | CUA / éles böngésző / kézi és DOM-mérés | 1.7.1 megnyitás, vendég menü és 390×844 kért mobilnézet | script.js?v=1.7.1; mért clientWidth=scrollWidth=375; sugáropciók 1/3/5 km; vendégként adminHidden=true, settingsHidden=true, loginHidden=false; error napló üres | Sikeres |
+| POI-01 | 02 | JS / Node VM / automata | Végső kiadási ismétlés | POI modell + rögzített 56 elemes gárdonyi válasz ismét PASS | Sikeres |
+| POI-02 | 03 | JS / Node VM / automata | Végső kiadási ismétlés | Téma, menü és sugárteszt ismét PASS | Sikeres |
+| POI-04 | 03 | JS / Node VM / automata | Végső kiadási ismétlés | generateAt ismét PASS: cache, safety, hibakezelés, párhuzamosság | Sikeres |
+| POI-05 | 02 | JS / Node VM / automata | Végső kiadási ismétlés | GPS, Sauron, elhelyezés és PWA ismét PASS | Sikeres |
+| POI-06 | 02 | JS / Node VM / automata | Végső kiadási ismétlés | Hat kliensszkript szintaxisa ellenőrizve | Sikeres |
 | POI-08 | — | Fizikai Android+iPhone / kézi | Bejelentkezett admin kattintás, éles böngészős POI-keresés, sötét UI, GPS | Külön tesztfiók és fizikai telefonok nélkül nem futott | Nem futott |
 
 ## Korlátok
 
 A tényleges szolgáltató teljes válasza és a produkciós feldolgozó/generáló kód igazolt. Ez nem egyenértékű a bejelentkezett admin teljes, élő böngészős folyamatával. OSM-adatból nem állapítható meg biztosan, hogy egy hely nyitva van vagy szabályosan megközelíthető; az admin jóváhagyása kötelező. A gyűrűk/Mordor nem kapnak tetszőleges véletlen pontot, ha a keresés sikertelen. A drágakő és Sauron geometrikus útvonala továbbra is admin által átnézendő.
+
+**Végső eredmény:** 8 tervezett esetből az utolsó futás szerint 7 sikeres, 1 nem futott. A korábbi blokkolt és sikertelen kísérletek a táblázatban megmaradtak. Forrás: `c161c0019ceff933e83195679eb2582ea5302fe6`, [sikeres Pages-telepítés](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44833099950). [Éles mobilképernyő bizonyítéka](../kepek/mobil-1.7.1.jpg). A következő dokumentációs commit csak a bizonyítékokat rögzíti.

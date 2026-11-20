@@ -24,7 +24,7 @@
 
 ## Éles kiadás
 
-**Játékverzió:** 1.6.0 (mobilhéj r2). **Forrás:** `1ff23459ad04e8e8d4af44137b4bd978473d02cf`. A Pages-futtatás sikeres; az éles oldalon az r2 belépőfájl, a térkép és a telepítési útmutató ellenőrizve. [Éles oldal](https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/) · [Telepítési futtatás](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44828274081)
+**Játékverzió:** 1.7.1. **Forrás:** `c161c0019ceff933e83195679eb2582ea5302fe6`. A Pages-futtatás sikeres, az éles HTML 1.7.1 kliensszkriptet hivatkozik. A vendégmenü, térkép, mobilméret és 1/3/5 km-es választó ellenőrizve. A belépett funkciók VM- és SQL-próbával ellenőrzöttek; fizikai telefonos teljes próba még szükséges. [Éles oldal](https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/) · [Telepítés](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44833099950)
 
 ## Telepítési sorrend
 
@@ -53,9 +53,9 @@ Az 1.6.0 első telepítése igazolt: a7ef3242be3225be0185b22e74d7eb5c7763a77f, s
 
 Változó fájlok: index.html, script.js, style.css, appearance.js, placement-model.js, sw.js, offline.html; kiegészített tesztek és dokumentáció. Először database/random-placement.sql telepítendő (opcionális 20/40 drágakő), majd a frontend. A backend visszafelé kompatibilis: gem_count nélkül 40 marad. A korábbi játékok, karakterek és jogosultságok nem módosulnak. A mobil service worker és a megváltozott fájlok verziója 1.7.0.
 
-A szervermigráció sikeres, az adatbázispróba visszagörgetett tranzakcióban átment. A frontend telepítését ebben a szakaszban még nem jelöljük élesnek; az igazolás az ellenőrzési naplóba kerül.
+A szervermigráció sikeres, az adatbázispróba visszagörgetett tranzakcióban átment. Az 1.7.0, majd az 1.7.1 frontend telepítése sikeres, az igazolás az ellenőrzési naplóban és a jegyzőkönyvekben szerepel.
 
 
 ## Helyszínalapú random pálya
 
-Az 1.7.1 az 1.7.0 szervermigrációjára épül; új adatbázis-módosítás nincs. Új poi-model.js, 1/3/5 km választó, Overpass CSP-engedély és helyszínalapú generálás. A PWA cache és minden változó kliensfájl verziója 1.7.1. A 1.7.0 Pages-futtatása igazolt: 7547254116498e8a718b0f68b80debc447aab7b4, futtatás 44831618794. Az 1.7.1 élesítési bizonyíték külön kerül az ellenőrzési naplóba. A szolgáltató kiesésekor nincs tetszőleges koordinátára történő fallback; hibaüzenet és változatlan korábbi terv marad.
+Az 1.7.1 az 1.7.0 szervermigrációjára épül; új adatbázis-módosítás nincs. Új poi-model.js, 1/3/5 km választó, Overpass CSP-engedély és helyszínalapú generálás. A PWA cache és minden változó kliensfájl verziója 1.7.1. A 1.7.0 Pages-futtatása igazolt: 7547254116498e8a718b0f68b80debc447aab7b4, futtatás 44831618794. Az 1.7.1 élesítése igazolt: c161c0019ceff933e83195679eb2582ea5302fe6, sikeres Pages-futtatás 44833099950; a bizonyíték az ellenőrzési naplóban és a jegyzőkönyvben szerepel. A szolgáltató kiesésekor nincs tetszőleges koordinátára történő fallback; hibaüzenet és változatlan korábbi terv marad.
