@@ -20,7 +20,7 @@
 
 ## Éles kiadás
 
-**Játékverzió:** 1.5.3. **Forrás:** `48947ff7f4a6386e3c70c71c793b5c296657a8ba`. A Pages-futtatás sikeres volt. [Éles oldal](https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/?v=1.5.3) · [Telepítési futtatás](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/43958973429)
+**Játékverzió:** 1.6.0 (mobilhéj r2). **Forrás:** `1ff23459ad04e8e8d4af44137b4bd978473d02cf`. A Pages-futtatás sikeres; az éles oldalon az r2 belépőfájl, a térkép és a telepítési útmutató ellenőrizve. [Éles oldal](https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/) · [Telepítési futtatás](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44828274081)
 
 ## Telepítési sorrend
 
@@ -42,4 +42,4 @@ A regressziós tesztjegyzőkönyveket a [sablon](tesztjegyzokonyvek/SABLON.md) s
 
 1.6.0 frontend: manifest, PNG ikonok, pwa.js, sw.js, offline.html, mobilos stílusok és telepítési útmutató. Backend- és adatbázis-migráció nincs. A forrásban lévő script.js 1.5.3 marad; a mobilhéj verziója 1.6.0. Kiadás előtt a service worker teljes statikus fájllistáját és a verzióparamétereket együtt kell ellenőrizni. Frissítéskor a CACHE verzióját és minden megváltozott statikus fájl URL-verzióját emelni kell. A worker nem használ automatikus skipWaiting hívást. Visszaállítás új worker-verzióval és korábbi kompatibilis frontenddel történjen, hogy a telepített példányok is frissüljenek.
 
-Az 1.6.0 első telepítése igazolt: a7ef3242be3225be0185b22e74d7eb5c7763a77f, sikeres [Pages-futtatás](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44827936959). Éles böngészőben a mobilútmutató és a térkép megnyílt. Az r2 frissítésjelzés-javítás és annak telepítése külön naplózandó. Fizikai Android/iPhone próba még szükséges.
+Az 1.6.0 első telepítése igazolt: a7ef3242be3225be0185b22e74d7eb5c7763a77f, sikeres [Pages-futtatás](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44827936959). Éles böngészőben a mobilútmutató és a térkép megnyílt. Az r2 frissítésjelzés-javítás telepítése is igazolt, a részletes bizonyíték az ellenőrzési naplóban és a mobilteszt-jegyzőkönyvben szerepel. Fizikai Android/iPhone próba még szükséges.
