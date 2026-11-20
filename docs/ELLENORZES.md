@@ -98,3 +98,7 @@ A korábbi általános tárgyhelyszínek helyett az új játék tervében a hat 
 A [célzott mobilteszt jegyzőkönyve](tesztjegyzokonyvek/2026-11-20-mobil-1.6.0.md) tartalmazza az összes futtatási kísérletet, a javított frissítésjelzést és a fizikai eszközös korlátokat. Első telepítés sikeres: a7ef3242be3225be0185b22e74d7eb5c7763a77f, [Pages futtatás](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44827936959). A térkép és a telepítési segítség élesen megnyílt, 375 px szélességen nem volt túllógás. A modelltesztek átmentek. Fizikai Android/iPhone telepítés és kéttelefonos GPS nem futott.
 
 Az r2 javítás élesítése is igazolt: `1ff23459ad04e8e8d4af44137b4bd978473d02cf`, [sikeres futtatás](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44828274081). Újratöltéskor az éles HTML `pwa.js?v=1.6.0-r2` fájlt hivatkozott; a beragadt frissítésjelzés nem jelent meg. A VM frissítési próba igazolta a megszakítást, jóváhagyást és újratöltést.
+
+## 2026-11-20 — Belépett felület és random pálya 1.7.0
+
+A [jegyzőkönyv](tesztjegyzokonyvek/2026-11-20-felulet-random-1.7.0.md) rögzíti a modelles és SQL-próbákat, az ismétléseket, a blokkolt helyi böngészőkörnyezetet és a telefonos korlátokat. Öt JS-tesztkészlet végső futása sikeres. A random_placement_gem_count migráció sikeres; a tranzakciós próba igazolta a 6+20 tárgyat 26 külön helyen, a korábbi 40-es alapértéket és az admin/safety védelmet. RPC: anon/authenticated tiltott, service_role engedett. Éles frontend igazolása folyamatban.

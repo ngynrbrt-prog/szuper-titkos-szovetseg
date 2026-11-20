@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Megjelenítés és véletlen pályaterv](#megjelenítés-és-véletlen-pályaterv)
 - [Mobilalkalmazás és gyorsítótár](#mobilalkalmazás-és-gyorsítótár)
 - [Verziókövetés](#verziókövetés)
 - [Architektúra](#architektúra)
@@ -19,6 +20,7 @@
 | 1.2 | 1.5.3 | 2026-11-16 | Futtatási függőségek, technológiák és fejlesztőeszközök dokumentálása. |
 | 1.3 | 1.5.3 | 2026-11-16 | Áttekintve a regressziós jegyzőkönyvezés bevezetésekor. |
 | 1.4 | 1.6.0 | 2026-11-20 | Telepíthető mobilváltozat, használat, működés és korlátok dokumentálása. |
+| 1.5 | 1.7.0 | 2026-11-20 | Belépett menü, világos/sötét megjelenítés és véletlen pályaterv. |
 
 ## Architektúra
 
@@ -134,3 +136,24 @@ flowchart TD
 ```
 
 Források: [Service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers), [PWA telepítés](https://web.dev/learn/pwa/installation).
+
+
+## Megjelenítés és véletlen pályaterv
+
+Új komponens: appearance.js. A fejléc és menü láthatóságát a script.js accountView függvénye a szerver me objektumából és az aktuális kliensmunkamenetből állítja. A név textContent, az admin felület nem helyettesíti a szerver adminellenőrzését. Kilépéskor az admin szerkesztő bezárul. A témához CSS-változók és data-theme attribútum tartozik; localStorage kulcs karakterazonosítónként. Nem szinkronizált szerveres profilbeállítás. A térképszolgáltató eredeti térképcsempéi világosak maradnak, a kezelőfelület és a térképi felugró ablakok sötétíthetők.
+
+PlacementModel.randomDraft: gömbi célpontképlet, a terület szerint egyenletes ponteloszlás sqrt(random) sugárral. 26 hely: első 6 gyűrű, további 20 drágakő; külön Mordor; 8 szög szerint rendezett útvonalpont és zárópont. A route geometrikus vonallánc, nem úthálózatra illesztett útvonal. A kliens a kör teljes befoglalását ellenőrzi a város 10 km-es területén, a szerver minden koordinátát ismét validál. A terv helyileg mentett, a generált drágakövek, Mordor és útvonalpontok is húzhatók. A generálás vagy helymódosítás törli a draft biztonsági jóváhagyását.
+
+public.game_action create: opcionális gem_count 20 vagy 40, hiányában 40. A konfiguráció tárolja a darabszámot; a létrehozás 6+gem_count tárgyat szúr be. A korábbi admin-, munkamenet-, pont- és safetyellenőrzések, valamint a service_role-only RPC-jogosultság megmaradnak. Telepítési SQL: database/random-placement.sql, a database/round-rules.sql ugyanezt a végső függvényt tartalmazza. Új külső könyvtár vagy szolgáltatás nincs.
+
+```mermaid
+flowchart TD
+ A[Admin: város elfogadása] --> B[Sugár és Random elhelyezés]
+ B --> C[Térképkattintás: középpont]
+ C --> D{Teljes kör 10 km-en belül?}
+ D -->|Nem| E[Hiba, a korábbi terv megmarad]
+ D -->|Igen| F[Korábbi terv cseréjének megerősítése]
+ F --> G[6 gyűrű + 20 drágakő + Mordor + útvonal]
+ G --> H[Átnézés, húzás, biztonsági jóváhagyás]
+ H --> I[Szerver validál és új játékot hoz létre]
+```

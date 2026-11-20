@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Belépett felület és pályagenerálás](#belépett-felület-és-pályagenerálás)
 - [Telefonra telepíthető alkalmazás](#telefonra-telepíthető-alkalmazás)
 - [Verziókövetés](#verziókövetés)
 - [Cél és szerepkörök](#cél-és-szerepkörök)
@@ -17,6 +18,7 @@
 | 1.2 | 1.5.3 | 2026-11-16 | Áttekintve a technológiai leltár dokumentálásakor. |
 | 1.3 | 1.5.3 | 2026-11-16 | Áttekintve a regressziós jegyzőkönyvezés bevezetésekor. |
 | 1.4 | 1.6.0 | 2026-11-20 | Telepíthető mobilváltozat, használat, működés és korlátok dokumentálása. |
+| 1.5 | 1.7.0 | 2026-11-20 | Belépett menü, világos/sötét megjelenítés és véletlen pályaterv. |
 
 ## Cél és szerepkörök
 
@@ -39,3 +41,10 @@ A gárdonyi pergamentérkép önálló koncepció. Az 1.5.3-as játék az utcai 
 ## Telefonra telepíthető alkalmazás
 
 A játék Androidon és iPhone-on kezdőképernyőről indítható PWA-változatot kap. Követelmény a saját ikon, önálló ablak, telepítési segítség, kapcsolatvesztés jelzése és felhasználó által indított verzióváltás. A többjátékos működés online; háttérbeli és lezárt képernyős GPS nincs vállalva. Fizikai telefonos elfogadás még szükséges.
+
+
+## Belépett felület és pályagenerálás
+
+A fejléc a Kilépés előtt minden képernyőméreten mutatja a belépett karakter nevét. Belépés után a Belépés gombok és a következő felfedezés tárgylistája eltűnnek; a felvétel a térképi jelölőből indítható. A Beállítások minden belépett karakternek elérhető, az Admin csak belépett adminnak. A világos/sötét választás eszközönként és karakterenként mentett.
+
+Új játék tervénél a Random elhelyezés 100–5000 méteres sugarú körben 6 gyűrűt, 20 drágakövet, Mordort és Sauron útvonalát helyezi el. A kör teljes egészében a város 10 km-es korlátján belül marad. A generálás meglévő tervnél megerősítést kér, ellenőrzést nem helyettesít; mentés előtt kötelező a helyszínek és útszakaszok ellenőrzése. A már futó játék automatikus újraszórása nem része ennek a funkciónak.

@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Megjelenítés, menü és random elhelyezés](#megjelenítés,-menü-és-random-elhelyezés)
 - [Telepítés Androidra és iPhone-ra](#telepítés-androidra-és-iphone-ra)
 - [Verziókövetés](#verziókövetés)
 - [Mobilos és asztali webes nézet](#mobilos-és-asztali-webes-nézet)
@@ -19,6 +20,7 @@
 | 1.2 | 1.5.3 | 2026-11-16 | Áttekintve a technológiai leltár dokumentálásakor. |
 | 1.3 | 1.5.3 | 2026-11-16 | Áttekintve a regressziós jegyzőkönyvezés bevezetésekor. |
 | 1.4 | 1.6.0 | 2026-11-20 | Telepíthető mobilváltozat, használat, működés és korlátok dokumentálása. |
+| 1.5 | 1.7.0 | 2026-11-20 | Belépett menü, világos/sötét megjelenítés és véletlen pályaterv. |
 
 ## Mobilos és asztali webes nézet
 
@@ -41,7 +43,7 @@ Nyisd meg a [játékot](https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/
 
 1. Aktív körben nyisd meg a **Térkép** oldalt, és indítsd el a helymegosztást. A friss, megosztott helyeket karakterikonok jelölik.
 2. Az arany keresőkör segít megtalálni a gyűrűt. Saját gyűrűvel és aktív megosztással megjelenik a pontos jelölő.
-3. Menj a tárgy tényleges helyétől 50 méteren belülre, majd válaszd a **Felveszem · 50 m** gombot. A gomb a térképen és a kincsek listájában is elérhető.
+3. Menj a tárgy tényleges helyétől 50 méteren belülre, majd válaszd a **Felveszem · 50 m** gombot. A műveletet a térképi jelölő felugró ablakából indítsd; belépett nézetben nincs külön kincslista.
 4. A **Szövetség** oldalon választhatsz rablást, ha mindkét játékos megosztja friss helyét és 100 méteren belül vannak egymáshoz. A páros rablási védelem 15 perc.
 5. A **Hátizsákban** Mordor 50 méteres körzetében megsemmisítheted a saját gyűrűdet. Több gyűrűnél elérhető az együttes megsemmisítés is. A kör véget ér, és megjelenik az eredményablak. Az **Eredmények** oldalon a pontok és a korábbi körök is láthatók.
 
@@ -70,3 +72,19 @@ Ha a gyűrűfelvétel sikertelen, ellenőrizd, hogy aktív-e a kör, engedélyez
 A játékhoz internet szükséges. Kapcsolatvesztéskor figyelmeztetés jelenik meg, offline indításkor pedig újrapróbálási oldal. Tartsd az alkalmazást előtérben és a kijelzőt bekapcsolva a helymegosztáshoz. Törlés: a telefonon hosszan nyomd az ikont, majd válaszd az eltávolítást. A böngésző és az alkalmazás adatai külön is megmaradhatnak.
 
 ![Az éles telepítési segítség telefonméretű böngészőben](kepek/pwa-telepites-mobil.jpg)
+
+
+## Megjelenítés, menü és random elhelyezés
+
+Belépés után a fejlécben **Belépve: karakternév** látszik a **Kilépés** előtt. A Belépés gomb eltűnik. A **Beállítások → Megjelenítés** alatt válassz **Világos** vagy **Sötét** módot, majd **Beállítás mentése**. A választás ezen az eszközön, karakterenként mentődik; másik telefonon külön állítható. Az **Admin** menüpont kizárólag a belépett admin számára látszik.
+
+A térképi tárgyjelölőre vagy gyűrű-keresési jelölőre bökve nyisd meg a felvételi műveletet. Belépve nincs külön „A következő felfedezés” tárgylista. A szükséges távolság, friss GPS és aktív játék továbbra is feltétel.
+
+**Véletlen pálya:**
+
+1. Admin → Új városi kaland: fogadd el a várost, majd nyisd meg a térképes szerkesztőt.
+2. Adj meg **100–5000 méter** sugarat; alapérték 1000 m.
+3. Nyomd meg a **Random elhelyezés** gombot, majd bökj a kívánt középpontra. A gomb ismételt megnyomásával megszakíthatod a módot. A teljes kör maradjon a városközpont 10 km-es körzetében.
+4. Korábbi tervnél erősítsd meg a lecserélést. 6 gyűrű, 20 drágakő, Mordor és Sauron útvonala jelenik meg. A jelenlegi játékot ez még nem változtatja meg.
+5. Vizsgáld át az összes pontot és útvonalszakaszt. Húzással módosíthatod a jelölőket; a véletlen útvonal nem követi automatikusan az utcákat. Vízre, magánterületre vagy veszélyes helyre eső pontot helyezz át.
+6. Jóváhagyás után hozd létre az előkészített játékot, és csak ellenőrzés után indítsd el. Kézi tervnél a korábbi 40 drágakő az alapérték; generált tervnél 20.

@@ -1,5 +1,9 @@
-create or replace function public.game_action(p_auth uuid,p_action text,p_data jsonb default '{}',p_session uuid default null) returns jsonb
-language plpgsql security definer set search_path='' as $$
+CREATE OR REPLACE FUNCTION public.game_action(p_auth uuid, p_action text, p_data jsonb DEFAULT '{}'::jsonb, p_session uuid DEFAULT NULL::uuid)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
 declare
  me public.players; g public.games; loc public.player_locations; victim public.player_locations;
  it public.items; other public.players; v_id uuid; lat float8; lng float8; acc float8;
@@ -24,6 +28,8 @@ begin
   if g.status in ('active','preparation') then raise exception 'Előbb zárd le az aktuális játékot.'; end if;
   lat:=(p_data->>'lat')::float8; lng:=(p_data->>'lng')::float8;
   if lat is null or lng is null or lat not between -90 and 90 or lng not between -180 and 180 then raise exception 'Érvénytelen városközpont.'; end if;
+  n:=coalesce((p_data->>'gem_count')::int,40);
+  if n not in (20,40) then raise exception 'A drágakövek száma 20 vagy 40 lehet.'; end if;
   pts:=p_data->'points'; route:=p_data->'route';
   if jsonb_typeof(pts) is distinct from 'array' or jsonb_typeof(route) is distinct from 'array' then raise exception 'Helyszínek és útvonal szükséges.'; end if;
   if jsonb_array_length(pts) not between 6 and 100 or jsonb_array_length(route) not between 2 and 100 then raise exception 'Legalább 6 helyszín és 2 útvonalpont kell.'; end if;
@@ -37,8 +43,8 @@ begin
   if route_length<10 then raise exception 'Sauron útvonala legalább 10 méter hosszú legyen.'; end if;
   if length(btrim(coalesce(p_data->>'city','')))=0 then raise exception 'Városnév szükséges.'; end if;
   insert into public.games(city_name,city_lat,city_lng,mordor_lat,mordor_lng,config)
-   values(left(btrim(p_data->>'city'),80),lat,lng,(p_data->'mordor'->>0)::float8,(p_data->'mordor'->>1)::float8,jsonb_build_object('route',route,'points',pts)) returning * into g;
-  for i in 1..46 loop
+   values(left(btrim(p_data->>'city'),80),lat,lng,(p_data->'mordor'->>0)::float8,(p_data->'mordor'->>1)::float8,jsonb_build_object('route',route,'points',pts,'gem_count',n)) returning * into g;
+  for i in 1..(6+n) loop
    pt:=pts->((i-1)%jsonb_array_length(pts));
    insert into public.items(game_id,item_type,item_name,item_description,value_sestertius,latitude,longitude)
    values(g.id,case when i<=6 then 'ring' else 'gem' end,case when i<=6 then ring_names[i] else 'Drágakő '||(i-6) end,
@@ -197,4 +203,5 @@ begin
   'sauron',case when g.id is not null and coalesce(g.sauron_cooldown_until,'-infinity')<=now() then coalesce(g.config->'sauron_position',game_private.sauron(g)) else null end,
   'recoverable',coalesce((select jsonb_agg(item_id) from game_private.ring_custody where player_id=me.id),'[]'),
   'server_time',now());
-end $$;
+end $function$
+;
