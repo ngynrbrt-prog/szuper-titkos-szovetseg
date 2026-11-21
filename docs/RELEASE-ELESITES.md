@@ -55,7 +55,7 @@
 
 ## Éles kiadás
 
-**Igazolt webes kiadás:** 1.9.7, forrás `a1cdc663e7dfbd290ed989be80980e6670e842c2`, sikeres [Pages-futás 44848819826](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44848819826). Friss élő böngészőben 1.9.7 lábléc és rescue-notices.js, a popup bezárógombja és a külön helymegosztás-leállítást leíró szöveg jelen van, konzolhiba nincs. A popupok eseménysorát automatizált modulteszt igazolja; valódi többtelefonos ötperces próba nem történt.
+**Igazolt webes kiadás:** 1.9.8, forrás `c09d9159b4b2084287373ecc452c33a0c363d838`, sikeres [Pages-futás 44888800746](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44888800746). Élő Szabályok oldalon 15 km/h és önálló háttérmotor szerepel, régi 6 km/h szöveg nincs, konzolhiba nincs. Háttérmotor szerveroldalon aktív, sikeres cronfutások és változó pozíció igazolja; friss megosztó játékosok nélkül is fut. A célzott SQL és a 15 webes teszt sikeres. Fizikai sétateszt nem történt.
 
 ## Telepítési sorrend
 

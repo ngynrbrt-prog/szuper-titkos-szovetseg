@@ -38,3 +38,5 @@ Minden alábbi első kísérlete sikeres.
 Fizikai többtelefonos sétateszt: NEM FUTTATOTT. Hét napos napi cron-naplótakarítás: NEM FUTTATOTT, csak ütemezése ellenőrizve. A scheduler Supabase-adatbázis elérhetőségét igényli; üzemszünetre nincs korlátlan utólagos mozgásgarancia. A felület polling miatt nem folyamatos animáció, de a szerver állapota kliens nélkül is továbbhalad.
 
 REG-JS / 1: az 1.9.8 végső forrásán mind a 15 JavaScript-csomag PASS. Élő kiegészítő SQL-megfigyelés: fresh_sharing_players=0, a cron ettől függetlenül továbbra is succeeded állapotban léptet. A megfigyelés olvasás, nem játékosnak álcázott kérés.
+
+Éles böngészőpróba / 1: PASS. 1.9.8 lábléc, Szabályok megnyitva; 15 km/h és háttérmotor látható, régi 6 km/h nincs, konzolhiba nincs. Pages 44888800746 sikeres, forrás c09d9159b4b2084287373ecc452c33a0c363d838.
