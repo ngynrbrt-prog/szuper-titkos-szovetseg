@@ -1,0 +1,13 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync(require('node:path').join(__dirname,'../script.js'),'utf8');
+const code=source.slice(source.indexOf(' let roundSessionUser='),source.indexOf(' function renderColors(){'));
+let opened=0,loaded=[];const memory=new Map(),dialog={open:false,showModal(){opened++;this.open=true;}};const nodes={roundDialog:dialog,roundWinner:{},roundMapFigure:{}};
+const c={sessionStorage:{getItem:k=>memory.get(k),setItem:(k,v)=>memory.set(k,v)},$:id=>nodes[id]||(nodes[id]={}),empty:()=>({append(){}}),name:()=> 'Winner',fmt:n=>n,document:{createElement:()=>({})},text(){},showRoundMap:r=>loaded.push(r.id),loadRoundMap:r=>loaded.push(r.id),clearRoundMap(){}};vm.runInNewContext(code,c);
+const prague={id:'prague',winner_id:'winner',results:[],map:{city_name:'Prága'}},gardony={id:'gardony',winner_id:'winner',results:[],map:{city_name:'Gárdony'}};
+c.showRoundResults({me:{id:'player'},game:{id:'gardony',status:'preparation'},last_round:prague});assert.equal(opened,0,'login must not show old Prague round');
+c.showRoundResults({me:{id:'player'},game:{id:'gardony',status:'active'},last_round:prague});assert.equal(opened,0);
+c.showRoundResults({me:{id:'player'},game:{id:'gardony',status:'finished'},last_round:gardony});assert.equal(opened,1);assert.equal(loaded[0],'gardony');
+c.showRoundResults({me:{id:'player'},game:{id:'gardony',status:'finished'},last_round:gardony});assert.equal(opened,1);
+c.resetRoundTracking();c.showRoundResults({me:{id:'player'},game:{id:'gardony',status:'finished'},last_round:gardony});assert.equal(opened,1,'login after finish must not reopen popup');
+c.resetRoundTracking();memory.clear();dialog.open=false;c.showRoundResults({me:{id:'player'},game:{id:'gardony',status:'active'},last_round:prague});c.showRoundResults({me:{id:'player'},game:{id:'next',status:'preparation'},last_round:gardony});assert.equal(opened,2,'logged-in observer must see finish even if admin already prepared next game');
+console.log('PASS: no historical popup on login, actual observed finish only, matching city/round map, no repeated popup, logout reset and fast next-game preparation');

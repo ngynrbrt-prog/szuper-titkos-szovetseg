@@ -12,7 +12,7 @@
  let noticeClient=null,noticeChannel=null,noticeUser=null,noticeToken=null;const announcedNotices=new Set();
  function message(text,error=false){$('message').textContent=text;$('message').classList.toggle('error',error);$('message').hidden=false;clearTimeout(messageTimer);messageTimer=setTimeout(()=>$('message').hidden=true,9000);}
  function show(page){if((page==='admin'&&!state?.me.is_admin)||(page==='settings'&&!state?.me))page='auth';const appPanel=document.querySelector('.app-panel');if(appPanel){appPanel.hidden=(typeof window!=='undefined'&&!!window.NativeBridge?.available)||!['map','settings'].includes(page);if(page==='map'||page==='settings')$(page==='map'?'appMapMount':'appSettingsMount').append(appPanel);}document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id===page));document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('selected',el.dataset.page===page));if(page==='map')setTimeout(()=>map?.invalidateSize(),50);}
- function saveSession(s){session=s;if(typeof window!=='undefined'&&window.NativeBridge?.available)void window.NativeBridge.request(s?'saveSession':'clearSession',s?{session:s}:{}).catch(()=>{});if(s)sessionStorage.setItem('fellowship-session',JSON.stringify(s));else {sessionStorage.removeItem('fellowship-session');stopNoticeRealtime();announcedNotices.clear();$('robberyNotices').hidden=true;$('robberyNotices').replaceChildren();}}
+ function saveSession(s){session=s;if(typeof window!=='undefined'&&window.NativeBridge?.available)void window.NativeBridge.request(s?'saveSession':'clearSession',s?{session:s}:{}).catch(()=>{});if(s)sessionStorage.setItem('fellowship-session',JSON.stringify(s));else {sessionStorage.removeItem('fellowship-session');stopNoticeRealtime();announcedNotices.clear();resetRoundTracking();$('robberyNotices').hidden=true;$('robberyNotices').replaceChildren();}}
  async function http(path,body,token){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
   try{const r=await fetch(cfg.url+path,{method:'POST',headers:{apikey:cfg.key,'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify(body),signal:controller.signal});if(r.status===204)return {};let b;try{b=await r.json();}catch{throw new Error('Érvénytelen szerverválasz.');}if(!r.ok){const err=new Error(b.error||b.msg||'A kérés sikertelen.');err.status=r.status;throw err;}return b;}finally{clearTimeout(timer);}
@@ -103,9 +103,15 @@
   const seconds=Math.floor(Math.max(0,end-Date.parse(game.started_at))/1000);
   clock.textContent='Játékidő · '+Math.floor(seconds/60)+' perc '+String(seconds%60).padStart(2,'0')+' mp';
  }
+ let roundSessionUser=null,observedActiveRound=null;
+ function resetRoundTracking(){roundSessionUser=null;observedActiveRound=null;clearRoundMap();}
  function showRoundResults(s){
+  if(roundSessionUser!==s.me.id){roundSessionUser=s.me.id;observedActiveRound=s.game?.status==='active'?s.game.id:null;return;}
+  if(s.game?.status==='active')observedActiveRound=s.game.id;
   const round=s.last_round;
+  if(!round||round.id!==observedActiveRound)return;
   if(!round||sessionStorage.getItem('seen-round:'+s.me.id)===round.id)return;
+  observedActiveRound=null;
   const dialog=$('roundDialog');
   $('roundWinner').textContent='Győztes: '+(round.reason==='sauron'?'Sauron':round.winner_id?name(round.winner_id):'nincs kijelölt győztes');
   const results=empty('roundResults');

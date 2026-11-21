@@ -118,3 +118,7 @@ A [részletes jegyzőkönyv](tesztjegyzokonyvek/2026-11-21-regresszio-1.8.0.md) 
 A [jegyzőkönyv](tesztjegyzokonyvek/2026-11-21-nativ-rablas-1.9.0.md) rögzíti a SQL aliasütközést és javítását, az SDK miatt pontosított PWA-tesztet, a címzetti session-RLS próbát, a natív híd modelltesztjét és a projektfájlok vizsgálatát. A végső SQL-futás visszagörgetett tranzakcióban sikeres. A natív fordítás CI-ben, a fizikai GPS és valódi kétklienses Realtime külön igazolandó.
 
 A natív fejlesztés a felhasználó kérésére elhalasztva, a forrás és eredmények megőrizve. A 44841706324 CI-futás iOS szimulátora sikeres, Android build/lint lépése sikertelen; APK-feltöltés nem futott. A workflow automatikus triggerét kivettük, csak kézzel indítható. Az automatikus PWA-folytatás kérése visszavonva, ilyen változás nincs.
+
+## 2026-11-21 — 1.9.3 popupjavítás és natív build eredmény
+
+A korábbi kör belépéskori összesítője tiltva; csak az aktuálisan követett aktív kör lezárása nyit ablakot. A célzott teszt ismételt futása és a teljes 13 JavaScript-csomag sikeres. [Jegyzőkönyv](tesztjegyzokonyvek/2026-11-21-popup-1.9.3.md). Android 1.9.2 build+lint és iOS unsigned szimulátor build sikeres a 44842967106 futásban. APK-artifact 14681647800. Telefonos telepítés, lezárt képernyős GPS és aláírt iPhone-telepítő nem igazolt. Az 1.9.3 élesítése még ellenőrzendő.
