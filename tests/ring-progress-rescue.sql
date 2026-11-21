@@ -78,6 +78,17 @@ begin
  update public.player_locations set sharing_enabled=true,updated_at=now() where game_id=gid;
  result:=public.game_action(uid,'state','{}',sid);
  if result->'rescue'->>'started_at' is null then raise exception 'All-shared rescue did not start';end if;
+ -- Shared GPS alone is insufficient while a ring remains on the ground.
+ update public.items set status='ground',owner_id=null where id=ids[1];
+ delete from game_private.ring_custody where item_id=ids[1];
+ update public.games set config=config||jsonb_build_object('rescue_started_at',now()-interval '5 minutes','rescue_checked_at',now()) where id=gid;
+ result:=public.game_action(uid,'state','{}',sid);
+ if result->'rescue'->>'started_at' is not null or (select count(*) from public.items where game_id=gid and status='sauron')<>5 then raise exception 'Ground ring did not block/reset rescue';end if;
+ perform public.game_action(uid,'pickup',jsonb_build_object('item',ids[1]),sid);
+ if (select config->>'rescue_started_at' from public.games where id=gid) is null then raise exception 'Collecting final ground ring did not start new countdown';end if;
+ update public.items set status='sauron',owner_id=null where id=ids[1];
+ insert into game_private.ring_custody(item_id,player_id) values(ids[1],pid);
+
  update public.games set config=config||jsonb_build_object('rescue_started_at',now()-interval '4 minutes','rescue_checked_at',now()) where id=gid;
  perform public.game_action(other_uid,'stop','{}',other_sid);
  if (select config->>'rescue_started_at' from public.games where id=gid) is not null then raise exception 'Stop did not reset rescue';end if;

@@ -1,7 +1,7 @@
 'use strict';
-const CACHE = 'szovetseg-pwa-1.9.5';
+const CACHE = 'szovetseg-pwa-1.9.6';
 const PREFIX = 'szovetseg-pwa-';
-const FILES = ['offline.html','native-bridge.js?v=1.9.5','vendor/supabase-2.119.2.js','player-rules.js?v=1.9.5','summary-map.js?v=1.9.5','assets/ring.svg','poi-model.js?v=1.9.5','appearance.js?v=1.9.5','vendor/leaflet.css','vendor/leaflet.js','style.css?v=1.9.5','config.js?v=1.3.0','map-model.js?v=1.9.5','placement-model.js?v=1.9.5','script.js?v=1.9.5','pwa.js?v=1.9.5','manifest.webmanifest','assets/sauron-helmet.svg','assets/app-180.png','assets/app-192.png','assets/app-512.png'];
+const FILES = ['offline.html','native-bridge.js?v=1.9.6','vendor/supabase-2.119.2.js','player-rules.js?v=1.9.6','summary-map.js?v=1.9.6','assets/ring.svg','poi-model.js?v=1.9.6','appearance.js?v=1.9.6','vendor/leaflet.css','vendor/leaflet.js','style.css?v=1.9.6','config.js?v=1.3.0','map-model.js?v=1.9.6','placement-model.js?v=1.9.6','script.js?v=1.9.6','pwa.js?v=1.9.6','manifest.webmanifest','assets/sauron-helmet.svg','assets/app-180.png','assets/app-192.png','assets/app-512.png'];
 const ALLOWED = new Set(FILES.map(p => new URL(p,self.registration.scope).href));
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))));
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith(PREFIX) && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())));

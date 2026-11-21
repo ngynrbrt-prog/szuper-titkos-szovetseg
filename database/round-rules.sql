@@ -178,9 +178,13 @@ begin
   tick_at:=coalesce((g.config->>'sauron_tick_at')::timestamptz,now());
   select l.* into target from public.player_locations l
    where l.game_id=g.id and l.sharing_enabled and l.updated_at>now()-interval '30 seconds' and l.accuracy_m<=50
+     and (g.config->>'sauron_pursuit_player' is null or l.player_id=(g.config->>'sauron_pursuit_player')::uuid)
      and exists (select 1 from public.items i where i.game_id=l.game_id and i.owner_id=l.player_id and i.item_type='ring' and i.status='owned')
    order by game_private.distance((origin->>0)::float8,(origin->>1)::float8,l.latitude,l.longitude),l.player_id limit 1;
-  destination:=case when target.player_id is null then game_private.sauron(g) else jsonb_build_array(target.latitude,target.longitude) end;
+  if target.player_id is not null then
+   g.config:=g.config||jsonb_build_object('sauron_last_seen',jsonb_build_array(target.latitude,target.longitude),'sauron_pursuit_player',target.player_id);
+  end if;
+  destination:=coalesce(g.config->'sauron_last_seen',game_private.sauron(g));
   s:=origin;
   if destination is not null then
    meters:=game_private.distance((origin->>0)::float8,(origin->>1)::float8,(destination->>0)::float8,(destination->>1)::float8);
@@ -190,7 +194,11 @@ begin
       (origin->>1)::float8+((destination->>1)::float8-(origin->>1)::float8)*fraction);
    end if;
   end if;
-  update public.games set config=config||jsonb_build_object('sauron_position',s,'sauron_tick_at',now(),'sauron_target',target.player_id)
+  if target.player_id is null and g.config->'sauron_last_seen' is not null
+    and game_private.distance((s->>0)::float8,(s->>1)::float8,(destination->>0)::float8,(destination->>1)::float8)<0.5 then
+   g.config:=g.config-'sauron_last_seen'-'sauron_pursuit_player';
+  end if;
+  update public.games set config=g.config||jsonb_build_object('sauron_position',s,'sauron_tick_at',now(),'sauron_target',target.player_id)
    where id=g.id returning * into g;
   if coalesce(g.sauron_cooldown_until,'-infinity')<=now() then
    select p.* into other from public.players p join public.player_locations l on l.player_id=p.id
@@ -208,7 +216,7 @@ begin
 
   -- Every registered player must continuously share fresh positions. A capture or stale gap restarts the five minutes.
   if exists(select 1 from public.items where game_id=g.id and item_type='ring' and status='sauron') then
-   select count(*)>0 and bool_and(exists(select 1 from public.player_locations l where l.player_id=p.id and l.game_id=g.id and l.sharing_enabled and l.accuracy_m<=50 and l.updated_at>now()-interval '30 seconds'))
+   select count(*)>0 and bool_and(exists(select 1 from public.player_locations l where l.player_id=p.id and l.game_id=g.id and l.sharing_enabled and l.accuracy_m<=50 and l.updated_at>now()-interval '30 seconds')) and not exists(select 1 from public.items remaining where remaining.game_id=g.id and remaining.item_type='ring' and remaining.status='ground')
     into all_sharing from public.players p where registration_completed;
    rescue_start:=(g.config->>'rescue_started_at')::timestamptz;
    if all_sharing then
@@ -242,7 +250,7 @@ begin
  return jsonb_build_object(
   'round_map',case when p_action='round_map' then game_private.round_map((p_data->>'round')::uuid) else null end,
   'me',jsonb_build_object('id',me.id,'character_name',me.character_name,'is_admin',me.is_admin,'avatar',me.avatar,'color_id',me.color_id),
-  'game',case when g.id is null then null else to_jsonb(g)||jsonb_build_object('config',g.config-'sauron_position'-'sauron_tick_at'-'sauron_target') end,
+  'game',case when g.id is null then null else to_jsonb(g)||jsonb_build_object('config',g.config-'sauron_position'-'sauron_tick_at'-'sauron_target'-'sauron_last_seen'-'sauron_pursuit_player') end,
   'players',coalesce((select jsonb_agg(jsonb_build_object('id',id,'character_name',character_name,'avatar',avatar,'color_id',color_id)) from public.players),'[]'),
   'items',coalesce((select jsonb_agg(to_jsonb(x)) from (select id,item_type,item_name,item_description,status,owner_id,latitude,longitude,value_sestertius,case when owner_id=me.id then ring_share_seconds else null end as ring_share_seconds from public.items where game_id=g.id)x),'[]'),
   'locations',coalesce((select jsonb_agg(to_jsonb(x)) from (select player_id,latitude,longitude,accuracy_m,updated_at,active_seconds from public.player_locations where game_id=g.id and sharing_enabled and updated_at>now()-interval '30 seconds')x),'[]'),
