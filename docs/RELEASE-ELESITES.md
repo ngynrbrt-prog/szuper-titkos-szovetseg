@@ -58,7 +58,7 @@
 
 ## Éles kiadás
 
-**Igazolt webes kiadás:** 1.9.8, forrás `c09d9159b4b2084287373ecc452c33a0c363d838`, sikeres [Pages-futás 44888800746](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44888800746). Élő Szabályok oldalon 15 km/h és önálló háttérmotor szerepel, régi 6 km/h szöveg nincs, konzolhiba nincs. Háttérmotor szerveroldalon aktív, sikeres cronfutások és változó pozíció igazolja; friss megosztó játékosok nélkül is fut. A célzott SQL és a 15 webes teszt sikeres. Fizikai sétateszt nem történt.
+**Igazolt webes kiadás:** 1.9.9, forrás `7132d95ff3e85504605c88594ed1bc0858660177`, sikeres [Pages-futás 44891556477](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44891556477). Élő vendégnézetben a háttér barnás pergamenszűrője és a nagyítás ellenőrizve; 12 háttércsempe betöltve, jelölő- és overlay-pane filter none, konzolhiba nincs. PWA-ellenőrzés sikeres. A sötét téma külön megjelenítését ebben a vendégnézeti próbában nem kapcsoltuk be.
 
 ## Telepítési sorrend
 

@@ -304,3 +304,7 @@ Telepítés: database/background-game-engine.sql (background_game_engine_15kmh m
 ## Barnás pergamentérkép
 
 A térképháttér meleg, barnás pergamenárnyalatot kap, hogy a játék fantasy hangulatához illeszkedjen. Az utcák és feliratok ugyanazon az OpenStreetMap-alaptérképen maradnak. A színkezelés kizárólag a Leaflet tile pane rétegen alkalmazott CSS sepia/saturate/hue-rotate/brightness/contrast szűrő; nem a teljes térképelemre kerül. Így a játékosszín, karakterikon, gyűrű, Sauron sisakja, útvonal, keresési kör, felugró ablak és zoomvezérlő saját színe és interakciója megmarad. A réteg nem fog el kattintást vagy érintést, nem kell új kép vagy térképszolgáltató. Sötét témában ugyanennek kissé sötétebb barnás változata jelenik meg. A kör végi exportált térképkép nem változik, a szűrő az interaktív játék- és admin-térképre vonatkozik.
+
+![Barnás pergamen térképháttér, változatlan fekete Sauron-ikonnal](kepek/pergamen-terkep-1.9.9.jpg)
+
+A kép a belépés előtti, másik kontinensről szóló észlelés nézetében mutatja az új színvilágot; nem a Gárdonyban futó játék térképe.
