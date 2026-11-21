@@ -37,4 +37,4 @@ Minden alábbi eset első futtatási kísérlete sikeres, kivéve ahol külön i
 
 ## Korlátok
 
-Valódi többtelefonos gyűrűfelvétel és GPS-próba: NEM FUTTATOTT. Éles felhasználóval feltételváltás: NEM FUTTATOTT; a tényleges szerverfüggvényt fixture-tranzakcióban teszteltük. Friss élő webverzió ellenőrzése és telepítési azonosító az ellenőrzési naplóban.
+Valódi többtelefonos gyűrűfelvétel és GPS-próba: NEM FUTTATOTT. Éles felhasználóval feltételváltás: NEM FUTTATOTT; a tényleges szerverfüggvényt fixture-tranzakcióban teszteltük. Friss élő webverzió ellenőrizve: 1.9.5 lábléc és map-model.js, konzolhiba nélkül. Pages 44846785987 sikeres, forrás 52051d7d9bff227f0a85aa9902e63cd05374c1d4. A böngészőpróba vendégnézet volt.

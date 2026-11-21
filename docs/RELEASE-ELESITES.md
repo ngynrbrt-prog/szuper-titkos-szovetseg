@@ -45,7 +45,7 @@
 
 ## Éles kiadás
 
-**Igazolt webes kiadás:** 1.9.4, forrás `077dcc5989091bd3f70294fa4a912f3b75ad2c86`, sikeres [Pages-futás 44844327823](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44844327823). Friss böngészőben 1.9.4 lábléc és script, nyitott popup és konzolhiba nélkül. Az adminmegszakítás adatbázisban telepítve, szerveroldali fixture teszt sikeres; a valódi Gárdony-kör továbbra is aktív. Fizikai app/GPS próba nincs igazolva.
+**Igazolt webes kiadás:** 1.9.5, forrás `52051d7d9bff227f0a85aa9902e63cd05374c1d4`, sikeres [Pages-futás 44846785987](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44846785987). Friss böngészőben az 1.9.5 lábléc és map-model.js töltődik, konzolhiba nélkül. A Sauron-láthatóság szerveroldali és modelltesztje sikeres; fizikai többtelefonos játékpróba nincs igazolva.
 
 ## Telepítési sorrend
 

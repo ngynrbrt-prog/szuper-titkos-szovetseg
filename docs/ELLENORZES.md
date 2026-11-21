@@ -136,3 +136,5 @@ Android artifact letöltési kísérletek: Node hálózati fetch sikertelen; els
 ## 2026-11-21 — 1.9.5 Sauron láthatósága
 
 A kérő saját gyűrűje és friss pontos helymegosztása feltétel a sauron válaszhoz; a game.config belső Sauron-mezői nem kerülnek a klienshez. A célzott SQL-teszt és a teljes ring-progress-rescue SQL-regresszió elsőre sikeres, visszagörgetett fixture-tranzakcióban. Mind a 14 JavaScript-csomag sikeres, benne saját/idegen gyűrű, leállított/hiányzó/lejárt/pontatlan GPS, rejtőzés és játék előtti észlelés. Advisors eredmény változatlan (12 INFO, két korábbi WARN), új jogosultság nincs. Az éles kör állapotát nem állítottuk át. Webes telepítés ellenőrzése folyamatban. [Jegyzőkönyv](tesztjegyzokonyvek/2026-11-21-sauron-lathatosag-1.9.5.md).
+
+Az 1.9.5 élesítés igazolt: 52051d7d9bff227f0a85aa9902e63cd05374c1d4, Pages 44846785987 sikeres. Friss élő vendégnézetben 1.9.5 lábléc és map-model.js?v=1.9.5, konzolhiba nincs. A feltételes megjelenítést a produkciós map-model és szerver game_action automatizált tesztje igazolta, valódi játékosbeli gyűrű/GPS váltást nem végeztünk. A dokumentáció a repóban frissítve.
