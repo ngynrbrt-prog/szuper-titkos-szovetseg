@@ -160,3 +160,7 @@ A korábbi mozgás csak game_action kérésnél futott, és a járőrfüggvényb
 A cron ellenőrzésekor a frissen helyet megosztó játékosok száma 0 volt; Sauron előző megfigyeléshez képest más pozícióban, friss motor-időbélyeggel szerepelt. Az 1.9.8 webes forrás mind a 15 automatizált JavaScript-csomagja elsőre PASS.
 
 Az 1.9.8 webes élesítés igazolt: c09d9159b4b2084287373ecc452c33a0c363d838, Pages 44888800746 sikeres. Élő böngészőben 1.9.8; Szabályok: speed15=true, background=true, oldSpeed=false, konzolhiba nincs. Ez UI-szabályszöveg ellenőrzés; a tényleges sebességet a szerveroldali 125 m/30 s teszt, a háttérfutást a sikeres cronnapló és változó adatbázispozíció igazolja.
+
+## 2026-11-21 — 1.9.9 pergamentérkép
+
+CSS szűrő kizárólag a Leaflet háttércsempék rétegére, világos és sötét témában. Az overlay/marker/control rétegek nem kapnak filtert; nincs új eseményt elfogó elem. Játéklogika és adatbázis változatlan. Élő vizuális ellenőrzés következik.

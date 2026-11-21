@@ -2,6 +2,8 @@
 
 ## Tartalomjegyzék
 
+- [Barnás pergamentérkép](#barnás-pergamentérkép)
+
 - [Független háttérmotor és Sauron sebessége](#független-háttérmotor-és-sauron-sebessége)
 
 - [Közös visszaszerzés értesítései](#közös-visszaszerzés-értesítései)
@@ -52,6 +54,7 @@
 | 1.21 | 1.9.6 | 2026-11-21 | Közös kiszabadítás előtt minden földi gyűrűt be kell gyűjteni; számláló, felület és szabályok frissítve. |
 | 1.22 | 1.9.7 | 2026-11-21 | Indulási és sikeres visszaszerzési popup minden játékosnak; bezárásuk nem állítja le a megosztást. |
 | 1.23 | 1.9.8 | 2026-11-21 | Önálló 10 másodperces szerveridőzítés; Sauron 15 km/h, megosztási szünetben is mozog. |
+| 1.24 | 1.9.9 | 2026-11-21 | A háttértérkép barnás pergamen szűrőt kapott; a jelölők, vezérlők és játékosszín változatlan. |
 
 ## Éles kiadás
 
@@ -159,3 +162,7 @@ Sauron sebessége 15 km/h (4,167 m/s, 125 m / 30 s). A helymegosztás leállít�
 Új komponensek: game_private.tick_game(uuid) és tick_active_games(), Postgres pg_cron. A szovetseg-game-engine 10 seconds ütemezéssel lépteti az aktív köröket. A game_action ugyanazt a privát motort hívja; közös tranzakciós zár és az utolsó lépés időbélyege akadályozza a kettős mozgást. Nem használ játékosnak álcázott belépést, böngészőt, Edge Function-kérést vagy kliensoldali titkos kulcsot. A privát függvények az anon/authenticated/service_role számára nem futtathatók közvetlenül; a Postgres tulajdonosi cronfolyamat és a meglévő hitelesített művelet használja. Előkészület és lezárt kör nem mozog. A job saját futási naplóját napi takarítás hét napig őrzi.
 
 Telepítés: database/background-game-engine.sql (background_game_engine_15kmh migráció), benne helper, game_action átvezetés, járőrképlet sebessége és pg_cron job. Ellenőrzés: cron.job aktív, cron.job_run_details succeeded, tényleges tick_idő és pozíció változik; a felület továbbra is körülbelül tíz másodpercenként kér friss állapotot. A kérések nélküli háttérmotor nem jelent offline időjóváírást a játékosnak: gyűrűidőhöz és közös kiszabadításhoz friss GPS kell. [Tesztjegyzőkönyv](tesztjegyzokonyvek/2026-11-21-hattermotor-1.9.8.md).
+
+## Barnás pergamentérkép
+
+A térképháttér meleg, barnás pergamenárnyalatot kap, hogy a játék fantasy hangulatához illeszkedjen. Az utcák és feliratok ugyanazon az OpenStreetMap-alaptérképen maradnak. A színkezelés kizárólag a Leaflet tile pane rétegen alkalmazott CSS sepia/saturate/hue-rotate/brightness/contrast szűrő; nem a teljes térképelemre kerül. Így a játékosszín, karakterikon, gyűrű, Sauron sisakja, útvonal, keresési kör, felugró ablak és zoomvezérlő saját színe és interakciója megmarad. A réteg nem fog el kattintást vagy érintést, nem kell új kép vagy térképszolgáltató. Sötét témában ugyanennek kissé sötétebb barnás változata jelenik meg. A kör végi exportált térképkép nem változik, a szűrő az interaktív játék- és admin-térképre vonatkozik.
