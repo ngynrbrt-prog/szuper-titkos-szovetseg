@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Jelenlegi böngészős hatókör és megőrzött natív prototípus](#jelenlegi-böngészős-hatókör-és-megőrzött-natív-prototípus)
 - [Natív alkalmazás és tartós rablásjelzés](#natív-alkalmazás-és-tartós-rablásjelzés)
 - [Az 1.8.0 változásai és telepítése](#az-1.8.0-változásai-és-telepítése)
 - [Helyszínalapú random pálya](#helyszínalapú-random-pálya)
@@ -30,6 +31,9 @@
 | 1.11 | 1.8.0 | 2026-11-21 | Android/iPhone natív háttér-GPS igény rögzítve; a PWA korlátja változatlan, külön fejlesztés indul. |
 | 1.12 | 1.9.0 | 2026-11-21 | Tartós, nyugtázható piros rablásjelzés és címzettvédett Realtime. |
 | 1.13 | 1.9.0 | 2026-11-21 | Android/iPhone natív projektek, háttér-GPS és biztonságos munkamenethíd. |
+| 1.14 | 1.9.1 | 2026-11-21 | Natív appkészítés elhalasztva, kód és eredmények megőrizve; automatikus fordítás kikapcsolva. |
+| 1.15 | 1.9.1 | 2026-11-21 | Böngészős automatikus megosztásfolytatás kérése visszavonva; marad a kézi újraindítás. |
+| 1.16 | 1.9.2 | 2026-11-21 | A felhasználó jóváhagyta a natív app folytatását; böngészős kézi GPS működés megmarad. |
 
 ## Éles kiadás
 
@@ -88,3 +92,14 @@ A rablásjelzés migrációja: database/robbery-notices.sql, majd a már első v
 A natív projektek mobile/android és mobile/ios alatt vannak, a native-build.yml fordítja őket. Az Android debug APK tesztcsomag, nem Play Store-kiadás; az iOS-szimulátorapp nem telepíthető valódi iPhone-ra. iPhone-telepítéshez saját fejlesztői aláírás szükséges. Nem történt áruházi feltöltés, fizetős regisztráció vagy Apple-fiók módosítása. Fordítást, lintet, hardveres GPS-t és aláírt terjesztést külön állapotként kell jelenteni.
 
 Az 1.8.0 webes kiadás már igazolt: f772089d9e9cac495a24047cc46c68a9cc587de1, sikeres Pages-futtatás 44838174098. Mobilon 297×68 px-es gombok, 375 px-es túllógásmentes oldal és alsó telepítési sáv látszik. A böngészős PNG-próba 12/12 térképcsempével sikeres. Az 1.9.0 frontend és natív build eredményét a futtatás után külön rögzítjük.
+
+
+## Jelenlegi böngészős hatókör és megőrzött natív prototípus
+
+A felhasználó 2026-11-21-én elhalasztotta az APK/iPhone app készítését, majd kérte minden addigi kód és eredmény megőrzését. A mobile mappa, native-bridge.js, natív tesztek és a kézi indításra állított workflow megmaradnak. Új appfordítást nem indítunk. A natív kód nem töltődik be az aktuális böngészős/PWA-kiadásban. A felhasználó a profilhoz mentett automatikus böngészős folytatás kérését is visszavonta, így ehhez új preferenciamező vagy működés nem készült. A böngészőben megosztási szünet után kézi újraindítás szükséges; az ötperces csapatidő újrakezdődik, az aktuális gyűrű saját, addig összegyűjtött ideje megmarad, de a szünet alatt nem növekszik.
+
+Az elhalasztás előtti [natív CI-próbán](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44841706324) az iOS-szimulátor fordítása sikeres, az Android build/lint lépése sikertelen volt. Ez nem fizikai háttér-GPS teszt és nem aláírt iPhone-telepítő. További natív javítás/fordítás és tényleges terjesztés nincs késznek jelölve.
+
+**Legutóbbi döntés:** a felhasználó jóváhagyta az Android/iPhone app készítésének folytatását. Az előző halasztás történeti bejegyzés; a kódot nem töröltük. A natív forrásokra automatikus CI-fordítás újra engedélyezett. A PWA-hoz automatikus böngészős GPS-újraindítás továbbra sincs, azt a felhasználó visszavonta. Az Android első lint-hibáját az OnBackPressedDispatcherre váltás javítja, AndroidX Activity 1.12.4 függőséggel. Az 1.9.2 új fordításának eredménye a jegyzőkönyvbe kerül.
+
+Az 1.9.1 böngészőre szűkítés csak helyi előkészítés volt, nem lett külön éles kiadás: a felhasználó utána jóváhagyta a natív folytatást. A jelenlegi cél az 1.9.2 web + Android teszt-APK + fordítható iPhone-projekt. A felhasználónak jelenleg nincs Apple-fejlesztői hozzáférése; aláírt iPhone-telepítőt nem jelölünk elkészültnek és fizetős tagságot nem vásárolunk.

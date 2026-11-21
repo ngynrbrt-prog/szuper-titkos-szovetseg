@@ -1,4 +1,6 @@
-# A Szövetség · Android és iPhone
+# A Szövetség · Android és iPhone tesztváltozat
+
+**Állapot: a felhasználó 2026-11-21-én jóváhagyta a folytatást.** Az átmeneti halasztás után a natív fejlesztés és CI-fordítás folytatódik. A böngészős változat önállóan továbbra is használható; a natív híd csak a saját telepített alkalmazásban aktív.
 
 ## Tartalomjegyzék
 
@@ -23,7 +25,7 @@
 
 ## Fordítás
 
-A `Native Android and iPhone builds` GitHub Actions munkafolyamat Android debug APK-t és aláíratlan iOS-szimulátorappot készít.
+A `Native Android and iPhone builds` munkafolyamat natív forrásváltozáskor és kézi indítással fut. Az elhalasztás előtt futott próbán az iOS-szimulátor fordítása sikeres, az Android build/lint lépése sikertelen volt. Nincs közzétett Android APK vagy aláírt iPhone-kiadás. Az új fordítás a hardening-javításokat és az Android visszagesztus javítását is ellenőrzi.
 
 Android helyben: JDK 17, Android SDK 36, Gradle 8.13, majd `gradle :app:assembleDebug :app:lintDebug` a `mobile/android` mappában. Az APK tesztcélú debug aláírást használ; nem Play Store-kiadás.
 
@@ -37,3 +39,7 @@ iOS helyben: Xcode alatt nyisd meg a `mobile/ios/Szovetseg.xcodeproj` projektet.
 4. A Megosztás leállítása gomb, Androidon az értesítés leállító gombja is kikapcsolja. A kijelentkezés leállítja a megosztást és törli a helyi hitelesítést.
 
 Az operációs rendszer kényszerített leállítása, engedélyvisszavonás, energiatakarékosság, újraindítás vagy hálózati/GPS-hiány megszakíthatja a folyamatot. iOS-en a felhasználó által kényszerítetten bezárt app nem követhet korlátlanul tovább. Az alkalmazásindításkor a korábban bekapcsolt szándék megfelelő engedély mellett helyreállítható. Ez nem állandó működési garancia. A valódi lezárt képernyős működés fizikai Android- és iPhone-teszttel igazolandó; fordítás vagy szimulátorteszt ezt önmagában nem bizonyítja.
+
+Az Android új visszagesztusát az AndroidX Activity 1.12.4 OnBackPressedDispatcher kezeli. Ez szabadon használható Android Jetpack-függőség, nem fizetős helymeghatározási SDK.
+
+Apple-fejlesztői hozzáférés jelenleg nincs. A valódi iPhone-ra szánt aláírt terjesztés blokkolt; a forrás és a szimulátoros fordítás ettől függetlenül ellenőrizhető. Fizetős tagság nem indult.

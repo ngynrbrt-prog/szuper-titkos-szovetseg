@@ -1,4 +1,4 @@
-# A Szuper Titkos szövetség · Multiplayer 1.9.0
+# A Szuper Titkos szövetség · Multiplayer 1.9.1
 
 Hat regisztrált játékos közös, egyvárosos GPS-játéka. A felület GitHub Pages-en, a hitelesítés és minden játékállapot-változás Supabase-ben fut.
 
@@ -68,4 +68,6 @@ A telepítéshez nyisd meg a játékot Androidon Chrome-ban vagy iPhone-on Safar
 
 ## Natív mobilalkalmazás és rablásjelzés
 
-Android/iPhone projektek és build: [mobile/README.md](mobile/README.md). A natív háttér-GPS különbözik a PWA-tól, és hardveren igazolandó. A rablás piros üzenete csak a sértett Rendben nyugtázása után tűnik el. Realtime és tartós állapotlekérés együtt működik.
+A felhasználó kérésére elhalasztott és megőrzött Android/iPhone prototípusok: [mobile/README.md](mobile/README.md). A natív háttér-GPS különbözik a PWA-tól, és hardveren igazolandó. A rablás piros üzenete csak a sértett Rendben nyugtázása után tűnik el. Realtime és tartós állapotlekérés együtt működik.
+
+Jelenlegi kiadás: böngésző/PWA. A natív híd nincs betöltve, appfordítás automatikusan nem indul. A megosztási szünet utáni automatikus újraindítás kérését a felhasználó visszavonta; marad a kézi indítás.

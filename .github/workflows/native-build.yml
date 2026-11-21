@@ -23,6 +23,13 @@ jobs:
       - name: Build Android debug APK
         working-directory: mobile/android
         run: gradle :app:assembleDebug :app:lintDebug --no-daemon
+      - name: Report Android lint findings
+        if: always()
+        working-directory: mobile/android
+        run: |
+          if test -f app/build/intermediates/lint_intermediate_text_report/debug/lintReportDebug/lint-results-debug.txt; then
+            cat app/build/intermediates/lint_intermediate_text_report/debug/lintReportDebug/lint-results-debug.txt
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: szovetseg-android-debug

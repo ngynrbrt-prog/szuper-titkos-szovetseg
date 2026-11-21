@@ -116,3 +116,5 @@ A [részletes jegyzőkönyv](tesztjegyzokonyvek/2026-11-21-regresszio-1.8.0.md) 
 ## 2026-11-21 — 1.9.0 natív app és tartós rablásjelzés
 
 A [jegyzőkönyv](tesztjegyzokonyvek/2026-11-21-nativ-rablas-1.9.0.md) rögzíti a SQL aliasütközést és javítását, az SDK miatt pontosított PWA-tesztet, a címzetti session-RLS próbát, a natív híd modelltesztjét és a projektfájlok vizsgálatát. A végső SQL-futás visszagörgetett tranzakcióban sikeres. A natív fordítás CI-ben, a fizikai GPS és valódi kétklienses Realtime külön igazolandó.
+
+A natív fejlesztés a felhasználó kérésére elhalasztva, a forrás és eredmények megőrizve. A 44841706324 CI-futás iOS szimulátora sikeres, Android build/lint lépése sikertelen; APK-feltöltés nem futott. A workflow automatikus triggerét kivettük, csak kézzel indítható. Az automatikus PWA-folytatás kérése visszavonva, ilyen változás nincs.

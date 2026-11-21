@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Jelenlegi böngészős hatókör és megőrzött natív prototípus](#jelenlegi-böngészős-hatókör-és-megőrzött-natív-prototípus)
 - [Natív alkalmazás és tartós rablásjelzés](#natív-alkalmazás-és-tartós-rablásjelzés)
 - [Gyűrűidő, játékosszín és közös kiszabadítás](#gyűrűidő,-játékosszín-és-közös-kiszabadítás)
 - [Helyszínalapú random pálya](#helyszínalapú-random-pálya)
@@ -30,6 +31,9 @@
 | 1.11 | 1.8.0 | 2026-11-21 | Android/iPhone natív háttér-GPS igény rögzítve; a PWA korlátja változatlan, külön fejlesztés indul. |
 | 1.12 | 1.9.0 | 2026-11-21 | Tartós, nyugtázható piros rablásjelzés és címzettvédett Realtime. |
 | 1.13 | 1.9.0 | 2026-11-21 | Android/iPhone natív projektek, háttér-GPS és biztonságos munkamenethíd. |
+| 1.14 | 1.9.1 | 2026-11-21 | Natív appkészítés elhalasztva, kód és eredmények megőrizve; automatikus fordítás kikapcsolva. |
+| 1.15 | 1.9.1 | 2026-11-21 | Böngészős automatikus megosztásfolytatás kérése visszavonva; marad a kézi újraindítás. |
+| 1.16 | 1.9.2 | 2026-11-21 | A felhasználó jóváhagyta a natív app folytatását; böngészős kézi GPS működés megmarad. |
 
 ## Cél és szerepkörök
 
@@ -86,3 +90,14 @@ A lezárt képernyős, bezárt oldalas folyamatos GPS Androidon és iPhone-on k�
 Rabláskor a kifosztott játékos a kezdő térképoldalon piros, tartós „Rablás történt” dobozt kap az elrabolt tárgy nevével. Csak a Rendben nyugtázás tünteti el, másik játékos nem nyugtázhatja; újranyitás és új játék sem törli a nyugtázatlan jelzést. Kapcsolatban Realtime jelzi a változást, kimaradásnál a tízmásodperces lekérés hozza vissza a tartós állapotot.
 
 Androidon és iPhone-on natív alkalmazás ad háttérbeli, lezárt képernyős helymeghatározást. Külön telefonos engedély szükséges. A natív rész a böngésző szünetelésétől függetlenül küldi a friss méréseket, tokenfrissítéssel. A felhasználói Leállítás és kijelentkezés megszakítja; rendszerkényszer, engedélyvisszavonás, GPS- és hálózathiány továbbra is megszakíthatja. iOS kényszerített bezárás után korlátlan folytatást nem ígérünk. A fizikai működés külön elfogadási próba.
+
+
+## Jelenlegi böngészős hatókör és megőrzött natív prototípus
+
+A felhasználó 2026-11-21-én elhalasztotta az APK/iPhone app készítését, majd kérte minden addigi kód és eredmény megőrzését. A mobile mappa, native-bridge.js, natív tesztek és a kézi indításra állított workflow megmaradnak. Új appfordítást nem indítunk. A natív kód nem töltődik be az aktuális böngészős/PWA-kiadásban. A felhasználó a profilhoz mentett automatikus böngészős folytatás kérését is visszavonta, így ehhez új preferenciamező vagy működés nem készült. A böngészőben megosztási szünet után kézi újraindítás szükséges; az ötperces csapatidő újrakezdődik, az aktuális gyűrű saját, addig összegyűjtött ideje megmarad, de a szünet alatt nem növekszik.
+
+Az elhalasztás előtti [natív CI-próbán](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44841706324) az iOS-szimulátor fordítása sikeres, az Android build/lint lépése sikertelen volt. Ez nem fizikai háttér-GPS teszt és nem aláírt iPhone-telepítő. További natív javítás/fordítás és tényleges terjesztés nincs késznek jelölve.
+
+**Legutóbbi döntés:** a felhasználó jóváhagyta az Android/iPhone app készítésének folytatását. Az előző halasztás történeti bejegyzés; a kódot nem töröltük. A natív forrásokra automatikus CI-fordítás újra engedélyezett. A PWA-hoz automatikus böngészős GPS-újraindítás továbbra sincs, azt a felhasználó visszavonta. Az Android első lint-hibáját az OnBackPressedDispatcherre váltás javítja, AndroidX Activity 1.12.4 függőséggel. Az 1.9.2 új fordításának eredménye a jegyzőkönyvbe kerül.
+
+Az 1.9.1 böngészőre szűkítés csak helyi előkészítés volt, nem lett külön éles kiadás: a felhasználó utána jóváhagyta a natív folytatást. A jelenlegi cél az 1.9.2 web + Android teszt-APK + fordítható iPhone-projekt. A felhasználónak jelenleg nincs Apple-fejlesztői hozzáférése; aláírt iPhone-telepítőt nem jelölünk elkészültnek és fizetős tagságot nem vásárolunk.

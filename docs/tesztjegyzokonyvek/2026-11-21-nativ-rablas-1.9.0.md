@@ -29,12 +29,14 @@ Helyi macOS x86_64, Node REPL VM/assert; nincs helyi Node CLI, JDK, Android SDK 
 | R19-03 | 01 | JS / Node VM / automata | tests/robbery-notices.test.cjs | Piros állapot tartós; pontos tárgynév; Rendben ack_notice; nincs ismételt kényszernavigáció; szervernyugtázás után rejtett | Sikeres |
 | R19-04 | 01 | JS / Node VM, fake native host / automata | tests/native-bridge.test.cjs | Natív felismerés, kérés/válasz, auth továbbítás, 204, engedélyhiba, külső fetch változatlan, böngészőben nincs natív híd | Sikeres |
 | R19-05 | 01 | plutil, xmllint / automata | iOS plist/privacy/pbxproj és Android XML/scheme | Minden vizsgált projektfájl szintaktikailag helyes | Sikeres |
-| R19-06 | — | GitHub Actions / Android fordító+lint / automata | Debug APK és lint | Futtatás után rögzítendő | Tervezett |
-| R19-07 | — | GitHub Actions / Xcode / automata | Aláíratlan iOS-szimulátorapp fordítása | Futtatás után rögzítendő | Tervezett |
+| R19-06 | 01 | GitHub Actions / Android fordító+lint / automata | Debug APK és lint | A build/lint lépés sikertelen; APK-feltöltés kimaradt. A felhasználó elhalasztotta az appmunkát; további javítás/újrafordítás nem indult | Sikertelen, elhalasztva |
+| R19-07 | 01 | GitHub Actions / Xcode / automata | Aláíratlan iOS-szimulátorapp fordítása | Sikeres a beaedd77c5138af82642f86d1c6bebb02838ebd3 forrásnál. Későbbi keményítések fordítása elhalasztva, fizikai háttér-GPS nincs igazolva | Sikeres, prototípus |
 | R19-08 | — | Fizikai Android és iPhone / kézi | Lezárt kijelző, háttér, mozgás/álló helyzet, tokenforgatás, offline, kézi/értesítéses stop | Fizikai eszköz nincs | Nem futott |
 | R19-09 | — | Két hitelesített böngésző / kézi | Valódi Realtime üzenetkésleltetés és Rendben | Külön tesztfiókok nélkül nem futott; az SQL és render-próba igazolt | Nem futott |
-| R19-10 | — | CUA / éles böngésző | Végső webes változat megnyitása | Élesítés után rögzítendő | Tervezett |
+| R19-10 | — | CUA / éles böngésző | Végső, natív híd nélküli 1.9.1 webes változat megnyitása | Élesítés után rögzítendő | Tervezett |
 
 ## Korlátok
 
 A natív fordítás nem bizonyít fizikai háttér-GPS-t, és az iOS-szimulátorcsomag nem iPhone-telepítő. A felhasználó általi kényszerített leállítás, engedélymegvonás, GPS/hálózathiány vagy rendszerkorlátozás megszakíthatja a megosztást. A szándék megőrizhető, de elavult koordinátát nem kezelünk frissként. A Realtime-hoz tartós lekéréses tartalék van; valódi kéttelefonos, élő WS-késleltetést nem állítunk igazoltnak. Fizetős fejlesztői tagság, aláírt iOS-terjesztés és áruházi feltöltés nem történt.
+
+A felhasználó későbbre halasztotta az appot és az automatikus böngészős folytatást is visszavonta. A kód megmaradt, automatikus appfordítás letiltva (csak workflow_dispatch). Az 1.9.1 böngészős kiadás nem aktiválja a natív prototípust.
