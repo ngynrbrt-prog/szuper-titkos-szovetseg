@@ -170,3 +170,5 @@ Az 1.9.9 élesítés igazolt: 7132d95ff3e85504605c88594ed1bc0858660177, Pages 44
 ## 2026-11-21 — 1.10.0 földrajzi papirusz
 
 Új papyrus-map.js Canvas GridLayer, determinisztikus Web Mercator geometria, külön 350-es, nem interaktív réteg. Első célzott tesztfutás: papyrus-map és PWA PASS. Ellenőrzött: azonos cella azonos minta, szomszédcsempék azonos világgeometriája, 14→15 nagyítás pontos kétszeres skála, 0–19 zoomon korlátos rajzmennyiség, marker alatti sorrend, pointer-events:none. Utána vízszintesen periodikus vetőmag bevezetve a dátumválasztó körüli illesztéshez. Végső ismétlés és élő ellenőrzés következik.
+
+Élő 1.10.0 első vizuális próba: textúra megjelent (15 canvas), pane350, marker600, pointer-events:none. A pixelkiolvasási próba eszközkorlátba ütközött (a böngészős olvasási felület nem biztosít getContext hívást), képernyőképpel ellenőrizve. A hajtások vége túl élesen zárult, ezért vizuális javítás következett 1.10.1-ben: közös cellaszéli végpontokkal folytonos fő hajtások, lekerekített és lágyabb árnyék. Ez megjelenési finomítás, földrajzi koordináták továbbra is determinisztikusak.

@@ -1,5 +1,6 @@
 const assert=require('node:assert/strict');const {folds,tilePoint,draw,addTo}=require('../papyrus-map.js');
 const shape=folds(14,9301,5802);assert.deepEqual(folds(14,9301,5802),shape);assert.notDeepEqual(folds(14,9302,5802),shape);
+assert.deepEqual(shape[0][1],folds(14,9301,5803)[0][0],'Vertical fold must continue across geographic cells');assert.deepEqual(shape[1][1],folds(14,9302,5802)[1][0],'Horizontal fold must continue across geographic cells');
 const p=shape[0][0],a=tilePoint(p,{x:9301,y:5802,z:14}),b=tilePoint(p,{x:18602,y:11604,z:15});assert.ok(Math.abs(b[0]-2*a[0])<1e-7);assert.ok(Math.abs(b[1]-2*a[1])<1e-7);
 const adjacent=tilePoint(p,{x:9302,y:5802,z:14});assert.ok(Math.abs(adjacent[0]+256-a[0])<1e-7,'Adjacent tile must use identical world geometry');
 let strokes=0;const ctx={createLinearGradient:()=>({addColorStop(){}}),beginPath(){},moveTo(){},lineTo(){},closePath(){},fill(){},stroke(){strokes++;}};for(let z=0;z<=19;z++){const n=draw(ctx,{x:Math.floor(.56*2**z),y:Math.floor(.35*2**z),z});assert.ok(n<1000,'Bounded canvas work at every zoom');assert.equal(ctx.globalAlpha,1);}
