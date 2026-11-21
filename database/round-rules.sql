@@ -242,7 +242,7 @@ begin
  return jsonb_build_object(
   'round_map',case when p_action='round_map' then game_private.round_map((p_data->>'round')::uuid) else null end,
   'me',jsonb_build_object('id',me.id,'character_name',me.character_name,'is_admin',me.is_admin,'avatar',me.avatar,'color_id',me.color_id),
-  'game',case when g.id is null then null else to_jsonb(g) end,
+  'game',case when g.id is null then null else to_jsonb(g)||jsonb_build_object('config',g.config-'sauron_position'-'sauron_tick_at'-'sauron_target') end,
   'players',coalesce((select jsonb_agg(jsonb_build_object('id',id,'character_name',character_name,'avatar',avatar,'color_id',color_id)) from public.players),'[]'),
   'items',coalesce((select jsonb_agg(to_jsonb(x)) from (select id,item_type,item_name,item_description,status,owner_id,latitude,longitude,value_sestertius,case when owner_id=me.id then ring_share_seconds else null end as ring_share_seconds from public.items where game_id=g.id)x),'[]'),
   'locations',coalesce((select jsonb_agg(to_jsonb(x)) from (select player_id,latitude,longitude,accuracy_m,updated_at,active_seconds from public.player_locations where game_id=g.id and sharing_enabled and updated_at>now()-interval '30 seconds')x),'[]'),
@@ -254,7 +254,10 @@ begin
    from public.games ended where ended.status='finished' and ended.started_at is not null and coalesce(ended.config->>'finish_reason','')<>'cancelled' order by ended.finished_at desc limit 1),
   'archive',coalesce((select jsonb_agg(to_jsonb(x)) from (select id,city_name,finished_at,winner_id,config->>'finish_reason' as reason from public.games where status='finished' and coalesce(config->>'finish_reason','')<>'cancelled' order by created_at desc limit 20)x),'[]'),
   'events',coalesce((select jsonb_agg(to_jsonb(x)) from (select player_id,event_type,event_data,created_at from public.game_events where game_id=g.id order by created_at desc limit 30)x),'[]'),
-  'sauron',case when g.id is not null and coalesce(g.sauron_cooldown_until,'-infinity')<=now() then coalesce(g.config->'sauron_position',game_private.sauron(g)) else null end,
+  'sauron',case when g.status='active' and coalesce(g.sauron_cooldown_until,'-infinity')<=now()
+    and exists(select 1 from public.items where game_id=g.id and owner_id=me.id and item_type='ring' and status='owned')
+    and exists(select 1 from public.player_locations where game_id=g.id and player_id=me.id and sharing_enabled and updated_at>now()-interval '30 seconds' and accuracy_m<=50)
+    then coalesce(g.config->'sauron_position',game_private.sauron(g)) else null end,
   'recoverable',coalesce((select jsonb_agg(item_id) from game_private.ring_custody where player_id=me.id),'[]'),
   'rescue',jsonb_build_object('required_players',(select count(*) from public.players where registration_completed),'sharing_players',
     (select count(*) from public.players p join public.player_locations l on l.player_id=p.id where p.registration_completed and l.game_id=g.id and l.sharing_enabled and l.accuracy_m<=50 and l.updated_at>now()-interval '30 seconds'),

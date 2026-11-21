@@ -13,7 +13,10 @@ assert.notDeepEqual(sauronView(null,now+7200000).position,rumor.position,'Sighti
 assert(rumor.city.includes('Ázsia')||rumor.city.includes('Ausztrália')||rumor.city.includes('Amerika')||rumor.city.includes('Afrika'));
 assert.equal(rumor.nextChange%7200000,0);
 game.status='active';game.started_at=new Date(now-3600000).toISOString();
-assert.deepEqual(sauronView({game,sauron:[50.15,14.15]},now).position,[50.15,14.15]);
+const ring={item_type:'ring',status:'owned',owner_id:'me'};const own={player_id:'me',accuracy_m:5,updated_at:new Date(now).toISOString()};const eligible={game,me:{id:'me'},items:[ring],locations:[own],sauron:[50.15,14.15]};
+assert.deepEqual(sauronView(eligible,now).position,[50.15,14.15]);
+for(const hidden of [{...eligible,items:[]},{...eligible,items:[{...ring,owner_id:'other'}]},{...eligible,locations:[]},{...eligible,locations:[{...own,player_id:'other'}]},{...eligible,locations:[{...own,updated_at:new Date(now-30000).toISOString()}]},{...eligible,locations:[{...own,accuracy_m:51}]},{...eligible,sauron:null}]){assert.equal(sauronView(hidden,now).visible,false);assert.equal(sauronView(hidden,now).position,null);}
+assert.equal(sauronView({...eligible,game:{...game,status:'finished'}},now).visible,false);
 assert.equal(sauronView({game,sauron:null},now).visible,false,'Must not replace server-hidden Sauron with a fabricated position.');
 assert.equal(sauronView({game,sauron:null},now).position,null);
-console.log('PASS: pre-game visibility, login continuity, shared rumor, preparation, live position, cooldown hiding');
+console.log('PASS: pre-game visibility, login continuity, shared rumor, preparation, own ring + fresh sharing visibility, missing/foreign ring/location, stale/inaccurate GPS and cooldown hiding');
