@@ -2,6 +2,8 @@
 
 ## Tartalomjegyzék
 
+- [Földrajzilag rögzített papirusztextúra](#földrajzilag-rögzített-papirusztextúra)
+
 - [Barnás pergamentérkép](#barnás-pergamentérkép)
 
 - [Független háttérmotor és Sauron sebessége](#független-háttérmotor-és-sauron-sebessége)
@@ -59,6 +61,7 @@
 | 1.22 | 1.9.7 | 2026-11-21 | Indulási és sikeres visszaszerzési popup minden játékosnak; bezárásuk nem állítja le a megosztást. |
 | 1.23 | 1.9.8 | 2026-11-21 | Önálló 10 másodperces szerveridőzítés; Sauron 15 km/h, megosztási szünetben is mozog. |
 | 1.24 | 1.9.9 | 2026-11-21 | A háttértérkép barnás pergamen szűrőt kapott; a jelölők, vezérlők és játékosszín változatlan. |
+| 1.25 | 1.10.0 | 2026-11-21 | Gyűrődések és hajtások földrajzi rögzítésű Canvas-rétegen, determinisztikus nagyítás és csempeillesztés. |
 
 ## Mobilos és asztali webes nézet
 
@@ -308,3 +311,9 @@ A térképháttér meleg, barnás pergamenárnyalatot kap, hogy a játék fantas
 ![Barnás pergamen térképháttér, változatlan fekete Sauron-ikonnal](kepek/pergamen-terkep-1.9.9.jpg)
 
 A kép a belépés előtti, másik kontinensről szóló észlelés nézetében mutatja az új színvilágot; nem a Gárdonyban futó játék térképe.
+
+## Földrajzilag rögzített papirusztextúra
+
+A barna háttértérképen finom árnyékos-világos hajtások és szabálytalan gyűrődések jelennek meg. Ezek nem a képernyőhöz kötött tapéták: Web Mercator-világkoordinátákhoz rögzülnek, és ugyanannál a földrajzi pontnál maradnak húzás, nagyítás és újratöltés után. Nagyításkor együtt skálázódnak a térképpel. A részletességi szinteken finomabb vonalak fokozatosan tűnhetnek elő, de a mintát nem sorsoljuk újra. A textúra a játék- és admin-térképen is ugyanaz. A játékosszín és jelölő fölötte marad, a textúra nem fog el érintést vagy kattintást.
+
+Technológia: papyrus-map.js, procedurális Canvas 2D + Leaflet GridLayer. Rögzített szintek és földrajzi cellaazonosító alapján determinisztikus geometria; a szomszédcsempék ugyanazt a világkoordinátájú vonalat rajzolják. A papyrus pane z-indexe 350 (csempék fölött, overlay/marker rétegek alatt), pointer-events:none és aria-hidden=true. A világ vízszintes ismétlésénél a geometria vetőmagja periodikus. A raszterfelbontás legfeljebb 2× kijelzősűrűség, a részletesség korlátozott, külső textúrakép vagy új szolgáltató nem kell. A CSP és az adatbázis nem változik. A kör végi exportált térképképhez ez a dekoráció nem kerül hozzá.
