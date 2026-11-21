@@ -1,0 +1,8 @@
+android/.gradle/
+android/local.properties
+android/app/build/
+ios/build/
+**/xcuserdata/
+*.jks
+*.keystore
+*.mobileprovision

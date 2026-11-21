@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Natív alkalmazás és tartós rablásjelzés](#natív-alkalmazás-és-tartós-rablásjelzés)
 - [Gyűrűidő, szín és a kör végi térképkép](#gyűrűidő,-szín-és-a-kör-végi-térképkép)
 - [Helyszínalapú random pálya](#helyszínalapú-random-pálya)
 - [Megjelenítés, menü és random elhelyezés](#megjelenítés,-menü-és-random-elhelyezés)
@@ -29,6 +30,8 @@
 | 1.9 | 1.8.0 | 2026-11-21 | Telefonos sáv a Beállításokban és a térképoldal alján. |
 | 1.10 | 1.8.0 | 2026-11-21 | Teljes szélességű, nagy helymegosztási gombok. |
 | 1.11 | 1.8.0 | 2026-11-21 | Android/iPhone natív háttér-GPS igény rögzítve; a PWA korlátja változatlan, külön fejlesztés indul. |
+| 1.12 | 1.9.0 | 2026-11-21 | Tartós, nyugtázható piros rablásjelzés és címzettvédett Realtime. |
+| 1.13 | 1.9.0 | 2026-11-21 | Android/iPhone natív projektek, háttér-GPS és biztonságos munkamenethíd. |
 
 ## Mobilos és asztali webes nézet
 
@@ -122,3 +125,16 @@ Az aktív játék csak mind a hat gyűrű megsemmisülésekor ér véget; a pont
 **Telefonos sáv és nagy gombok:** a Szövetség a telefonodon sáv a Beállításokban és a kezdő Térkép oldal legalján található. Más oldalon nem jelenik meg. A Helymegosztás indítása és Megosztás leállítása teljes kártyaszélességű, nagy gomb; mobilon a térkép alatt helyezkedik el.
 
 A lezárt képernyős, bezárt oldalas folyamatos GPS Androidon és iPhone-on külön natív alkalmazást igényel. Az 1.8.0 webes változat ezt nem teljesíti, nem címkéz elavult helyadatot frissként. Források: [Android háttérhelymeghatározás](https://developer.android.com/develop/sensors-and-location/location/background), [Apple Core Location](https://developer.apple.com/documentation/corelocation/handling-location-updates-in-the-background).
+
+
+## Natív alkalmazás és tartós rablásjelzés
+
+Ha meglopnak, a kezdő térképoldal piros doboza kiírja: **Rablás történt**, valamint az elrabolt tárgy nevét és a rabló karakternevét. A doboz addig marad, amíg a saját fiókoddal meg nem nyomod a **Rendben** gombot. Újranyitás után is visszatér, ha még nem nyugtáztad. A valós idejű kapcsolat megszakadásánál a következő sikeres állapotlekérés hozza meg a jelzést.
+
+A natív Android/iPhone app használatát és telepítését a [mobil útmutató](../mobile/README.md) írja le. Androidon pontos hely és állandó megosztási értesítés szükséges; a helymegosztás az értesítésből is leállítható. iPhone-on Mindig helyengedély szükséges; a rendszer engedélykérési lépései miatt ezt a telefon Beállításaiban is be kell kapcsolni, majd újra indítani a megosztást. A saját natív appban a Telefonra telepítés PWA-sáv nem jelenik meg, mert már telepített appot használsz.
+
+A kijelző lezárása és az app háttérbe tétele mellett a natív helyszolgáltatás működhet tovább. Kényszerített leállítás, jogosultságvisszavonás, energiatakarékosság és GPS/hálózati hiány esetén ez megszakadhat. Csak a szerverhez érkezett friss, elfogadott mérés számít a gyűrű- és csapatidőbe. Normál böngészőben/PWA-ban továbbra is előtérben kell tartani az oldalt a megbízható GPS-hez.
+
+![Szemléltető körkép kitalált útvonalakkal, nem valódi játékosadat](kepek/kor-terkep-minta-1.8.jpg)
+
+![A nagy mobilos helymegosztási gombok ellenőrzött nézete](kepek/mobil-nagy-gps-1.8.jpg)

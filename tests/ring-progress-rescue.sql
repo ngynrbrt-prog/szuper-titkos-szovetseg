@@ -1,7 +1,7 @@
 -- All test identities/sessions, game changes, locations and traces are rolled back.
 begin;
 do $$
-declare uid uuid; other_uid uuid; pid uuid; other_pid uuid; sid uuid:=gen_random_uuid(); other_sid uuid:=gen_random_uuid(); gid uuid; ids uuid[]; result jsonb; rejected bool; old_color smallint; free_color int; expected int; map_color int;
+declare uid uuid; other_uid uuid; pid uuid; other_pid uuid; sid uuid:=gen_random_uuid(); other_sid uuid:=gen_random_uuid(); gid uuid; ids uuid[]; result jsonb; rejected bool; old_color smallint; free_color int; expected int; map_color int; notice_id uuid;
 begin
  select auth_user_id,id,color_id into uid,pid,old_color from public.players where is_admin and registration_completed limit 1;
  select auth_user_id,id into other_uid,other_pid from public.players where not is_admin and registration_completed limit 1;
@@ -38,14 +38,31 @@ begin
  update public.items set ring_share_seconds=3600 where game_id=gid and status='owned';
  perform public.game_action(other_uid,'rob',jsonb_build_object('item',ids[2]),other_sid);
  if not exists(select 1 from public.items where id=ids[2] and owner_id=other_pid and ring_share_seconds=0) then raise exception 'Robbery retained previous owner progress';end if;
+ select id into notice_id from public.player_notices where game_id=gid and recipient_id=pid and item_id=ids[2] and acknowledged_at is null;
+ if notice_id is null then raise exception 'Robbery did not create persistent victim notice';end if;
+ result:=public.game_action(uid,'state','{}',sid);if not exists(select 1 from jsonb_array_elements(result->'notices')n where n->>'id'=notice_id::text and n->>'item_name'='Fixture ring 2') then raise exception 'Victim state lacks item notice';end if;
+ perform public.game_action(other_uid,'ack_notice',jsonb_build_object('notice',notice_id),other_sid);
+ if exists(select 1 from public.player_notices where id=notice_id and acknowledged_at is not null) then raise exception 'Other player acknowledged victim notice';end if;
+ perform set_config('request.jwt.claims',jsonb_build_object('sub',uid,'role','authenticated','session_id',sid)::text,true);
+ execute 'set local role authenticated';select count(*) into expected from public.player_notices where id=notice_id;execute 'reset role';if expected<>1 then raise exception 'Own live-session Realtime SELECT denied';end if;
+ perform set_config('request.jwt.claims',jsonb_build_object('sub',other_uid,'role','authenticated','session_id',other_sid)::text,true);
+ execute 'set local role authenticated';select count(*) into expected from public.player_notices where id=notice_id;execute 'reset role';if expected<>0 then raise exception 'Other player can read victim notice';end if;
+ perform set_config('request.jwt.claims',jsonb_build_object('sub',uid,'role','authenticated','session_id',gen_random_uuid())::text,true);
+ execute 'set local role authenticated';select count(*) into expected from public.player_notices where id=notice_id;execute 'reset role';if expected<>0 then raise exception 'Revoked/fake session can read notice';end if;
+ perform set_config('request.jwt.claims','{}',true);
+ result:=public.game_action(uid,'state','{}',sid);if not exists(select 1 from jsonb_array_elements(result->'notices')n where n->>'id'=notice_id::text) then raise exception 'Notice disappeared without acknowledgment';end if;
+ result:=public.game_action(uid,'ack_notice',jsonb_build_object('notice',notice_id),sid);if exists(select 1 from jsonb_array_elements(result->'notices')n where n->>'id'=notice_id::text) then raise exception 'Acknowledged notice still pending';end if;
+
  update public.items set owner_id=pid,ring_share_seconds=3600 where game_id=gid and status='owned';
  result:=public.game_action(uid,'destroy_all','{}',sid);
  if result->'game'->>'status'<>'finished' or result->'game'->'config'->>'finish_reason'<>'all_rings_destroyed' then raise exception 'Six rings did not finish';end if;
- if jsonb_array_length(result->'last_round'->'map'->'tracks')<1 then raise exception 'Summary lacks trails';end if;
- select (x->>'color_id')::int into map_color from jsonb_array_elements(result->'last_round'->'map'->'players') x where x->>'id'=pid::text;
+ result:=public.game_action(uid,'round_map',jsonb_build_object('round',gid),sid);
+ if jsonb_array_length(result->'round_map'->'tracks')<1 then raise exception 'Summary lacks trails';end if;
+ select (x->>'color_id')::int into map_color from jsonb_array_elements(result->'round_map'->'players') x where x->>'id'=pid::text;
  select c into free_color from generate_series(1,8)c where not exists(select 1 from public.players where color_id=c) limit 1;
  result:=public.game_action(uid,'color',jsonb_build_object('color_id',free_color),sid);
- if not exists(select 1 from jsonb_array_elements(result->'last_round'->'map'->'players')x where x->>'id'=pid::text and (x->>'color_id')::int=map_color) then raise exception 'Old round color snapshot changed';end if;
+ result:=public.game_action(uid,'round_map',jsonb_build_object('round',gid),sid);
+ if not exists(select 1 from jsonb_array_elements(result->'round_map'->'players')x where x->>'id'=pid::text and (x->>'color_id')::int=map_color) then raise exception 'Old round color snapshot changed';end if;
  rejected:=false;begin perform public.game_action(other_uid,'color',jsonb_build_object('color_id',free_color),other_sid);exception when others then rejected:=true;end;if not rejected then raise exception 'Duplicate player color accepted';end if;
  -- Reuse this uncommitted fixture for team rescue, keeping every real game untouched.
  update public.games set status='active',finished_at=null,winner_id=null,sauron_cooldown_until=now()+interval '1 hour',config='{"route":[[47.2,18.6],[47.201,18.601]],"sauron_position":[47.2,18.6]}' where id=gid;

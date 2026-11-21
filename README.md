@@ -1,4 +1,4 @@
-# A Szuper Titkos szövetség · Multiplayer 1.8.0
+# A Szuper Titkos szövetség · Multiplayer 1.9.0
 
 Hat regisztrált játékos közös, egyvárosos GPS-játéka. A felület GitHub Pages-en, a hitelesítés és minden játékállapot-változás Supabase-ben fut.
 
@@ -29,7 +29,7 @@ Hat regisztrált játékos közös, egyvárosos GPS-játéka. A felület GitHub 
 
 A böngésző csak publikus API-kulcsot kap. A PIN bcrypt-hashként, privát sémában tárolódik; öt hibás belépés után 15 perces zárolás következik. A korábbi meghívók már nem használhatók regisztrációra. Az adminjogot a felhasználó által nem módosítható adatbázisrekord adja. A regisztráció hat fős korlátja és a játékműveletek tranzakciószintű zárolással védettek.
 
-A `player-auth` a belépést és a meghívó nélküli regisztrációt kezeli. A `game-api` minden kérést a Supabase Auth `/user` végpontján ellenőriz, majd a szerver az élő `auth.sessions` rekord meglétét is megköveteli. Az ügyfél nem választhatja meg a cselekvő játékos azonosítóját. A kliensszerepköröknek nincs közvetlen tábla- vagy játék-RPC-hozzáférésük. Minden tábla RLS-sel védett; a policy nélküli, alapértelmezett tiltás szándékos, az összes adatforgalom a szerverfüggvényeken halad át.
+A `player-auth` a belépést és a meghívó nélküli regisztrációt kezeli. A `game-api` minden kérést a Supabase Auth `/user` végpontján ellenőriz, majd a szerver az élő `auth.sessions` rekord meglétét is megköveteli. Az ügyfél nem választhatja meg a cselekvő játékos azonosítóját. A kliensszerepköröknek nincs közvetlen játéktábla- vagy játék-RPC-hozzáférésük. A player_notices kivétel: a sértett saját, élő munkamenetéhez tartozó üzenetét SELECT RLS védi a Realtime-hoz. Minden tábla RLS-sel védett; a policy nélküli, alapértelmezett tiltás szándékos, az összes adatforgalom a szerverfüggvényeken halad át.
 
 A kliens munkamenete a lap `sessionStorage` tárhelyén marad. Nincs szolgáltatási kulcs a forrásban. A HTML szigorú tartalombiztonsági szabályt használ, a felhasználói szövegeket a felület szövegként kezeli. A Leaflet 1.9.4 helyben csomagolt; a térképcsempék az OpenStreetMaptől érkeznek.
 
@@ -65,3 +65,7 @@ Az Admin oldalon a jelenlegi játék hat gyűrűje névvel és koordinátával j
 ## Telefonra telepíthető változat
 
 A telepítéshez nyisd meg a játékot Androidon Chrome-ban vagy iPhone-on Safariban, és válaszd a **Telepítés a telefonra** gombot. Részletek: [kézikönyv](docs/FELHASZNALOI-KEZIKONYV.md#telepítés-androidra-és-iphone-ra). A játék online, a háttérbeli GPS nem támogatott.
+
+## Natív mobilalkalmazás és rablásjelzés
+
+Android/iPhone projektek és build: [mobile/README.md](mobile/README.md). A natív háttér-GPS különbözik a PWA-tól, és hardveren igazolandó. A rablás piros üzenete csak a sértett Rendben nyugtázása után tűnik el. Realtime és tartós állapotlekérés együtt működik.

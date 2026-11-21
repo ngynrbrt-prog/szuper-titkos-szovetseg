@@ -74,6 +74,8 @@ begin
   n:=array_position(ring_names,it.item_name)-1;
   if n is not null then update public.games set config=jsonb_set(config,array['points',n::text],jsonb_build_array(lat,lng)) where id=g.id returning * into g; end if;
   insert into public.game_events(game_id,player_id,event_type,event_data) values(g.id,me.id,'place_ring',jsonb_build_object('item',it.id,'from',jsonb_build_array(it.latitude,it.longitude),'to',jsonb_build_array(lat,lng)));
+ elsif p_action='ack_notice' then
+  update public.player_notices set acknowledged_at=now() where id=(p_data->>'notice')::uuid and recipient_id=me.id and recipient_auth=p_auth and acknowledged_at is null;
  elsif p_action='color' then
   if g.status='active' then raise exception 'A játékosszín csak a játék indítása előtt módosítható.'; end if;
   n:=(p_data->>'color_id')::int;
@@ -111,7 +113,7 @@ begin
    on conflict(player_id) do update set game_id=g.id,latitude=lat,longitude=lng,accuracy_m=acc,sharing_enabled=true,updated_at=now(),
     active_seconds=case when dt>0 then loc.active_seconds+dt else 0 end,
     immune_until=case when public.player_locations.game_id=g.id then public.player_locations.immune_until else null end;
- elsif p_action not in ('state','pickup','rob','destroy','destroy_all','recover') then
+ elsif p_action not in ('state','round_map','pickup','rob','destroy','destroy_all','recover') then
   raise exception 'Ismeretlen művelet.';
  end if;
 
@@ -147,6 +149,7 @@ begin
    select * into victim from public.player_locations where player_id=it.owner_id and game_id=g.id;
    if not found or not victim.sharing_enabled or victim.updated_at<now()-interval '30 seconds' or victim.accuracy_m>50 or game_private.distance(loc.latitude,loc.longitude,victim.latitude,victim.longitude)>100 then raise exception 'A másik játékos nem látható 100 méteren belül.'; end if;
    if exists(select 1 from public.robberies where game_id=g.id and ((robber_id=me.id and victim_id=it.owner_id) or (victim_id=me.id and robber_id=it.owner_id)) and created_at>now()-interval '15 minutes') then raise exception 'E két játékos között 15 perc védettség van.'; end if;
+   insert into public.player_notices(recipient_id,recipient_auth,game_id,item_id,item_name,robber_name) select it.owner_id,p.auth_user_id,g.id,it.id,it.item_name,me.character_name from public.players p where p.id=it.owner_id;
    insert into public.robberies(game_id,robber_id,victim_id,item_id,item_type) values(g.id,me.id,it.owner_id,it.id,it.item_type);
    update public.items set owner_id=me.id,collected_at=now(),ring_share_seconds=0 where id=it.id;
    insert into public.game_results(game_id,player_id) values(g.id,me.id) on conflict(game_id,player_id) do nothing;
@@ -223,11 +226,13 @@ begin
     where id=g.id returning * into g;
   end if;
  end if;
- if g.status='finished' and g.winner_id is null and g.config->>'finish_reason' is distinct from 'sauron' then
+ if g.status='finished' and g.winner_id is null and g.config->>'finish_reason' is distinct from 'sauron' and coalesce(g.config->>'finish_reason','')<>'cancelled' then
   select player_id into v_id from public.game_results where game_id=g.id order by sestertius_earned desc,rings_destroyed desc,ring_seconds desc,player_id limit 1;
   update public.games set winner_id=v_id where id=g.id returning * into g;
  end if;
+ if p_action='location' and p_data->>'background'='true' then return jsonb_build_object('ok',true,'server_time',now());end if;
  return jsonb_build_object(
+  'round_map',case when p_action='round_map' then game_private.round_map((p_data->>'round')::uuid) else null end,
   'me',jsonb_build_object('id',me.id,'character_name',me.character_name,'is_admin',me.is_admin,'avatar',me.avatar,'color_id',me.color_id),
   'game',case when g.id is null then null else to_jsonb(g) end,
   'players',coalesce((select jsonb_agg(jsonb_build_object('id',id,'character_name',character_name,'avatar',avatar,'color_id',color_id)) from public.players),'[]'),
@@ -235,11 +240,11 @@ begin
   'locations',coalesce((select jsonb_agg(to_jsonb(x)) from (select player_id,latitude,longitude,accuracy_m,updated_at,active_seconds from public.player_locations where game_id=g.id and sharing_enabled and updated_at>now()-interval '30 seconds')x),'[]'),
   'results',coalesce((select jsonb_agg(to_jsonb(x)) from (select * from public.game_results where game_id=g.id order by sestertius_earned desc,ring_seconds desc)x),'[]'),
   'last_round',(select jsonb_build_object('id',ended.id,'winner_id',ended.winner_id,'reason',ended.config->>'finish_reason',
-   'finished_at',ended.finished_at,'map',game_private.round_map(ended.id),'results',coalesce((select jsonb_agg(to_jsonb(r)||jsonb_build_object(
+   'finished_at',ended.finished_at,'results',coalesce((select jsonb_agg(to_jsonb(r)||jsonb_build_object(
      'rings_held',(select count(*) from public.items i where i.game_id=ended.id and i.owner_id=r.player_id and i.item_type='ring' and i.status='owned')
     ) order by r.sestertius_earned desc,r.player_id) from public.game_results r where r.game_id=ended.id),'[]'))
    from public.games ended where ended.status='finished' and ended.started_at is not null and coalesce(ended.config->>'finish_reason','')<>'cancelled' order by ended.finished_at desc limit 1),
-  'archive',coalesce((select jsonb_agg(to_jsonb(x)) from (select id,city_name,finished_at,winner_id,config->>'finish_reason' as reason from public.games where status='finished' order by created_at desc limit 20)x),'[]'),
+  'archive',coalesce((select jsonb_agg(to_jsonb(x)) from (select id,city_name,finished_at,winner_id,config->>'finish_reason' as reason from public.games where status='finished' and coalesce(config->>'finish_reason','')<>'cancelled' order by created_at desc limit 20)x),'[]'),
   'events',coalesce((select jsonb_agg(to_jsonb(x)) from (select player_id,event_type,event_data,created_at from public.game_events where game_id=g.id order by created_at desc limit 30)x),'[]'),
   'sauron',case when g.id is not null and coalesce(g.sauron_cooldown_until,'-infinity')<=now() then coalesce(g.config->'sauron_position',game_private.sauron(g)) else null end,
   'recoverable',coalesce((select jsonb_agg(item_id) from game_private.ring_custody where player_id=me.id),'[]'),
@@ -247,6 +252,7 @@ begin
     (select count(*) from public.players p join public.player_locations l on l.player_id=p.id where p.registration_completed and l.game_id=g.id and l.sharing_enabled and l.accuracy_m<=50 and l.updated_at>now()-interval '30 seconds'),
     'started_at',g.config->'rescue_started_at','elapsed_seconds',case when g.status='active' and g.config->>'rescue_started_at' is not null then least(300,greatest(0,floor(extract(epoch from now()-(g.config->>'rescue_started_at')::timestamptz)))) else 0 end,
     'captive_rings',(select count(*) from public.items where game_id=g.id and item_type='ring' and status='sauron')),
+  'notices',coalesce((select jsonb_agg(to_jsonb(notice_row) order by notice_row.created_at) from (select id,item_name,robber_name,created_at from public.player_notices where recipient_id=me.id and recipient_auth=p_auth and acknowledged_at is null order by created_at limit 100)notice_row),'[]'),
   'server_time',now());
 end $function$
 ;

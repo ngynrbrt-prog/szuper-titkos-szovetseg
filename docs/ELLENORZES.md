@@ -112,3 +112,7 @@ Az 1.7.1 frontend élesítése igazolt: `c161c0019ceff933e83195679eb2582ea5302fe
 ## 2026-11-21 — 1.8.0 szabályok, színek és csapatkiszabadítás
 
 A [részletes jegyzőkönyv](tesztjegyzokonyvek/2026-11-21-regresszio-1.8.0.md) tartalmazza az összes SQL- és kliensoldali kísérletet, a javított tesztelvárást, a hibás tesztszintaxist és a betelt regisztrációs keret korlátját. A két szervermigráció sikeres. A végső tranzakciós próba sikeres, minden fixture visszavonva; az aktuális kör előkészített maradt és nincs éles nyomvonalminta. A tíz kliensoldali tesztkészlet végső futása sikeres. A natív háttérmegosztás nem része az igazolt PWA-működésnek.
+
+## 2026-11-21 — 1.9.0 natív app és tartós rablásjelzés
+
+A [jegyzőkönyv](tesztjegyzokonyvek/2026-11-21-nativ-rablas-1.9.0.md) rögzíti a SQL aliasütközést és javítását, az SDK miatt pontosított PWA-tesztet, a címzetti session-RLS próbát, a natív híd modelltesztjét és a projektfájlok vizsgálatát. A végső SQL-futás visszagörgetett tranzakcióban sikeres. A natív fordítás CI-ben, a fizikai GPS és valódi kétklienses Realtime külön igazolandó.

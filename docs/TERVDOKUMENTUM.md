@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Natív alkalmazás és tartós rablásjelzés](#natív-alkalmazás-és-tartós-rablásjelzés)
 - [Gyűrűidők, színek, megosztási nyomvonal és kiszabadítás](#gyűrűidők,-színek,-megosztási-nyomvonal-és-kiszabadítás)
 - [Helyszínalapú random pálya](#helyszínalapú-random-pálya)
 - [Megjelenítés és véletlen pályaterv](#megjelenítés-és-véletlen-pályaterv)
@@ -29,6 +30,8 @@
 | 1.9 | 1.8.0 | 2026-11-21 | Telefonos sáv a Beállításokban és a térképoldal alján. |
 | 1.10 | 1.8.0 | 2026-11-21 | Teljes szélességű, nagy helymegosztási gombok. |
 | 1.11 | 1.8.0 | 2026-11-21 | Android/iPhone natív háttér-GPS igény rögzítve; a PWA korlátja változatlan, külön fejlesztés indul. |
+| 1.12 | 1.9.0 | 2026-11-21 | Tartós, nyugtázható piros rablásjelzés és címzettvédett Realtime. |
+| 1.13 | 1.9.0 | 2026-11-21 | Android/iPhone natív projektek, háttér-GPS és biztonságos munkamenethíd. |
 
 ## Architektúra
 
@@ -206,3 +209,16 @@ flowchart TD
 ```
 
 A lezárt képernyős, bezárt oldalas folyamatos GPS Androidon és iPhone-on külön natív alkalmazást igényel. Az 1.8.0 webes változat ezt nem teljesíti, nem címkéz elavult helyadatot frissként. Források: [Android háttérhelymeghatározás](https://developer.android.com/develop/sensors-and-location/location/background), [Apple Core Location](https://developer.apple.com/documentation/corelocation/handling-location-updates-in-the-background).
+
+
+## Natív alkalmazás és tartós rablásjelzés
+
+Új futtatási függőség: helyben csomagolt @supabase/supabase-js 2.119.2 UMD, MIT licenc, vendor/SUPABASE-LICENSE. Csak Realtime-feliratkozásra használjuk, auth-persist és SDK-s automatikus tokenfrissítés kikapcsolt; a meglévő ellenőrzött sessiont használja. A CSP az adott Supabase-projekt wss címét engedi, frame-src none. A hagyományos játéktáblákhoz továbbra sincs klienshozzáférés.
+
+Új public.player_notices tábla, csak címzetti SELECT-engedéllyel. RLS a címzett auth.uid() értékét és az élő session_id-t ellenőrzi a can_read_game_notice boolean helperrel. A helper nem ad vissza felhasználói adatot és anon nem futtathatja. Sikeres rob tranzakció a tárgy nevét és rabló karakternevét a sértettnek menti. ack_notice csak a címzett saját rekordját írhatja. INSERT esemény Realtime, a nyugtázatlan lista a game_action válaszban is megmarad. A doboz önálló, nincs automatikus timer; renderNotices új jelzéskor térképre visz, Rendben szerveres nyugtázásig megmarad.
+
+Natív platformok: Android Java + LocationManager, location típusú foreground service és értesítés, Android Keystore AES-GCM; iOS Swift + UIKit/WKWebView + Core Location background mode + Keychain AfterFirstUnlockThisDeviceOnly. Nincs fizetős natív SDK. A native-bridge.js csak az app saját natív felületét észleli; normál böngészőben nem aktív. A natív host kizárólag a saját HTTPS-játékoldalon enged HTTP- és helymegosztási kérést, pontos végpont-engedélylistával. A háttér-GPS nem JavaScript-timerre épül, és a natív HTTP-sor kezeli a tokenforgatást. Nyers szolgáltatási kulcs nincs az appban. A natív és UI HTTP ugyanazon tokenállományt használja, a későbbi webes refresh a friss natív refresh_tokenből indul.
+
+A háttér location data.background=true kérés csak kisméretű ok/server_time választ kap. A kör végi térképadat külön round_map művelettel egyszer töltődik be; nem kerül bele minden tízmásodperces válaszba. A nyomvonal a privát sémában marad, csak hitelesített kérésre készül a lezárt kör képi alapja.
+
+Fordítás: Android Gradle Plugin 8.13.0, Gradle 8.13, JDK 17, compile/target SDK 36, min SDK 26. iOS Xcode-projekt, Swift 5 mód, iOS 16 minimum. A GitHub Actions Android debug APK-t és aláíratlan iOS-szimulátorappot készít; valódi iPhone-aláírás és App Store-terjesztés nincs automatizálva. A saját gépen nincs Xcode/JDK/Android SDK, a natív fordítás ezért CI-feladat. Forrás: [Android foreground service](https://developer.android.com/develop/background-work/services/fgs/service-types#location), [Apple háttérhely](https://developer.apple.com/documentation/corelocation/handling-location-updates-in-the-background), [Supabase Realtime](https://supabase.com/docs/guides/realtime/postgres-changes).

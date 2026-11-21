@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Natív alkalmazás és tartós rablásjelzés](#natív-alkalmazás-és-tartós-rablásjelzés)
 - [Az 1.8.0 változásai és telepítése](#az-1.8.0-változásai-és-telepítése)
 - [Helyszínalapú random pálya](#helyszínalapú-random-pálya)
 - [Az 1.7.0 kiadás előkészítése](#az-1.7.0-kiadás-előkészítése)
@@ -27,10 +28,12 @@
 | 1.9 | 1.8.0 | 2026-11-21 | Telefonos sáv a Beállításokban és a térképoldal alján. |
 | 1.10 | 1.8.0 | 2026-11-21 | Teljes szélességű, nagy helymegosztási gombok. |
 | 1.11 | 1.8.0 | 2026-11-21 | Android/iPhone natív háttér-GPS igény rögzítve; a PWA korlátja változatlan, külön fejlesztés indul. |
+| 1.12 | 1.9.0 | 2026-11-21 | Tartós, nyugtázható piros rablásjelzés és címzettvédett Realtime. |
+| 1.13 | 1.9.0 | 2026-11-21 | Android/iPhone natív projektek, háttér-GPS és biztonságos munkamenethíd. |
 
 ## Éles kiadás
 
-**Játékverzió:** 1.7.1. **Forrás:** `c161c0019ceff933e83195679eb2582ea5302fe6`. A Pages-futtatás sikeres, az éles HTML 1.7.1 kliensszkriptet hivatkozik. A vendégmenü, térkép, mobilméret és 1/3/5 km-es választó ellenőrizve. A belépett funkciók VM- és SQL-próbával ellenőrzöttek; fizikai telefonos teljes próba még szükséges. [Éles oldal](https://ngynrbrt-prog.github.io/szuper-titkos-szovetseg/) · [Telepítés](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44833099950)
+**Igazolt webes kiadás:** 1.8.0. **Forrás:** `f772089d9e9cac495a24047cc46c68a9cc587de1`. [Sikeres Pages-futtatás](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44838174098). Az 1.9.0 natív és Realtime-bővítés fordítása és frontend-élesítése folyamatban; az eredményét csak ellenőrzés után jelöljük igazoltnak.
 
 ## Telepítési sorrend
 
@@ -76,3 +79,12 @@ A tranzakciós tesztek igazolják a gyűrűidőt és átadáskori nullázást, a
 Frontend: player-rules.js, summary-map.js, ring.svg, módosított menük, Hátizsák, összesítő, nagy GPS-gombok és áthelyezett telepítési sáv. A megváltozott statikus fájlok és a service worker cache verziója 1.8.0. A frontend élesítését csak a sikeres Pages-futás és az éles nézet ellenőrzése után jelöljük igazoltnak. Visszaállításnál az új adatmezőket és privát adatokat ne töröld; kompatibilis javító frontend és új worker-verzió szükséges.
 
 A lezárt képernyős, bezárt oldalas folyamatos GPS Androidon és iPhone-on külön natív alkalmazást igényel. Az 1.8.0 webes változat ezt nem teljesíti, nem címkéz elavult helyadatot frissként. Források: [Android háttérhelymeghatározás](https://developer.android.com/develop/sensors-and-location/location/background), [Apple Core Location](https://developer.apple.com/documentation/corelocation/handling-location-updates-in-the-background).
+
+
+## Natív alkalmazás és tartós rablásjelzés
+
+A rablásjelzés migrációja: database/robbery-notices.sql, majd a már első változatot telepített környezeten notice-alias-fix.sql javította a tesztben talált SQL-aliasütközést. A végső round-rules.sql és a robbery-notices.sql már a javított függvényt tartalmazza. A native-response-map.sql kisméretű háttérválaszt és külön körképadat-lekérést vezetett be. A kibővített, címzetti RLS-t is próbáló tranzakciós teszt végső futása sikeres.
+
+A natív projektek mobile/android és mobile/ios alatt vannak, a native-build.yml fordítja őket. Az Android debug APK tesztcsomag, nem Play Store-kiadás; az iOS-szimulátorapp nem telepíthető valódi iPhone-ra. iPhone-telepítéshez saját fejlesztői aláírás szükséges. Nem történt áruházi feltöltés, fizetős regisztráció vagy Apple-fiók módosítása. Fordítást, lintet, hardveres GPS-t és aláírt terjesztést külön állapotként kell jelenteni.
+
+Az 1.8.0 webes kiadás már igazolt: f772089d9e9cac495a24047cc46c68a9cc587de1, sikeres Pages-futtatás 44838174098. Mobilon 297×68 px-es gombok, 375 px-es túllógásmentes oldal és alsó telepítési sáv látszik. A böngészős PNG-próba 12/12 térképcsempével sikeres. Az 1.9.0 frontend és natív build eredményét a futtatás után külön rögzítjük.

@@ -8,10 +8,11 @@
  let draft={points:[],route:[],mordor:null};
  try{session=JSON.parse(sessionStorage.getItem('fellowship-session'));draft=JSON.parse(localStorage.getItem('fellowship-draft'))||draft;}catch{}
  draft=window.PlacementModel.normalizeDraft(draft);
- let messageTimer,lastProfileRace,lastProfileColor;
+ let messageTimer,lastProfileRace,lastProfileColor,nativeGPSGeneration=0;
+ let noticeClient=null,noticeChannel=null,noticeUser=null,noticeToken=null;const announcedNotices=new Set();
  function message(text,error=false){$('message').textContent=text;$('message').classList.toggle('error',error);$('message').hidden=false;clearTimeout(messageTimer);messageTimer=setTimeout(()=>$('message').hidden=true,9000);}
- function show(page){if((page==='admin'&&!state?.me.is_admin)||(page==='settings'&&!state?.me))page='auth';const appPanel=document.querySelector('.app-panel');if(appPanel){appPanel.hidden=!['map','settings'].includes(page);if(page==='map'||page==='settings')$(page==='map'?'appMapMount':'appSettingsMount').append(appPanel);}document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id===page));document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('selected',el.dataset.page===page));if(page==='map')setTimeout(()=>map?.invalidateSize(),50);}
- function saveSession(s){session=s;if(s)sessionStorage.setItem('fellowship-session',JSON.stringify(s));else sessionStorage.removeItem('fellowship-session');}
+ function show(page){if((page==='admin'&&!state?.me.is_admin)||(page==='settings'&&!state?.me))page='auth';const appPanel=document.querySelector('.app-panel');if(appPanel){appPanel.hidden=(typeof window!=='undefined'&&!!window.NativeBridge?.available)||!['map','settings'].includes(page);if(page==='map'||page==='settings')$(page==='map'?'appMapMount':'appSettingsMount').append(appPanel);}document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id===page));document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('selected',el.dataset.page===page));if(page==='map')setTimeout(()=>map?.invalidateSize(),50);}
+ function saveSession(s){session=s;if(typeof window!=='undefined'&&window.NativeBridge?.available)void window.NativeBridge.request(s?'saveSession':'clearSession',s?{session:s}:{}).catch(()=>{});if(s)sessionStorage.setItem('fellowship-session',JSON.stringify(s));else {sessionStorage.removeItem('fellowship-session');stopNoticeRealtime();announcedNotices.clear();$('robberyNotices').hidden=true;$('robberyNotices').replaceChildren();}}
  async function http(path,body,token){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
   try{const r=await fetch(cfg.url+path,{method:'POST',headers:{apikey:cfg.key,'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify(body),signal:controller.signal});if(r.status===204)return {};let b;try{b=await r.json();}catch{throw new Error('Érvénytelen szerverválasz.');}if(!r.ok){const err=new Error(b.error||b.msg||'A kérés sikertelen.');err.status=r.status;throw err;}return b;}finally{clearTimeout(timer);}
@@ -47,7 +48,7 @@
   const s=state,g=s?.game;accountView();if(!s){renderMap();return;}
   $('characterForm').hidden=false;
   if(lastProfileRace!==s.me.avatar?.race){lastProfileRace=s.me.avatar?.race;$('characterForm').elements.race.value=lastProfileRace||'Ember';}
-  accountView();renderColors();
+  accountView();renderColors();renderNotices();void ensureNoticeRealtime();
   $('phase').textContent=g?({preparation:'Előkészület',active:'A vadászat tart',finished:'Lezárt krónika'}[g.status]):'Még nincs játék';
   $('connection').textContent='Közös állapot · '+new Date(s.server_time).toLocaleTimeString('hu-HU');$('cityTitle').textContent=g?g.city_name:'A kaland itt kezdődik.';
   $('ringCount').textContent=g?`${s.items.filter(i=>i.item_type==='ring'&&i.status==='ground').length} szabad gyűrű · ${s.items.filter(i=>i.item_type==='gem'&&i.status==='ground').length} drágakő`:'6 gyűrű · 40 drágakő';
@@ -76,8 +77,23 @@
   updateRoundClock();
   const rescue=window.PlayerRules.rescueProgress(s.rescue);$('rescueStatus').hidden=!rescue.captive;$('rescueStatus').textContent='Közös kiszabadítás: '+rescue.sharing+'/'+rescue.required+' játékos osztja meg a helyét · '+Math.floor(rescue.seconds/60)+' perc '+String(rescue.seconds%60).padStart(2,'0')+' mp / 5 perc. Megszakítás vagy elfogás újrakezdi.';
   showRoundResults(s);
-  if(g?.status==='finished'&&watch!==null)void stopGPS().catch(()=>{});
+  if(g?.status==='finished'&&watch!==null&&!window.NativeBridge?.available)void stopGPS().catch(()=>{});
+  if(window.NativeBridge?.available&&watch==='native'){const fresh=s.locations.some(l=>l.player_id===s.me.id&&Date.now()-Date.parse(l.updated_at)<30000);$('gpsStatus').textContent=g?.status!=='active'?'Natív megosztás bekapcsolva; nincs aktív játék. A Leállítás gombbal kikapcsolhatod.':fresh?'Natív háttérmegosztás: friss helyzet érkezett a szerverhez.':'Natív megosztás bekapcsolva; friss GPS-mérésre várunk. Csak elfogadott friss mérés számít.';}
   buttons();renderMap();renderRingSummary();if(editing)renderDraft();
+ }
+
+ function renderNotices(){
+  const box=empty('robberyNotices'),notices=state?.notices||[];box.hidden=!notices.length;
+  for(const n of notices){const row=document.createElement('div');row.className='robbery-notice';text(row,'strong','Rablás történt');text(row,'p','Elrabolták tőled: '+n.item_name);text(row,'p','Elkövető: '+n.robber_name,'robbery-detail');addButton(row,'Rendben',()=>api('ack_notice',{notice:n.id}));box.append(row);}
+  if(notices.some(n=>!announcedNotices.has(n.id))){notices.forEach(n=>announcedNotices.add(n.id));show('map');box.scrollIntoView({block:'start',behavior:'smooth'});}
+ }
+ function stopNoticeRealtime(){if(noticeClient){noticeClient.removeAllChannels();noticeClient.realtime.disconnect();}noticeClient=null;noticeChannel=null;noticeUser=null;noticeToken=null;}
+ async function ensureNoticeRealtime(){
+  if(!session||!state?.me||!window.supabase)return;const id=state.me.id;
+  try{if(noticeUser!==id){stopNoticeRealtime();noticeUser=id;noticeClient=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false},accessToken:async()=>token()});const t=await token();if(!noticeClient||noticeUser!==id)return;await noticeClient.realtime.setAuth(t);noticeToken=t;
+    noticeChannel=noticeClient.channel('robbery-notices:'+id).on('postgres_changes',{event:'INSERT',schema:'public',table:'player_notices',filter:'recipient_id=eq.'+id},payload=>{if(state?.me.id!==id||!session)return;const n=payload.new;if(n&&!state.notices?.some(x=>x.id===n.id)){state.notices=[...(state.notices||[]),n];renderNotices();}void api('state').catch(()=>{});}).subscribe();
+   }else if(noticeToken!==session.access_token){noticeToken=session.access_token;await noticeClient?.realtime.setAuth(noticeToken);}
+  }catch{ /* Polling still fetches durable notices after network recovery. */ }
  }
  function updateRoundClock(){
   const game=state?.game, clock=$('roundClock');
@@ -101,7 +117,7 @@
    results.append(row);
   }
   if(!dialog.open)dialog.showModal();
-  if(round.map)void showRoundMap(round);else $('roundMapFigure').hidden=true;
+  if(round.map)void showRoundMap(round);else void loadRoundMap(round);
   sessionStorage.setItem('seen-round:'+s.me.id,round.id);
  }
 
@@ -113,11 +129,15 @@
  }
  let roundMapId=null,roundMapData=null;
  function clearRoundMap(){roundMapId=null;roundMapData=null;$('roundMapFigure').hidden=true;$('roundMapImage').removeAttribute('src');$('downloadRoundMap').removeAttribute('href');if($('roundDialog').open)$('roundDialog').close();}
+ async function loadRoundMap(round){
+  roundMapData=round;roundMapId=null;$('roundMapFigure').hidden=false;$('roundMapImage').hidden=true;$('downloadRoundMap').hidden=true;$('retryRoundMap').hidden=true;$('roundMapStatus').textContent='Az összesítő térképadatok betöltése…';
+  try{const response=await api('round_map',{round:round.id});if(roundMapData?.id!==round.id)return;if(response.round_map)void showRoundMap({...round,map:response.round_map},true);else $('roundMapFigure').hidden=true;}catch{if(roundMapData?.id!==round.id)return;$('roundMapStatus').textContent='A térképadatokat nem sikerült lekérni. Újrapróbálhatod.';$('retryRoundMap').hidden=false;}
+ }
  async function showRoundMap(round,retry=false){
   if(roundMapId===round.id&&!retry)return;roundMapId=round.id;roundMapData=round;$('roundMapFigure').hidden=false;$('roundMapImage').hidden=true;$('downloadRoundMap').hidden=true;$('retryRoundMap').hidden=true;$('roundMapStatus').textContent='Az összesítő térképkép készül…';
   try{const result=await window.RoundMap.render(round.map,document.createElement('canvas'),cfg.tiles);if(roundMapId!==round.id)return;$('roundMapImage').src=result.url;$('roundMapImage').hidden=false;$('downloadRoundMap').href=result.url;$('downloadRoundMap').hidden=false;$('retryRoundMap').hidden=result.failed===0;$('roundMapStatus').textContent=(result.points?'A kör alatt megosztott útvonalak a játékosok rögzített színével.':'Ehhez a körhöz nincs rögzített helymegosztási útvonal.')+(result.failed?' A háttértérkép hiányos; újrapróbálhatod.':'');}catch(e){if(roundMapId!==round.id)return;$('roundMapStatus').textContent='A térképképet nem sikerült elkészíteni. Kapcsolódj az internethez és próbáld újra.';$('retryRoundMap').hidden=false;}
  }
- $('retryRoundMap').addEventListener('click',()=>{if(roundMapData)void showRoundMap(roundMapData,true);});
+ $('retryRoundMap').addEventListener('click',()=>{if(roundMapData){if(roundMapData.map)void showRoundMap(roundMapData,true);else void loadRoundMap(roundMapData);}});
  setInterval(updateRoundClock,1000);
  function marker(lat,lng,symbol,label,callback,options={}){if(!map)return;const icon=L.divIcon({className:'map-icon',html:symbol,iconSize:[32,32],iconAnchor:[16,16]});const m=L.marker([lat,lng],{icon,...options}).addTo(layer);const box=document.createElement('div');text(box,'strong',label);if(callback)addButton(box,'Felveszem · 50 m',callback);m.bindPopup(box);}
  function ringSearchCenter(item){
@@ -272,8 +292,17 @@
   show('map');renderMap();renderDraft();
   requestAnimationFrame(()=>{map.invalidateSize();const it=selectedLiveRing(),f=$('createForm').elements,point=context==='live'&&it?[it.latitude,it.longitude]:/^ring:/.test($('editMode').value)?draft.points[Number($('editMode').value.split(':')[1])]:null;map.setView(point||(context==='live'?[state.game.city_lat,state.game.city_lng]:[Number(f.lat.value),Number(f.lng.value)]),16);$('mapEditor').scrollIntoView({block:'start',behavior:'smooth'});});
  }
- async function stopGPS(){if(heartbeat!==null)clearInterval(heartbeat);heartbeat=null;if(watch!==null)navigator.geolocation.clearWatch(watch);watch=null;lastGPS=0;$('gpsStatus').textContent='Helymegosztás kikapcsolva.';buttons();renderMap();if(session)await api('stop');}
+ async function stopGPS(){
+  if(heartbeat!==null)clearInterval(heartbeat);heartbeat=null;const native=typeof window!=='undefined'&&window.NativeBridge?.available;
+  if(native){nativeGPSGeneration++;watch=null;await window.NativeBridge.request('stop');}else if(watch!==null)navigator.geolocation.clearWatch(watch);
+  watch=null;lastGPS=0;$('gpsStatus').textContent='Helymegosztás kikapcsolva.';buttons();renderMap();if(session)await api('stop');
+ }
+ async function beginNativeGPS(){
+  const request=++nativeGPSGeneration,generation=epoch;watch='native-starting';buttons();$('gpsStatus').textContent='A telefon helyengedélyét és a háttérmegosztást indítjuk…';
+  try{await token();await window.NativeBridge.request('saveSession',{session});await window.NativeBridge.request('start');if(request!==nativeGPSGeneration||generation!==epoch)return;watch='native';$('gpsStatus').textContent='Natív megosztás bekapcsolva. Friss GPS-mérésre várunk.';buttons();}catch(e){if(request===nativeGPSGeneration){watch=null;buttons();message(e.message,true);}}
+ }
  function beginGPS(){
+  if(typeof window!=='undefined'&&window.NativeBridge?.available){void beginNativeGPS();return;}
   if(!navigator.geolocation)throw new Error('Ez a böngésző nem támogatja a helymeghatározást.');
   if(document.hidden)throw new Error('Nyisd meg a játék lapját.');
   const options={enableHighAccuracy:true,maximumAge:0,timeout:20000};
@@ -380,10 +409,16 @@
  bindButton('undoPoint',()=>{setRandomPlacement(false);if(placementContext==='live')pendingPlacement=null;else{const mode=$('editMode').value;if(mode.startsWith('ring:'))draft.points[Number(mode.split(':')[1])]=null;else if(mode==='mordor')draft.mordor=null;else if(mode==='points'){if(draft.points.length>6)draft.points.pop();}else draft.route.pop();}renderDraft();});
  bindButton('closeEditor',()=>{setRandomPlacement(false);if(placementContext==='live'&&pendingPlacement&&!confirm('Az új hely még nincs mentve. Elveted a kijelölést?'))return;editing=false;pendingPlacement=null;document.body.classList.remove('map-editing');$('mapEditor').hidden=true;draftLayer.clearLayers();renderMap();show('admin');});
  $('createForm').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,button=f.querySelector('button.primary');button.disabled=true;try{if($('randomPlacement').disabled)throw new Error('Várd meg a helyszínkeresés végét, vagy zárd be a szerkesztőt.');validateCity();const b=Object.fromEntries(new FormData(f));if(draft.points.slice(0,6).some(p=>!p))throw new Error('Jelöld ki mind a hat gyűrű helyét a szerkesztőben.');await api('create',{city:b.city,lat:Number(b.lat),lng:Number(b.lng),...draft,safe:f.elements.safe.checked});draft=window.PlacementModel.normalizeDraft(null); f.elements.safe.checked=false; renderDraft();message('A játék előkészítve. Indítás előtt ellenőrizd a térképet.');fit();}catch(err){message(err.message,true);}finally{button.disabled=false;}});
- document.addEventListener('visibilitychange',()=>{if(document.hidden){const t=session?.access_token;if(t)fetch(cfg.url+'/functions/v1/game-api',{method:'POST',headers:{apikey:cfg.key,'Content-Type':'application/json',Authorization:'Bearer '+t},body:JSON.stringify({action:'stop'}),keepalive:true}).catch(()=>{});stopGPS().catch(()=>{});}});
- window.addEventListener('offline',()=>{$('connection').textContent='Nincs internetkapcsolat';stopGPS().catch(()=>{});});
- window.addEventListener('pagehide',()=>{if(session)fetch(cfg.url+'/functions/v1/game-api',{method:'POST',headers:{apikey:cfg.key,'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},body:JSON.stringify({action:'stop'}),keepalive:true}).catch(()=>{});});
+ document.addEventListener('visibilitychange',()=>{if(window.NativeBridge?.available){if(!document.hidden)void resumeNative();return;}if(document.hidden){const t=session?.access_token;if(t)fetch(cfg.url+'/functions/v1/game-api',{method:'POST',headers:{apikey:cfg.key,'Content-Type':'application/json',Authorization:'Bearer '+t},body:JSON.stringify({action:'stop'}),keepalive:true}).catch(()=>{});stopGPS().catch(()=>{});}});
+ window.addEventListener('offline',()=>{$('connection').textContent='Nincs internetkapcsolat';if(!window.NativeBridge?.available)stopGPS().catch(()=>{});});
+ window.addEventListener('pagehide',()=>{if(window.NativeBridge?.available)return;if(session)fetch(cfg.url+'/functions/v1/game-api',{method:'POST',headers:{apikey:cfg.key,'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},body:JSON.stringify({action:'stop'}),keepalive:true}).catch(()=>{});});
  async function poll(){if(!session)updateSauron();if(session&&!document.hidden)try{await api('state');}catch(e){$('connection').textContent='Kapcsolat megszakadt · '+e.message;}setTimeout(poll,10000);}
  if(window.L){map=L.map('mapCanvas').setView([50.0875,14.4213],14);L.tileLayer(cfg.tiles,{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map).on('tileerror',()=>{ $('gpsStatus').textContent='A térképháttér nem elérhető. A jelölők látszódhatnak, de a helyszínek ellenőrzéséhez várd meg a háttértérkép betöltését.'; });layer=L.layerGroup().addTo(map);draftLayer=L.layerGroup().addTo(map);map.on('click',e=>{if(!editing||!state?.me.is_admin)return;try{acceptPoint([Number(e.latlng.lat.toFixed(6)),Number(e.latlng.lng.toFixed(6))]);}catch(error){message(error.message,true);}});}else message('A térképet nem sikerült betölteni. A listás játékfelület továbbra is használható.',true);
- accountView();renderDraft();buttons();renderMap();poll();
+ async function resumeNative(){
+  if(!window.NativeBridge?.available)return;
+  try{const stored=await window.NativeBridge.request('session');if(stored?.access_token)saveSession(stored);const status=await window.NativeBridge.request('status');watch=status.sharing?'native':null;buttons();if(session&&!document.hidden)await api('state');}catch(e){message(e.message,true);}
+ }
+ window.addEventListener('nativeResume',()=>void resumeNative());
+ async function initialize(){if(window.NativeBridge?.available){try{const stored=await window.NativeBridge.request('session');if(stored?.access_token)saveSession(stored);else if(session)await window.NativeBridge.request('saveSession',{session});const status=await window.NativeBridge.request('status');watch=status.sharing?'native':null;}catch(e){message(e.message,true);}}accountView();renderDraft();buttons();renderMap();poll();}
+ void initialize();
 })();

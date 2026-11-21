@@ -35,11 +35,13 @@ A kliensoldali térképkép próba Mock Canvas/Image modell, a színek és ponto
 | R18-06 | 01 | SQL / Supabase / automata | RPC és private trails SELECT jog | anon_rpc=false, client_rpc=false, anon_trails=false, client_trails=false; unique_colors=true; real_trail_samples=0 | Sikeres |
 | R18-07 | 01 | Supabase advisor / automata | Biztonsági vizsgálat | Szándékos RLS-no-policy INFO-k (új privát táblával 12), korábbi leaked-password-protection WARN. Nincs új nyilvános hozzáférés | Ellenőrizve |
 | R18-08 | 01 | JS / Node VM / automata | Végső ismétlés a menü- és gombmódosítások után | Mind a tíz kliensoldali tesztkészlet és a szintaktikai vizsgálat PASS | Sikeres |
-| R18-09 | — | CUA / éles böngésző / kézi | Mobilméret: teljes szélességű GPS-gombok és telepítési panel helye | Élesítés után rögzítendő | Tervezett |
-| R18-10 | — | CUA / valódi Canvas+OSM / kézi | Szemléltető, nem valódi játékosok PNG-je | Élesítés után rögzítendő | Tervezett |
+| R18-09 | 01 | CUA / éles böngésző / kézi és DOM-mérés | Kért 390×844 mobilnézet | script.js?v=1.8.0; clientWidth=scrollWidth=375; mindkét GPS-gomb 297×68 px; panelParent=appMapMount; ikonform settings szakaszban | Sikeres |
+| R18-10 | 01 | CUA / valódi Canvas+OSM / kézi | Szemléltető, nem valódi játékosok PNG-je | data:image/png; 12 csempe betöltött, 0 sikertelen; három kitalált színes útvonal látszik, megszakítás nincs összekötve | Sikeres |
 | R18-11 | — | Fizikai Android+iPhone / kézi | Teljes többtelefonos 60 perces mérés, lezárás és 5 perces rescue | Fizikai telefonos próba nincs | Nem futott |
 | R18-12 | — | Új regisztráció / külön üres tesztprojekt | Véletlen szín teljes signup-folyamata | Éles 6 hely betelt; a limitet nem kerültük meg | Nem futott |
 
 ## Korlátok
 
 A pontos mérés csak a szerver által elfogadott friss minták közötti egész másodpercekből áll; a hosszabb szünet, az app háttérbe kerülése és az oldal bezárása nem termel időt. A tesztben az 1 órát és az 5 percet kontrollált adatbázis-időpontok modellezték, nem várakoztunk végig fizikai telefonokkal. A natív háttér-GPS igényét külön kell megvalósítani és eszközön igazolni. A színek véletlen kiosztásának triggerkódja telepített, a meglévő kiosztás egyedi, de új signup nem futott a betelt keret miatt. Az OSM csempék hálózati elérhetősége és a nyomvonalak tényleges pontossága eszközfüggő.
+
+Éles forrás: f772089d9e9cac495a24047cc46c68a9cc587de1; [sikeres Pages](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44838174098). [Mobilnézet](../kepek/mobil-nagy-gps-1.8.jpg), [szemléltető térképkép](../kepek/kor-terkep-minta-1.8.jpg).

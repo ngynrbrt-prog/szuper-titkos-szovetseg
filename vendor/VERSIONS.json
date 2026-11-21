@@ -1,0 +1,10 @@
+{
+  "supabase": {
+    "package": "@supabase/supabase-js",
+    "version": "2.119.2",
+    "file": "supabase-2.119.2.js",
+    "license": "MIT",
+    "sha256": "8816af04d9915dbba1882d6f84f0b402dc40268063a63d9c66d24f52f371c263",
+    "source": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js"
+  }
+}

@@ -1,5 +1,6 @@
 (() => {
  'use strict';
+ if(window.NativeBridge?.available){document.querySelector('.app-panel').hidden=true;return;}
  const install=document.getElementById('installApp'), update=document.getElementById('updateApp'), status=document.getElementById('appStatus'), dialog=document.getElementById('installDialog');
  let prompt=null, registration=null, applying=false;
  const standalone=() => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;

@@ -2,6 +2,7 @@
 
 ## Tartalomjegyzék
 
+- [Natív alkalmazás és tartós rablásjelzés](#natív-alkalmazás-és-tartós-rablásjelzés)
 - [Gyűrűidő, játékosszín és közös kiszabadítás](#gyűrűidő,-játékosszín-és-közös-kiszabadítás)
 - [Helyszínalapú random pálya](#helyszínalapú-random-pálya)
 - [Belépett felület és pályagenerálás](#belépett-felület-és-pályagenerálás)
@@ -27,6 +28,8 @@
 | 1.9 | 1.8.0 | 2026-11-21 | Telefonos sáv a Beállításokban és a térképoldal alján. |
 | 1.10 | 1.8.0 | 2026-11-21 | Teljes szélességű, nagy helymegosztási gombok. |
 | 1.11 | 1.8.0 | 2026-11-21 | Android/iPhone natív háttér-GPS igény rögzítve; a PWA korlátja változatlan, külön fejlesztés indul. |
+| 1.12 | 1.9.0 | 2026-11-21 | Tartós, nyugtázható piros rablásjelzés és címzettvédett Realtime. |
+| 1.13 | 1.9.0 | 2026-11-21 | Android/iPhone natív projektek, háttér-GPS és biztonságos munkamenethíd. |
 
 ## Cél és szerepkörök
 
@@ -76,3 +79,10 @@ Ha a Sauronnál lévő gyűrűk mellett minden regisztrált játékos egyszerre 
 A telefonos telepítési sáv a Beállításokban és a kezdő térképoldal legalján látszik. A helymegosztás két gombja teljes kártyaszélességű, legalább 64 px magas; mobilon 68 px magas és a térkép alatt kap helyet.
 
 A lezárt képernyős, bezárt oldalas folyamatos GPS Androidon és iPhone-on külön natív alkalmazást igényel. Az 1.8.0 webes változat ezt nem teljesíti, nem címkéz elavult helyadatot frissként. Források: [Android háttérhelymeghatározás](https://developer.android.com/develop/sensors-and-location/location/background), [Apple Core Location](https://developer.apple.com/documentation/corelocation/handling-location-updates-in-the-background).
+
+
+## Natív alkalmazás és tartós rablásjelzés
+
+Rabláskor a kifosztott játékos a kezdő térképoldalon piros, tartós „Rablás történt” dobozt kap az elrabolt tárgy nevével. Csak a Rendben nyugtázás tünteti el, másik játékos nem nyugtázhatja; újranyitás és új játék sem törli a nyugtázatlan jelzést. Kapcsolatban Realtime jelzi a változást, kimaradásnál a tízmásodperces lekérés hozza vissza a tartós állapotot.
+
+Androidon és iPhone-on natív alkalmazás ad háttérbeli, lezárt képernyős helymeghatározást. Külön telefonos engedély szükséges. A natív rész a böngésző szünetelésétől függetlenül küldi a friss méréseket, tokenfrissítéssel. A felhasználói Leállítás és kijelentkezés megszakítja; rendszerkényszer, engedélyvisszavonás, GPS- és hálózathiány továbbra is megszakíthatja. iOS kényszerített bezárás után korlátlan folytatást nem ígérünk. A fizikai működés külön elfogadási próba.
