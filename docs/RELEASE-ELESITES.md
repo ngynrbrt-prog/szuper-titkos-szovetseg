@@ -62,7 +62,7 @@
 
 ## Éles kiadás
 
-**Igazolt webes kiadás:** 1.9.9, forrás `7132d95ff3e85504605c88594ed1bc0858660177`, sikeres [Pages-futás 44891556477](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44891556477). Élő vendégnézetben a háttér barnás pergamenszűrője és a nagyítás ellenőrizve; 12 háttércsempe betöltve, jelölő- és overlay-pane filter none, konzolhiba nincs. PWA-ellenőrzés sikeres. A sötét téma külön megjelenítését ebben a vendégnézeti próbában nem kapcsoltuk be.
+**Igazolt webes kiadás:** 1.10.1, forrás `3ea058f0e26fc8fe740d587e68afd9d9b4050202`, sikeres [Pages-futás 44892666476](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44892666476). Élő térképen földrajzi papírhajtások láthatók, nagyítás és billentyűzetes húzás működik; 12 textúracsempe, pane350 a marker600 alatt, pointer-events none, konzolhiba nincs. Geometriai és PWA-tesztek sikeresek. A földrajzi skálázás és csempeillesztés matematikai teszttel igazolt; fizikai mobilkészüléken nem futott próba.
 
 ## Telepítési sorrend
 
