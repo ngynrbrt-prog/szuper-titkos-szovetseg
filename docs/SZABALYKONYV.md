@@ -19,6 +19,7 @@
 
 | Verzió | Játék | Dátum | Változás |
 | --- | --- | --- | --- |
+| 1.2 | 1.9.8 | 2026-11-21 | Független tízmásodperces szerveridőzítés, 15 km/h mozgás, régi félórás járőrözési késleltetés eltávolítva. |
 | 1.1 | 1.9.7 | 2026-11-21 | Két bezárható közös visszaszerzési popup; a megosztás csak külön gombbal áll le. |
 | 1.0 | 1.9.6 | 2026-11-21 | Részletes, a szerverkóddal egyeztetett gyűrű- és Sauron-szabályok, utolsó észlelésig tartó üldözés, admin megszakítás. |
 
@@ -66,7 +67,7 @@ Sauron elrejtése a térképeden nem állítja meg a mozgását, és nem törli 
 
 ## Sauron üldözése és az utolsó ismert hely
 
-Sauron friss helyet megosztó gyűrűbirtokost keres. Ha nincs megjegyzett célja, a hozzá legközelebbi ilyen játékost választja. Gyűrű nélküli játékos pusztán helymegosztással nem indít üldözést. A mozgási sebesség 6 km/h, a térképen egyenes szakaszokon halad; a rendszer nem gyalogos útvonaltervező.
+Sauron friss helyet megosztó gyűrűbirtokost keres. Ha nincs megjegyzett célja, a hozzá legközelebbi ilyen játékost választja. Gyűrű nélküli játékos pusztán helymegosztással nem indít üldözést. A mozgási sebesség 15 km/h, a térképen egyenes szakaszokon halad; a rendszer nem gyalogos útvonaltervező.
 
 A kiválasztott gyűrűbirtokos friss helyét megjegyzi. Amíg az illető új, érvényes helyet oszt meg és gyűrűje van, az üldözési cél a legutóbbi ilyen mérésre frissül. A megjegyzett cél eléréséig nem vált át önkényesen egy másik játékosra.
 
@@ -102,6 +103,6 @@ A hatodik gyűrű megsemmisítése után a bejelentkezve követett kör játéko
 
 A bekapcsolt helymegosztás a karaktered választott ikonjával és színével mutat a többi játékosnak. Böngésző/PWA háttérbe kerülése, képernyőzár vagy kapcsolatvesztés megszakíthatja; ilyenkor kézzel kell újraindítani. A natív Android/iPhone kód háttér-GPS-re készült, de a fizikai készülékes folyamatos működés még külön tesztet igényel, az iPhone telefonos telepítéséhez aláírás kell. A tesztalkalmazás nem ad korlátlan működési garanciát.
 
-A felület nagyjából tíz másodpercenként frissül. Sauron mozgását és a kiszabadítást a szerver a beérkező játékkérésekkor értékeli ki. Hosszú kéréskimaradás után nem szimulál korlátlan offline időt: egy mozgáslépés legfeljebb 30 másodpercet vesz figyelembe. A szerver által elfogadott állapot a mérvadó.
+A felület nagyjából tíz másodpercenként frissül. Sauron mozgását és a kiszabadítást a szerver saját, tíz másodpercenként futó háttérmotorja is értékeli, a játékosok játékkéréseitől és helymegosztásától függetlenül. Hosszú kéréskimaradás után nem szimulál korlátlan offline időt: egy mozgáslépés legfeljebb 30 másodpercet vesz figyelembe. A szerver által elfogadott állapot a mérvadó.
 
 Aktív megosztásból útvonalminták tárolódnak a kör végi közös térképhez. Kikapcsolt megosztásból nincs új minta; az adatok legfeljebb 30 napig érhetők el, a lejártak törlését a következő játékkérés végzi. Kizárólag ellenőrzött nyilvános gyalogoshelyszíneken játsszatok. Ne lépj magánterületre vagy úttestre, és vezetés közben ne használd a játékot. A telefon GPS-e manipulálható: ez baráti játék, nem hitelesített helymérés.

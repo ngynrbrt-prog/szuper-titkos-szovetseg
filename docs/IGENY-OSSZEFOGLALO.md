@@ -2,6 +2,8 @@
 
 ## Tartalomjegyzék
 
+- [Független háttérmotor és Sauron sebessége](#független-háttérmotor-és-sauron-sebessége)
+
 - [Közös visszaszerzés értesítései](#közös-visszaszerzés-értesítései)
 
 - [Üldözési emlékezet és részletes szabálykönyv](#üldözési-emlékezet-és-részletes-szabálykönyv)
@@ -49,6 +51,7 @@
 | 1.20 | 1.9.6 | 2026-11-21 | Utolsó észlelési pontig tartó üldözés; játékbeli és Markdown szabálykönyv részletesítve. |
 | 1.21 | 1.9.6 | 2026-11-21 | Közös kiszabadítás előtt minden földi gyűrűt be kell gyűjteni; számláló, felület és szabályok frissítve. |
 | 1.22 | 1.9.7 | 2026-11-21 | Indulási és sikeres visszaszerzési popup minden játékosnak; bezárásuk nem állítja le a megosztást. |
+| 1.23 | 1.9.8 | 2026-11-21 | Önálló 10 másodperces szerveridőzítés; Sauron 15 km/h, megosztási szünetben is mozog. |
 
 ## Cél és szerepkörök
 
@@ -146,3 +149,11 @@ A játék Szabályok oldala és a [részletes szabálykönyv](SZABALYKONYV.md) 1
 A közös ötperces visszaszerzés indulásakor minden játékos tájékoztató popupot kap: minden regisztrált játékos megoszt, és a gyűrűvisszaszerzés folyamatban van. Sikeres befejezéskor külön popup jelzi, hány gyűrű került vissza eredeti helyére. Mindkét ablak a Rendben, bezárás gombbal bezárható. Az értesítés bezárása nem változtat a helymegosztás állapotán: ha az aktív volt, aktív marad. Ha le akarod állítani, külön nyomd meg a térképen a Megosztás leállítása gombot. Az értesítések a szerverállapot frissítésekor jelennek meg, nem telefonos push üzenetek; ugyanazt a bezárt eseményt ugyanannál a játékosnál, ugyanabban a böngészőben nem ismételjük.
 
 A rescue-notices.js a hitelesített állapotból a game.config.rescue_started_at és rescue_completed_at/rescue_released szervermezőket figyeli. Egyedi játékos/kör/eseménytípus/időbélyeg kulcs alapján sorba állítja az üzeneteket. A bezárás localStorage nyugtát ment, külön játékosra és böngészőre; nem hív stop vagy helymeghatározási API-t. Kijelentkezés lezárja a megjelenített ablakot és üríti a sort. A kör végi eredményablak után várakozó visszaszerzési értesítés külön megnyílhat. Nem került be új adatbázistábla vagy migráció. [Tesztjegyzőkönyv](tesztjegyzokonyvek/2026-11-21-visszaszerzes-popup-1.9.7.md).
+
+## Független háttérmotor és Sauron sebessége
+
+Sauron sebessége 15 km/h (4,167 m/s, 125 m / 30 s). A helymegosztás leállítása nem állítja meg a mozgását: az utolsó ismert célját eléri, utána új érvényes cél hiányában a járőrútvonal felé halad. Friss helymegosztás nélkül továbbra sem fog el játékost. A térképi láthatósági feltétel ettől független, változatlan. A korábbi félórás járőrözési időeltolás megszűnt.
+
+Új komponensek: game_private.tick_game(uuid) és tick_active_games(), Postgres pg_cron. A szovetseg-game-engine 10 seconds ütemezéssel lépteti az aktív köröket. A game_action ugyanazt a privát motort hívja; közös tranzakciós zár és az utolsó lépés időbélyege akadályozza a kettős mozgást. Nem használ játékosnak álcázott belépést, böngészőt, Edge Function-kérést vagy kliensoldali titkos kulcsot. A privát függvények az anon/authenticated/service_role számára nem futtathatók közvetlenül; a Postgres tulajdonosi cronfolyamat és a meglévő hitelesített művelet használja. Előkészület és lezárt kör nem mozog. A job saját futási naplóját napi takarítás hét napig őrzi.
+
+Telepítés: database/background-game-engine.sql (background_game_engine_15kmh migráció), benne helper, game_action átvezetés, járőrképlet sebessége és pg_cron job. Ellenőrzés: cron.job aktív, cron.job_run_details succeeded, tényleges tick_idő és pozíció változik; a felület továbbra is körülbelül tíz másodpercenként kér friss állapotot. A kérések nélküli háttérmotor nem jelent offline időjóváírást a játékosnak: gyűrűidőhöz és közös kiszabadításhoz friss GPS kell. [Tesztjegyzőkönyv](tesztjegyzokonyvek/2026-11-21-hattermotor-1.9.8.md).
