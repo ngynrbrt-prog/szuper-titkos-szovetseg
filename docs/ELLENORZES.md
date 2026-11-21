@@ -122,3 +122,9 @@ A natív fejlesztés a felhasználó kérésére elhalasztva, a forrás és ered
 ## 2026-11-21 — 1.9.3 popupjavítás és natív build eredmény
 
 A korábbi kör belépéskori összesítője tiltva; csak az aktuálisan követett aktív kör lezárása nyit ablakot. A célzott teszt ismételt futása és a teljes 13 JavaScript-csomag sikeres. [Jegyzőkönyv](tesztjegyzokonyvek/2026-11-21-popup-1.9.3.md). Android 1.9.2 build+lint és iOS unsigned szimulátor build sikeres a 44842967106 futásban. APK-artifact 14681647800. Telefonos telepítés, lezárt képernyős GPS és aláírt iPhone-telepítő nem igazolt. Az 1.9.3 élesítése még ellenőrzendő.
+
+Az 1.9.3 webes élesítés igazolt: commit 6ff24525a3abe2abf0bfb1b00cac8688063d60f4, Pages 44843886034 sikeres. Friss böngészőben a lábléc és a betöltött script 1.9.3; roundDialog.open=false, konzolhiba nincs. Ez vendégnézet, a belépési sorrendeket automatizált függvényteszt igazolja.
+
+## 2026-11-21 — 1.9.4 admin kézi megszakítás
+
+Az abort adminművelet telepítve. Első SQL-próba hibás tesztadatból hiányzó Sauron-útvonal miatt sikertelen, javított fixture-rel második próbálkozás sikeres. A meglévő gyűrű/szín/kiszabadítás/rablás SQL regresszió sikeres, mindkét tranzakció visszagörgetve. Mind a 14 JavaScript-csomag sikeres. A futó Gárdony-játék leállítását nem hajtottuk végre. [Jegyzőkönyv](tesztjegyzokonyvek/2026-11-21-admin-leallitas-1.9.4.md). Webes élesítés ellenőrzése következik.

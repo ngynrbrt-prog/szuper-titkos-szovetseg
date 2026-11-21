@@ -63,6 +63,14 @@ begin
    if g.status<>'preparation' then raise exception 'Aktív játék csak mind a hat gyűrű megsemmisülésekor zárulhat le.'; end if;
    update public.games set status='finished',finished_at=now(),config=config||jsonb_build_object('finish_reason','cancelled') where id=g.id returning * into g;
   end if;
+ elsif p_action='abort' then
+  if not me.is_admin or g.id is null then raise exception 'Csak admin, létező játékban.'; end if;
+  if g.status<>'active' then raise exception 'Csak futó játék állítható le.'; end if;
+  if p_data->>'confirm' is distinct from 'true' or p_data->>'game' is distinct from g.id::text then raise exception 'Az aktuális játék leállítását meg kell erősíteni.'; end if;
+  update public.games set status='finished',finished_at=now(),winner_id=null,
+   config=config||jsonb_build_object('finish_reason','cancelled','cancelled_by',me.id,'rescue_started_at',null,'rescue_checked_at',null) where id=g.id returning * into g;
+  update public.player_locations set sharing_enabled=false,active_seconds=0 where game_id=g.id;
+  insert into public.game_events(game_id,player_id,event_type,event_data) values(g.id,me.id,'admin_cancel',jsonb_build_object('reason','manual_stop'));
  elsif p_action='place_ring' then
   if not me.is_admin or g.id is null or g.status not in ('preparation','active') then raise exception 'Csak admin helyezhet el gyűrűt előkészített vagy aktív játékban.'; end if;
   if p_data->>'safe' is distinct from 'true' then raise exception 'A nyilvános, biztonságos helyszínt jóvá kell hagyni.'; end if;

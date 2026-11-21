@@ -14,6 +14,7 @@
 | Verzió | Dátum | Változás |
 | --- | --- | --- |
 | 1.9.0 | 2026-11-21 | Natív Android és iOS háttérhelymeghatározás, biztonságos tokenkezelés és natív webhíd. |
+| 1.9.2 | 2026-11-21 | Android build/lint és iOS-szimulátor build sikeres, letölthető APK; fizikai GPS nincs igazolva. |
 
 ## Felépítés
 
@@ -25,7 +26,7 @@
 
 ## Fordítás
 
-A `Native Android and iPhone builds` munkafolyamat natív forrásváltozáskor és kézi indítással fut. Az elhalasztás előtt futott próbán az iOS-szimulátor fordítása sikeres, az Android build/lint lépése sikertelen volt. Nincs közzétett Android APK vagy aláírt iPhone-kiadás. Az új fordítás a hardening-javításokat és az Android visszagesztus javítását is ellenőrzi.
+A `Native Android and iPhone builds` munkafolyamat natív forrásváltozáskor és kézi indítással fut. A [44842967106 futás](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44842967106) Android build/lint és iOS unsigned szimulátor fordítása sikeres. Forrás: 2dded917eb8561da9c27195eb1c7cbda439c2fdc. [Android teszt-APK ZIP](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44842967106/artifacts/14681647800): kicsomagolás után app-debug.apk. A GitHub-letöltés bejelentkezést kérhet; artifact megőrzése 2027-02-19-ig. Az első sikertelen Android lint és javítása a tesztjegyzőkönyvben szerepel.
 
 Android helyben: JDK 17, Android SDK 36, Gradle 8.13, majd `gradle :app:assembleDebug :app:lintDebug` a `mobile/android` mappában. Az APK tesztcélú debug aláírást használ; nem Play Store-kiadás.
 
