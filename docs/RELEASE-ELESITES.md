@@ -2,6 +2,8 @@
 
 ## Tartalomjegyzék
 
+- [Erőteljesebb papíröregítés](#erőteljesebb-papíröregítés)
+
 - [Földrajzilag rögzített papirusztextúra](#földrajzilag-rögzített-papirusztextúra)
 
 - [Barnás pergamentérkép](#barnás-pergamentérkép)
@@ -59,6 +61,7 @@
 | 1.24 | 1.9.9 | 2026-11-21 | A háttértérkép barnás pergamen szűrőt kapott; a jelölők, vezérlők és játékosszín változatlan. |
 | 1.25 | 1.10.0 | 2026-11-21 | Gyűrődések és hajtások földrajzi rögzítésű Canvas-rétegen, determinisztikus nagyítás és csempeillesztés. |
 | 1.26 | 1.10.1 | 2026-11-21 | Vizuális finomítás: cellák között összefüggő fő hajtások, lágyabb és lekerekített gyűrődésárnyékok. |
+| 1.27 | 1.10.2 | 2026-11-21 | Erősebb és sűrűbb papíröregítés: barnás foltok, víznyomok, oxidációs pöttyök, kopás és több gyűrődés. |
 
 ## Éles kiadás
 
@@ -176,3 +179,9 @@ A térképháttér meleg, barnás pergamenárnyalatot kap, hogy a játék fantas
 A barna háttértérképen finom árnyékos-világos hajtások és szabálytalan gyűrődések jelennek meg. Ezek nem a képernyőhöz kötött tapéták: Web Mercator-világkoordinátákhoz rögzülnek, és ugyanannál a földrajzi pontnál maradnak húzás, nagyítás és újratöltés után. Nagyításkor együtt skálázódnak a térképpel. A részletességi szinteken finomabb vonalak fokozatosan tűnhetnek elő, de a mintát nem sorsoljuk újra. A textúra a játék- és admin-térképen is ugyanaz. A játékosszín és jelölő fölötte marad, a textúra nem fog el érintést vagy kattintást.
 
 Technológia: papyrus-map.js, procedurális Canvas 2D + Leaflet GridLayer. Rögzített szintek és földrajzi cellaazonosító alapján determinisztikus geometria; a szomszédcsempék ugyanazt a világkoordinátájú vonalat rajzolják. A papyrus pane z-indexe 350 (csempék fölött, overlay/marker rétegek alatt), pointer-events:none és aria-hidden=true. A világ vízszintes ismétlésénél a geometria vetőmagja periodikus. A raszterfelbontás legfeljebb 2× kijelzősűrűség, a részletesség korlátozott, külső textúrakép vagy új szolgáltató nem kell. A CSP és az adatbázis nem változik. A kör végi exportált térképképhez ez a dekoráció nem kerül hozzá.
+
+## Erőteljesebb papíröregítés
+
+A térkép jóval hangsúlyosabb antik papírhatást kapott: nagy, puha barnás elszíneződések, köríves vízfoltnyomok, apró rozsdabarna oxidációs pöttyök, világos kopott papírrostok és sűrűbb, erősebb gyűrődésárnyékok láthatók. A fő hajtások megtartják a korábbi földrajzi helyüket. Az új foltok és rostok is ugyanabból a helyhez kötött, determinisztikus cellamintából készülnek: nem képernyőre ragasztott effektek és nem mozognak önállóan nagyítás vagy húzás közben. A nagyítási részletesség fokozatosan változhat, a mintát nem sorsoljuk újra.
+
+A papyrus-map.js Canvas-rétege cellánként 5 hajtás/gyűrődés-vonalat, 3 elmosódó öregedési foltot, 1 víznyomot, 22 apró barnás pöttyöt és 14 kopásrostot generál. A gyűrődések és foltok részben áttetszők, a térképi feliratok olvashatóságát megőrzik. A réteg továbbra is a jelölők alatt, pointer-events:none beállítással működik; nem foglalja el a térképi műveleteket. Nincs adatbázis- vagy játékszabály-változás, illetve új külső szolgáltatás. A háttér barnítása és a játékosok saját ikonjai/színei változatlanok.

@@ -2,6 +2,8 @@
 
 ## Tartalomjegyzék
 
+- [Erőteljesebb papíröregítés](#erőteljesebb-papíröregítés)
+
 - [Földrajzilag rögzített papirusztextúra](#földrajzilag-rögzített-papirusztextúra)
 
 - [Barnás pergamentérkép](#barnás-pergamentérkép)
@@ -63,6 +65,7 @@
 | 1.24 | 1.9.9 | 2026-11-21 | A háttértérkép barnás pergamen szűrőt kapott; a jelölők, vezérlők és játékosszín változatlan. |
 | 1.25 | 1.10.0 | 2026-11-21 | Gyűrődések és hajtások földrajzi rögzítésű Canvas-rétegen, determinisztikus nagyítás és csempeillesztés. |
 | 1.26 | 1.10.1 | 2026-11-21 | Vizuális finomítás: cellák között összefüggő fő hajtások, lágyabb és lekerekített gyűrődésárnyékok. |
+| 1.27 | 1.10.2 | 2026-11-21 | Erősebb és sűrűbb papíröregítés: barnás foltok, víznyomok, oxidációs pöttyök, kopás és több gyűrődés. |
 
 ## Mobilos és asztali webes nézet
 
@@ -322,3 +325,9 @@ Technológia: papyrus-map.js, procedurális Canvas 2D + Leaflet GridLayer. Rögz
 ![Földrajzilag rögzített, finom papírhajtások a barnás térképen](kepek/papirusz-terkep-1.10.1.jpg)
 
 Belépés előtti mintanézet a textúra szemléltetésére; nem a Gárdony-játék állapota. A hajtások a földrajzi tartalommal együtt nagyulnak és mozognak, a Sauron-ikon a textúra fölött marad.
+
+## Erőteljesebb papíröregítés
+
+A térkép jóval hangsúlyosabb antik papírhatást kapott: nagy, puha barnás elszíneződések, köríves vízfoltnyomok, apró rozsdabarna oxidációs pöttyök, világos kopott papírrostok és sűrűbb, erősebb gyűrődésárnyékok láthatók. A fő hajtások megtartják a korábbi földrajzi helyüket. Az új foltok és rostok is ugyanabból a helyhez kötött, determinisztikus cellamintából készülnek: nem képernyőre ragasztott effektek és nem mozognak önállóan nagyítás vagy húzás közben. A nagyítási részletesség fokozatosan változhat, a mintát nem sorsoljuk újra.
+
+A papyrus-map.js Canvas-rétege cellánként 5 hajtás/gyűrődés-vonalat, 3 elmosódó öregedési foltot, 1 víznyomot, 22 apró barnás pöttyöt és 14 kopásrostot generál. A gyűrődések és foltok részben áttetszők, a térképi feliratok olvashatóságát megőrzik. A réteg továbbra is a jelölők alatt, pointer-events:none beállítással működik; nem foglalja el a térképi műveleteket. Nincs adatbázis- vagy játékszabály-változás, illetve új külső szolgáltatás. A háttér barnítása és a játékosok saját ikonjai/színei változatlanok.
