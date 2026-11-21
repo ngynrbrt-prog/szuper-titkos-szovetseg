@@ -36,3 +36,5 @@ Minden alábbi eset első futtatása sikeres.
 ## Korlátok
 
 Valódi többtelefonos, ötpereces élő kör: NEM FUTTATOTT. Böngészőteszt az élő verzió/vezérlők ellenőrzésére külön kerül az ellenőrzési naplóba. A popupok böngészőben futó értesítések, nem OS push üzenetek. A nyugták helyiek: másik eszközön vagy törölt helyi adatok után az aktuális kör értesítése újra megjelenhet. Kikapcsolt/bezárt kliens nem jelenít meg azonnal popupot; állapotlekéréskor kapja meg az aktuális kör elérhető jelzését.
+
+Éles böngészős ellenőrzés / 1. kísérlet: PASS. Pages 44848819826 sikeres, a1cdc663e7dfbd290ed989be80980e6670e842c2. Élő vendégnézet 1.9.7; új modul betöltve, dialog nyugalmi állapotban zárva, bezárógomb és megosztási magyarázat jelen van, konzolhiba nincs. Ez a telepített felület ellenőrzése, nem valós ötperces esemény végigjátszása.

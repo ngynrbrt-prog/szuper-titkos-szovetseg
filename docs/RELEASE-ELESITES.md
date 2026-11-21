@@ -52,7 +52,7 @@
 
 ## Éles kiadás
 
-**Igazolt webes kiadás:** 1.9.6, forrás `ed1c5b09eabcd9c5c5253cd38df89b69f3a36412`, sikeres [Pages-futás 44847861813](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44847861813). Élő böngészőben az 1.9.6 Szabályok oldal mind a 11 fejezete és a közös kiszabadítás új feltétele megjelent, a tartalomjegyzék hivatkozása működik, konzolhiba nincs. A két szervermigráció telepítve, célzott és regressziós tesztek sikeresek. Valódi többtelefonos játékpróba nincs igazolva.
+**Igazolt webes kiadás:** 1.9.7, forrás `a1cdc663e7dfbd290ed989be80980e6670e842c2`, sikeres [Pages-futás 44848819826](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44848819826). Friss élő böngészőben 1.9.7 lábléc és rescue-notices.js, a popup bezárógombja és a külön helymegosztás-leállítást leíró szöveg jelen van, konzolhiba nincs. A popupok eseménysorát automatizált modulteszt igazolja; valódi többtelefonos ötperces próba nem történt.
 
 ## Telepítési sorrend
 

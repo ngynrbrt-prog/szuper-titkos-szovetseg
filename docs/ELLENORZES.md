@@ -150,3 +150,5 @@ Az 1.9.6 élesítés igazolt: commit ed1c5b09eabcd9c5c5253cd38df89b69f3a36412, P
 ## 2026-11-21 — 1.9.7 visszaszerzési popupok
 
 Az indulás és a sikeres befejezés szerver-időbélyege külön bezárható popupot indít minden hitelesített játékosnál. Bezárás nem állítja le a GPS-t. Első teljes automatizált futás: 15 JavaScript-csomag PASS. Célzott teszt: indulás, befejezés, nyitott ablak melletti sorba állítás, kör végi modal megvárása, ismétlés és újratöltés utáni nyugta, eltérő játékos, kijelentkezési reset, nulla stopGPS hívás. Nincs adatbázisváltoztatás, ezért SQL-t ebben a futásban nem ismételtünk. Élesítés igazolása következik.
+
+Az 1.9.7 élesítés igazolt: commit a1cdc663e7dfbd290ed989be80980e6670e842c2, Pages 44848819826 sikeres. Friss élő vendégnézetben 1.9.7 és rescue-notices.js?v=1.9.7, konzolhiba nélkül. A dialog DOM-ban a Rendben, bezárás gomb és a külön Megosztás leállítása utasítás ellenőrizve; vendégként a popup helyesen zárva marad. Valódi ötperces többjátékos eseményt nem váltottunk ki az éles játékban.
