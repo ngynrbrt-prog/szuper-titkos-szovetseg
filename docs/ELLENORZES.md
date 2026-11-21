@@ -178,3 +178,5 @@ Az 1.10.1 végső célzott ismétlésnél papyrus-map és PWA PASS, új cellasz�
 ## 2026-11-21 — 1.10.2 erősebb papíröregítés
 
 Bővített földrajzi Canvas-textúra: több és erősebb gyűrődés, három barnás folt, víznyom, 22 oxidációs pötty és 14 kopásrost cellánként. Első célzott futás: papyrus-map és PWA PASS. Új ellenőrzések: öregedési geometria determinisztikus, elemszámok helyesek; a korábbi világkoordinátás zoomskála, cellaszéli főhajtás-folytonosság és nem interaktív réteg megmaradt. Élő olvashatósági és vizuális próba következik. Backend változatlan, SQL nem futott.
+
+Az 1.10.2 élesítés igazolt: 5ce2aeebebe16403cd735cc1699b75c0c5aa5eda, Pages 44893132532 sikeres. Élő böngészőn világ- és nagyított regionális nézetben a barnás foltok, víznyomok, pöttyök, rostok és többletgyűrődések jól láthatók; a helynevek és a fekete sisak olvashatók maradtak. Sauron fókusz, zoom és popup Escape bezárása működött; 15 textúracsempe, markerZ600, pointer-events:none, konzolhiba nincs. Kép: kepek/oreg-papir-terkep-1.10.2.jpg. A földrajzi determinisztikusságot a bővített modellteszt igazolja. Mobil/sötét téma: NEM FUTTATOTT; backend és játékszabály változatlan.

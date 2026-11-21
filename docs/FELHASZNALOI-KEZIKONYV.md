@@ -331,3 +331,7 @@ Belépés előtti mintanézet a textúra szemléltetésére; nem a Gárdony-ját
 A térkép jóval hangsúlyosabb antik papírhatást kapott: nagy, puha barnás elszíneződések, köríves vízfoltnyomok, apró rozsdabarna oxidációs pöttyök, világos kopott papírrostok és sűrűbb, erősebb gyűrődésárnyékok láthatók. A fő hajtások megtartják a korábbi földrajzi helyüket. Az új foltok és rostok is ugyanabból a helyhez kötött, determinisztikus cellamintából készülnek: nem képernyőre ragasztott effektek és nem mozognak önállóan nagyítás vagy húzás közben. A nagyítási részletesség fokozatosan változhat, a mintát nem sorsoljuk újra.
 
 A papyrus-map.js Canvas-rétege cellánként 5 hajtás/gyűrődés-vonalat, 3 elmosódó öregedési foltot, 1 víznyomot, 22 apró barnás pöttyöt és 14 kopásrostot generál. A gyűrődések és foltok részben áttetszők, a térképi feliratok olvashatóságát megőrzik. A réteg továbbra is a jelölők alatt, pointer-events:none beállítással működik; nem foglalja el a térképi műveleteket. Nincs adatbázis- vagy játékszabály-változás, illetve új külső szolgáltatás. A háttér barnítása és a játékosok saját ikonjai/színei változatlanok.
+
+![Erősebben öregített térkép barnás foltokkal, kopással és sűrű hajtásokkal](kepek/oreg-papir-terkep-1.10.2.jpg)
+
+Belépés előtti mintanézet az erősebb papíröregítés szemléltetésére, nem a Gárdony-kör állapota.

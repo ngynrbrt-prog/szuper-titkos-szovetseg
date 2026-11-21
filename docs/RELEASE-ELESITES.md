@@ -65,7 +65,7 @@
 
 ## Éles kiadás
 
-**Igazolt webes kiadás:** 1.10.1, forrás `3ea058f0e26fc8fe740d587e68afd9d9b4050202`, sikeres [Pages-futás 44892666476](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44892666476). Élő térképen földrajzi papírhajtások láthatók, nagyítás és billentyűzetes húzás működik; 12 textúracsempe, pane350 a marker600 alatt, pointer-events none, konzolhiba nincs. Geometriai és PWA-tesztek sikeresek. A földrajzi skálázás és csempeillesztés matematikai teszttel igazolt; fizikai mobilkészüléken nem futott próba.
+**Igazolt webes kiadás:** 1.10.2, forrás `5ce2aeebebe16403cd735cc1699b75c0c5aa5eda`, sikeres [Pages-futás 44893132532](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44893132532). Élő térképen erősebb barnás foltok, víznyomok, oxidációs pöttyök, rostok és több gyűrődés látható, nagyítás után is. A jelölő 600-as rétegen a textúra fölött marad, pointer-events none, konzolhiba nincs. Geometriai/PWA tesztek sikeresek; fizikai mobil és sötét téma külön próbája nem futott.
 
 ## Telepítési sorrend
 
