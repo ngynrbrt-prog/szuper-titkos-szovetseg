@@ -77,6 +77,7 @@
   updateRoundClock();
   const rescue=window.PlayerRules.rescueProgress(s.rescue);$('rescueStatus').hidden=!rescue.captive;$('rescueStatus').textContent='Közös kiszabadítás: '+rescue.sharing+'/'+rescue.required+' játékos osztja meg a helyét · '+Math.floor(rescue.seconds/60)+' perc '+String(rescue.seconds%60).padStart(2,'0')+' mp / 5 perc. '+(s.items.some(i=>i.item_type==='ring'&&i.status==='ground')?'Előbb gyűjtsétek össze a térképen maradt '+s.items.filter(i=>i.item_type==='ring'&&i.status==='ground').length+' gyűrűt.':'Minden térképen maradt gyűrű játékosnál van.')+' Megszakítás vagy elfogás újrakezdi.';
   showRoundResults(s);
+  window.RescueNotices?.update(s);
   if(g?.status==='finished'&&watch!==null&&!window.NativeBridge?.available)void stopGPS().catch(()=>{});
   if(window.NativeBridge?.available&&watch==='native'){const fresh=s.locations.some(l=>l.player_id===s.me.id&&Date.now()-Date.parse(l.updated_at)<30000);$('gpsStatus').textContent=g?.status!=='active'?'Natív megosztás bekapcsolva; nincs aktív játék. A Leállítás gombbal kikapcsolhatod.':fresh?'Natív háttérmegosztás: friss helyzet érkezett a szerverhez.':'Natív megosztás bekapcsolva; friss GPS-mérésre várunk. Csak elfogadott friss mérés számít.';}
   buttons();renderMap();renderRingSummary();if(editing)renderDraft();
@@ -104,7 +105,7 @@
   clock.textContent='Játékidő · '+Math.floor(seconds/60)+' perc '+String(seconds%60).padStart(2,'0')+' mp';
  }
  let roundSessionUser=null,observedActiveRound=null;
- function resetRoundTracking(){roundSessionUser=null;observedActiveRound=null;clearRoundMap();}
+ function resetRoundTracking(){if(typeof window!=='undefined')window.RescueNotices?.reset();roundSessionUser=null;observedActiveRound=null;clearRoundMap();}
  function showRoundResults(s){
   if(roundSessionUser!==s.me.id){roundSessionUser=s.me.id;observedActiveRound=s.game?.status==='active'?s.game.id:null;return;}
   if(s.game?.status==='active')observedActiveRound=s.game.id;

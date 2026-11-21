@@ -2,6 +2,8 @@
 
 ## Tartalomjegyzék
 
+- [Közös visszaszerzés értesítései](#közös-visszaszerzés-értesítései)
+
 - [Részletes gyűrű- és Sauron-szabályok](#részletes-gyűrű--és-sauron-szabályok)
 
 - [Üldözési emlékezet és részletes szabálykönyv](#üldözési-emlékezet-és-részletes-szabálykönyv)
@@ -50,6 +52,7 @@
 | 1.19 | 1.9.5 | 2026-11-21 | Sauron élő helye csak saját gyűrűvel és friss saját helymegosztással látható; szerverválasz és kliens ellenőrizve. |
 | 1.20 | 1.9.6 | 2026-11-21 | Utolsó észlelési pontig tartó üldözés; játékbeli és Markdown szabálykönyv részletesítve. |
 | 1.21 | 1.9.6 | 2026-11-21 | Közös kiszabadítás előtt minden földi gyűrűt be kell gyűjteni; számláló, felület és szabályok frissítve. |
+| 1.22 | 1.9.7 | 2026-11-21 | Indulási és sikeres visszaszerzési popup minden játékosnak; bezárásuk nem állítja le a megosztást. |
 
 ## Mobilos és asztali webes nézet
 
@@ -260,6 +263,8 @@ A közös kiszabadításnak két egyidejű előfeltétele van: a térképen egye
 
 Leállítás, elavult GPS, új elfogás, a térképen maradó felvehető gyűrű vagy a folyamatos szerverellenőrzés megszakadása újrakezdi az öt percet. Offline idő nem számít. Siker esetén az összes Sauronnál lévő gyűrű visszakerül a saját eredeti indulási helyére, ismét bárki felveheti a szokásos 50 méteres feltételekkel. A számlálójuk nullázódik. A kiszabadítás önmagában nem ad győzelmet vagy pontot.
 
+A közös ötperces visszaszerzés indulásakor minden játékos tájékoztató popupot kap: minden regisztrált játékos megoszt, és a gyűrűvisszaszerzés folyamatban van. Sikeres befejezéskor külön popup jelzi, hány gyűrű került vissza eredeti helyére. Mindkét ablak a Rendben, bezárás gombbal bezárható. Az értesítés bezárása nem változtat a helymegosztás állapotán: ha az aktív volt, aktív marad. Ha le akarod állítani, külön nyomd meg a térképen a Megosztás leállítása gombot. Az értesítések a szerverállapot frissítésekor jelennek meg, nem telefonos push üzenetek; ugyanazt a bezárt eseményt ugyanannál a játékosnál, ugyanabban a böngészőben nem ismételjük.
+
 ### Pontozás és a kör eredménye
 
 A drágakő értéke a sorszámának ezerszerese: 1 000-től húsz darabos körben 20 000, negyven darabos körben 40 000 sestertiusig. Első felvételkor írjuk jóvá. A gyűrű puszta felvétele nem ad 1 000 pontot, annak megsemmisítése ad gyűrűnként 1 000 sestertiust. A sikeres rablások száma külön statisztika.
@@ -275,3 +280,9 @@ A bekapcsolt helymegosztás a karaktered választott ikonjával és színével m
 A felület nagyjából tíz másodpercenként frissül. Sauron mozgását és a kiszabadítást a szerver a beérkező játékkérésekkor értékeli ki. Hosszú kéréskimaradás után nem szimulál korlátlan offline időt: egy mozgáslépés legfeljebb 30 másodpercet vesz figyelembe. A szerver által elfogadott állapot a mérvadó.
 
 Aktív megosztásból útvonalminták tárolódnak a kör végi közös térképhez. Kikapcsolt megosztásból nincs új minta; az adatok legfeljebb 30 napig érhetők el, a lejártak törlését a következő játékkérés végzi. Kizárólag ellenőrzött nyilvános gyalogoshelyszíneken játsszatok. Ne lépj magánterületre vagy úttestre, és vezetés közben ne használd a játékot. A telefon GPS-e manipulálható: ez baráti játék, nem hitelesített helymérés.
+
+## Közös visszaszerzés értesítései
+
+A közös ötperces visszaszerzés indulásakor minden játékos tájékoztató popupot kap: minden regisztrált játékos megoszt, és a gyűrűvisszaszerzés folyamatban van. Sikeres befejezéskor külön popup jelzi, hány gyűrű került vissza eredeti helyére. Mindkét ablak a Rendben, bezárás gombbal bezárható. Az értesítés bezárása nem változtat a helymegosztás állapotán: ha az aktív volt, aktív marad. Ha le akarod állítani, külön nyomd meg a térképen a Megosztás leállítása gombot. Az értesítések a szerverállapot frissítésekor jelennek meg, nem telefonos push üzenetek; ugyanazt a bezárt eseményt ugyanannál a játékosnál, ugyanabban a böngészőben nem ismételjük.
+
+A rescue-notices.js a hitelesített állapotból a game.config.rescue_started_at és rescue_completed_at/rescue_released szervermezőket figyeli. Egyedi játékos/kör/eseménytípus/időbélyeg kulcs alapján sorba állítja az üzeneteket. A bezárás localStorage nyugtát ment, külön játékosra és böngészőre; nem hív stop vagy helymeghatározási API-t. Kijelentkezés lezárja a megjelenített ablakot és üríti a sort. A kör végi eredményablak után várakozó visszaszerzési értesítés külön megnyílhat. Nem került be új adatbázistábla vagy migráció. [Tesztjegyzőkönyv](tesztjegyzokonyvek/2026-11-21-visszaszerzes-popup-1.9.7.md).

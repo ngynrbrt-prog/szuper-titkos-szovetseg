@@ -19,6 +19,7 @@
 
 | Verzió | Játék | Dátum | Változás |
 | --- | --- | --- | --- |
+| 1.1 | 1.9.7 | 2026-11-21 | Két bezárható közös visszaszerzési popup; a megosztás csak külön gombbal áll le. |
 | 1.0 | 1.9.6 | 2026-11-21 | Részletes, a szerverkóddal egyeztetett gyűrű- és Sauron-szabályok, utolsó észlelésig tartó üldözés, admin megszakítás. |
 
 ## A kör és a cél
@@ -86,6 +87,8 @@ A Sauron által elvett gyűrűt csak az a játékos szerezheti vissza egyénileg
 A közös kiszabadításnak két egyidejű előfeltétele van: a térképen egyetlen felvehető gyűrű sem maradhat, és minden regisztrált játékosnak egyszerre öt percig kell aktív, friss és pontos helyet megosztania. Minden meg nem semmisített, nem Sauronnál lévő gyűrűt előbb valamelyik játékosnak kell birtokolnia; lehetnek egy vagy több játékosnál, nem kell mindenkinek saját gyűrű. A megsemmisített gyűrűt nem kell összegyűjteni. Ha minden megmaradt gyűrű Sauronnál van, nincs felszedendő gyűrű, de a közös öt perc akkor is szükséges. Az óra csak mindkét feltétel teljesülése után indul, az előtte megosztott idő nem számít bele. A gyűrű nélküli regisztrált játékos is beleszámít a szükséges létszámba. A kártya mutatja a megosztó/összes játékos létszámot és a közös időt.
 
 Leállítás, elavult GPS, új elfogás, a térképen maradó felvehető gyűrű vagy a folyamatos szerverellenőrzés megszakadása újrakezdi az öt percet. Offline idő nem számít. Siker esetén az összes Sauronnál lévő gyűrű visszakerül a saját eredeti indulási helyére, ismét bárki felveheti a szokásos 50 méteres feltételekkel. A számlálójuk nullázódik. A kiszabadítás önmagában nem ad győzelmet vagy pontot.
+
+A közös ötperces visszaszerzés indulásakor minden játékos tájékoztató popupot kap: minden regisztrált játékos megoszt, és a gyűrűvisszaszerzés folyamatban van. Sikeres befejezéskor külön popup jelzi, hány gyűrű került vissza eredeti helyére. Mindkét ablak a Rendben, bezárás gombbal bezárható. Az értesítés bezárása nem változtat a helymegosztás állapotán: ha az aktív volt, aktív marad. Ha le akarod állítani, külön nyomd meg a térképen a Megosztás leállítása gombot. Az értesítések a szerverállapot frissítésekor jelennek meg, nem telefonos push üzenetek; ugyanazt a bezárt eseményt ugyanannál a játékosnál, ugyanabban a böngészőben nem ismételjük.
 
 ## Pontozás és a kör eredménye
 

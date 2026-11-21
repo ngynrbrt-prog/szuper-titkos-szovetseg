@@ -1,4 +1,4 @@
-# A Szuper Titkos szövetség · Multiplayer 1.9.6
+# A Szuper Titkos szövetség · Multiplayer 1.9.7
 
 Hat regisztrált játékos közös, egyvárosos GPS-játéka. A felület GitHub Pages-en, a hitelesítés és minden játékállapot-változás Supabase-ben fut.
 
@@ -31,7 +31,7 @@ A böngésző csak publikus API-kulcsot kap. A PIN bcrypt-hashként, privát sé
 
 A `player-auth` a belépést és a meghívó nélküli regisztrációt kezeli. A `game-api` minden kérést a Supabase Auth `/user` végpontján ellenőriz, majd a szerver az élő `auth.sessions` rekord meglétét is megköveteli. Az ügyfél nem választhatja meg a cselekvő játékos azonosítóját. A kliensszerepköröknek nincs közvetlen játéktábla- vagy játék-RPC-hozzáférésük. A player_notices kivétel: a sértett saját, élő munkamenetéhez tartozó üzenetét SELECT RLS védi a Realtime-hoz. Minden tábla RLS-sel védett; a policy nélküli, alapértelmezett tiltás szándékos, az összes adatforgalom a szerverfüggvényeken halad át.
 
-A kliens munkamenete a lap `sessionStorage` tárhelyén marad. Nincs szolgáltatási kulcs a forrásban. A HTML szigorú tartalombiztonsági szabályt használ, a felhasználói szövegeket a felület szövegként kezeli. A Leaflet 1.9.6 helyben csomagolt; a térképcsempék az OpenStreetMaptől érkeznek.
+A kliens munkamenete a lap `sessionStorage` tárhelyén marad. Nincs szolgáltatási kulcs a forrásban. A HTML szigorú tartalombiztonsági szabályt használ, a felhasználói szövegeket a felület szövegként kezeli. A Leaflet 1.9.7 helyben csomagolt; a térképcsempék az OpenStreetMaptől érkeznek.
 
 ## Telepítés és karbantartás
 

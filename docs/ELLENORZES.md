@@ -146,3 +146,7 @@ Sauron friss célpont utolsó helyét megjegyzi és megszűnt megosztás után i
 Az 1.9.6 végső webes forrásán mind a 14 JavaScript-csomag elsőre sikeres, benne a nagyobb szabályoldalt betöltő PWA precache-ellenőrzése.
 
 Az 1.9.6 élesítés igazolt: commit ed1c5b09eabcd9c5c5253cd38df89b69f3a36412, Pages 44847861813 sikeres. Élő vendégnézet Szabályok gombja megnyitotta a részletes szabályokat; 11 fejezet, üldözési emlékezet és minden földi gyűrű begyűjtése megjelent. A Közös ötperces kiszabadítás tartalomjegyzék-link rule-kiszabaditas célra vitt, szabályoldal látható maradt, konzolhiba nincs. A végső advisors változatlan: 12 default-deny INFO, a szándékosan címzettellenőrzött can_read_game_notice definer és leaked-password korábbi WARN; közvetlen authenticated game_action EXECUTE továbbra is tiltva.
+
+## 2026-11-21 — 1.9.7 visszaszerzési popupok
+
+Az indulás és a sikeres befejezés szerver-időbélyege külön bezárható popupot indít minden hitelesített játékosnál. Bezárás nem állítja le a GPS-t. Első teljes automatizált futás: 15 JavaScript-csomag PASS. Célzott teszt: indulás, befejezés, nyitott ablak melletti sorba állítás, kör végi modal megvárása, ismétlés és újratöltés utáni nyugta, eltérő játékos, kijelentkezési reset, nulla stopGPS hívás. Nincs adatbázisváltoztatás, ezért SQL-t ebben a futásban nem ismételtünk. Élesítés igazolása következik.

@@ -1,0 +1,11 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const src=fs.readFileSync(require('node:path').join(__dirname,'../rescue-notices.js'),'utf8');
+const store=new Map();let sharing=true,stopCalls=0;
+function create(){let shown=0;const handlers={},roundHandlers={},dialog={open:false,addEventListener:(n,f)=>handlers[n]=f,showModal(){this.open=true;shown++;},close(){this.open=false;handlers.close();}},round={open:false,addEventListener:(n,f)=>roundHandlers[n]=f};const nodes={rescueDialog:dialog,rescueNoticeTitle:{},rescueNoticeBody:{},roundDialog:round};const c={document:{getElementById:id=>nodes[id]},window:{},localStorage:{getItem:k=>store.get(k),setItem:(k,v)=>store.set(k,v)},stopGPS(){sharing=false;stopCalls++;}};vm.runInNewContext(src,c);return {api:c.window.RescueNotices,dialog,round,roundHandlers,nodes,shown:()=>shown};}
+const state=(id='one',config={rescue_started_at:'start-1'})=>({me:{id},game:{id:'game',status:'active',config}});
+let a=create();a.api.update(state());assert.equal(a.shown(),1);assert.match(a.nodes.rescueNoticeTitle.textContent,/folyamatban/);a.api.update(state());assert.equal(a.shown(),1);
+a.api.update(state('one',{rescue_completed_at:'finish-1',rescue_released:3}));assert.equal(a.shown(),1);a.dialog.close();assert.equal(a.shown(),2);assert.match(a.nodes.rescueNoticeBody.textContent,/3 gyűrű/);a.dialog.close();assert.equal(sharing,true);assert.equal(stopCalls,0);
+a.api.update(state('one',{rescue_completed_at:'finish-1',rescue_released:3}));assert.equal(a.shown(),2);
+let reload=create();reload.api.update(state('one',{rescue_completed_at:'finish-1',rescue_released:3}));assert.equal(reload.shown(),0);
+reload.api.update(state('two',{rescue_completed_at:'finish-1',rescue_released:3}));assert.equal(reload.shown(),1,'each player receives their own popup');reload.dialog.close();reload.round.open=true;reload.api.update(state('two',{rescue_started_at:'start-2'}));assert.equal(reload.shown(),1);reload.round.open=false;reload.roundHandlers.close();assert.equal(reload.shown(),2);reload.api.reset();assert.equal(reload.dialog.open,false);assert.equal(stopCalls,0);
+console.log('PASS rescue popups: start and completion, queued while open/round summary, no repeated acknowledged event after reload, player isolation, logout reset, dismissal never stops sharing');
