@@ -35,4 +35,4 @@ Web 1.9.4 helyi forrás, macOS Node REPL / JavaScript VM és node:assert/strict.
 
 ## Korlátok
 
-Éles adminfelületi valódi leállítás: NEM FUTTATOTT, mert megszakítaná a felhasználó játékát. Helyette produkciós függvényteszt és szerveroldali visszagörgetett fixture. Fizikai telefonos GPS nincs újratesztelve. Webes telepítés igazolása az ellenőrzési naplóban.
+Éles adminfelületi valódi leállítás: NEM FUTTATOTT, mert megszakítaná a felhasználó játékát. Helyette produkciós függvényteszt és szerveroldali visszagörgetett fixture. Fizikai telefonos GPS nincs újratesztelve. Webes telepítés igazolt: Pages 44844327823 sikeres (077dcc5989091bd3f70294fa4a912f3b75ad2c86). Friss élő vendégnézet lábléce és scriptje 1.9.4, konzolhiba nélkül. Az admin jogosultsági felület működése automatizált függvényteszt, nem élő felhasználói gombnyomás.

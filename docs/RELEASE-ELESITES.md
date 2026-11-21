@@ -42,7 +42,7 @@
 
 ## Éles kiadás
 
-**Igazolt webes kiadás:** 1.9.3, forrás `6ff24525a3abe2abf0bfb1b00cac8688063d60f4`, sikeres [Pages-futás 44843886034](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44843886034). Élő böngésző: 1.9.3 lábléc és script, nincs nyitott összesítő vagy konzolhiba. Az 1.9.4 adminleállítás szerveroldali migrációja telepítve és visszagörgetett teszttel igazolt; webes közzétételének eredménye az ellenőrzési naplóba kerül.
+**Igazolt webes kiadás:** 1.9.4, forrás `077dcc5989091bd3f70294fa4a912f3b75ad2c86`, sikeres [Pages-futás 44844327823](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44844327823). Friss böngészőben 1.9.4 lábléc és script, nyitott popup és konzolhiba nélkül. Az adminmegszakítás adatbázisban telepítve, szerveroldali fixture teszt sikeres; a valódi Gárdony-kör továbbra is aktív. Fizikai app/GPS próba nincs igazolva.
 
 ## Telepítési sorrend
 

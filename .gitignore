@@ -3,3 +3,6 @@ ADMIN-MEGHIVO.txt
 !.env.example
 node_modules/
 test-results/
+
+# Local downloaded build artifacts
+/downloads/
