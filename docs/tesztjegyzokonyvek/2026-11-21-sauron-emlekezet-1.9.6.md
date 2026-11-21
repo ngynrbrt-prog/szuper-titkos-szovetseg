@@ -37,3 +37,5 @@ Web 1.9.6; macOS, Node REPL JavaScript VM / assert, automatizált ellenőrzés. 
 Több valós játékos helymegosztásával játszott élő kör: NEM FUTTATOTT. A tényleges szerverfüggvény kontrollált, visszagörgetett tranzakcióban tesztelt. Az élő webes változat és a szabálykönyv böngészős ellenőrzése az ellenőrzési naplóba kerül. A fizikai háttér-GPS nincs újraellenőrizve.
 
 Automatizált webes regresszió, első futás az 1.9.6 végső forrásán: mind a 14 .test.cjs csomag PASS (admin-manual-stop, appearance-random, gps, map-model, native-bridge, navigation-panel, placement-model, player-rules, poi-generation, poi-model, pwa, robbery-notices, round-summary-gating, summary-map).
+
+Böngészős ellenőrzés, kézi UI-művelet automatizált böngészővezérléssel, első próbálkozás: PASS. Élő 1.9.6, Szabályok menü → 11 fejezet, új feltételek olvashatók; Közös ötperces kiszabadítás link → #rule-kiszabaditas, rulesVisible=true, konzolhiba nincs. Pages 44847861813 sikeres, forrás ed1c5b09eabcd9c5c5253cd38df89b69f3a36412.

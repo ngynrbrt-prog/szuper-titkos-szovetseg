@@ -49,7 +49,7 @@
 
 ## Éles kiadás
 
-**Igazolt webes kiadás:** 1.9.5, forrás `52051d7d9bff227f0a85aa9902e63cd05374c1d4`, sikeres [Pages-futás 44846785987](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44846785987). Friss böngészőben az 1.9.5 lábléc és map-model.js töltődik, konzolhiba nélkül. A Sauron-láthatóság szerveroldali és modelltesztje sikeres; fizikai többtelefonos játékpróba nincs igazolva.
+**Igazolt webes kiadás:** 1.9.6, forrás `ed1c5b09eabcd9c5c5253cd38df89b69f3a36412`, sikeres [Pages-futás 44847861813](https://github.com/ngynrbrt-prog/szuper-titkos-szovetseg/actions/runs/44847861813). Élő böngészőben az 1.9.6 Szabályok oldal mind a 11 fejezete és a közös kiszabadítás új feltétele megjelent, a tartalomjegyzék hivatkozása működik, konzolhiba nincs. A két szervermigráció telepítve, célzott és regressziós tesztek sikeresek. Valódi többtelefonos játékpróba nincs igazolva.
 
 ## Telepítési sorrend
 
